@@ -1,0 +1,142 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "v0.0.1",
+    "title": "Dokumentasi API booking hotel dan penerbangan - Travelease",
+    "description": "Jika ada yang ingin ditanyakan hubungi AMRINA"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local Server"
+    },
+    {
+      "url": "https://travelease-be-orpin.vercel.app/api",
+      "description": "Deploy Server"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "example@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123"
+          }
+        },
+        "xml": {
+          "name": "LoginRequest"
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Jhon Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "example@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123"
+          },
+          "confirmation_password": {
+            "type": "string",
+            "example": "Password123"
+          }
+        },
+        "xml": {
+          "name": "RegisterRequest"
+        }
+      }
+    }
+  }
+}

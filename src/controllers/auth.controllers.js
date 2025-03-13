@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import { registerUser } from "../services/auth/register.js";
+import { loginUser } from "../services/auth/login.js";
 
 const registerValidation = Yup.object({
     name: Yup.string().required(),
@@ -33,6 +34,15 @@ const registerValidation = Yup.object({
 
 export default {
     async register (req, res) {
+        /**
+         #swagger.tags = ['Auth']
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/RegisterRequest"
+            }
+         }
+         */
         const { name, email, password, confirmation_password } = req.body;
     
         try {
@@ -60,4 +70,62 @@ export default {
             });
         }
     },
-}
+
+    async login (req, res) {
+        /**
+        #swagger.tags = ['Auth']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/LoginRequest"}
+        }
+
+        */
+        const { email, password } = req.body;
+
+        try {
+            const userData = await loginUser({email, password});
+
+            if(userData === "email or password failed"){
+                return res.status(400).json({
+                    message: "email or password failed",
+                    data: null,
+                });
+            };
+            
+            res.cookie(
+                "token",
+                userData,
+                {
+                    maxAge: 3_600 * 1000
+                },
+            );
+
+            res.status(200).json({
+                message: "Login success",
+                data: userData,
+            })
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async logout(_req, res) {
+        /**
+         #swagger.tags = ['Auth']
+         */
+        res.cookie(
+            "token",
+            " ",
+            {
+              maxAge: 0
+            }
+          );
+        
+        res.status(200).json({
+            message: "Logout Berhasil"
+        });
+    },
+};
