@@ -1,10 +1,11 @@
 import express from "express";
-import dummyController from "../controllers/dummy.js";
 import authControllers from "../controllers/auth.controllers.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/dummy", dummyController.dummy);
-router.post("/register", authControllers.register)
+router.post("/register", authControllers.register);
+router.post("/login", authControllers.login);
+router.delete("/logout", authMiddleware, authControllers.logout);
 
 export default router;
