@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import { registerUser } from "../services/auth/register.js";
+import { sendEmail } from "../services/auth/verify.js";
 import { loginUser } from "../services/auth/login.js";
 
 const registerValidation = Yup.object({
@@ -49,8 +50,8 @@ export default {
             await registerValidation.validate({
                 name, email, password, confirmation_password,
             });
-    
-            const user = await registerUser({name, email, password});
+
+            const { user, verificationLink } = await registerUser({ name, email, password });
             
             if( user === "email already registered"){
                 return res.status(400).json({
@@ -58,9 +59,17 @@ export default {
                     data: null,
                 });
             };
+            
+            const emailContent = `
+                <p>Halo ${name},</p>
+                <p>Terima kasih telah mendaftar. Silakan klik link berikut untuk verifikasi email Anda:</p>
+                <a href="${verificationLink}">${verificationLink}</a>
+            `;
+
+            await sendEmail(email, "Verifikasi Email Anda", emailContent);
 
             res.status(200).json({
-                message: "Success Registration",
+                message: "Success registration, please check your email to verify",
                 data: user,
             });
         } catch (error) {

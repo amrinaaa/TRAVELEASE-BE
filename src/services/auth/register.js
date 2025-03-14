@@ -20,11 +20,13 @@ export const registerUser = async ({
             }
         }
 
-        password = encrypt(password);
+        password= encrypt(password);
 
         const userFirebase = await firebaseAdmin.admin.auth().createUser({
             email, password
         });
+        
+        const verificationLink = await firebaseAdmin.admin.auth().generateEmailVerificationLink(email);
 
         const userPrisma = await prisma.users.create({
             data: {
@@ -32,10 +34,11 @@ export const registerUser = async ({
                 name,
                 email,
                 password,
+                isVerified: false,
             },
         });
-
-        return userPrisma;
+        
+        return { user: userPrisma, verificationLink };
 
     } catch (error) {
         return error.message;
