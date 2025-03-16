@@ -4,8 +4,7 @@
       {
         "src": "src/index.js",
         "use": "@vercel/node",
-        "config": { "includeFiles": ["src/**"] },
-        "env": {"DATABASE_URL": "@database_url"}
+        "config": { "includeFiles": ["src/**"] }
       }
     ],
     "routes": [

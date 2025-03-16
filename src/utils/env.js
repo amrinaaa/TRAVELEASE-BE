@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+export const DATABASE_URL = process.env.DATABASE_URL;
+
 export const SECRET = process.env.SECRET;
 export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 export const FIREBASE_SERVICE_ACCOUNT = process.env.FIREBASE_SERVICE_ACCOUNT;
