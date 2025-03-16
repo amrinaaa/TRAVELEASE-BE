@@ -1,7 +1,9 @@
 import * as Yup from "yup";
 import { registerUser } from "../services/auth/register.js";
-import { sendEmail } from "../services/auth/verify.js";
 import { loginUser } from "../services/auth/login.js";
+import { forgotPasswordService } from "../services/auth/forgot.password.js";
+import { resetPasswordService } from "../services/auth/reset.password.js";
+import { sendEmail } from "../utils/email.js";
 
 const registerValidation = Yup.object({
     name: Yup.string().required(),
@@ -51,14 +53,7 @@ export default {
                 name, email, password, confirmation_password,
             });
 
-            const { user, verificationLink } = await registerUser({ name, email, password });
-            
-            if( user === "email already registered"){
-                return res.status(400).json({
-                    message: "email already registered",
-                    data: null,
-                });
-            };
+            const { user, verificationLink } = await registerUser({ name, email, password});
             
             const emailContent = `
                 <p>Halo ${name},</p>
@@ -93,14 +88,7 @@ export default {
 
         try {
             const userData = await loginUser({email, password});
-
-            if(userData === "email or password failed"){
-                return res.status(400).json({
-                    message: "email or password failed",
-                    data: null,
-                });
-            };
-            
+    
             res.cookie(
                 "token",
                 userData,
@@ -137,4 +125,53 @@ export default {
             message: "Logout Berhasil"
         });
     },
+
+    async forgotPassword (req, res) {
+        /**
+        #swagger.tags = ['Auth']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/ForgotPasswordRequest"}
+        }
+        */
+        const { email } = req.body;
+        try {
+            const resetPasswordLink  = await forgotPasswordService(email);
+            const emailContent = `
+                <p>Silakan klik link berikut untuk mendapatkan kode:</p>
+                <a href="${resetPasswordLink}">${resetPasswordLink}</a>
+            `;
+            
+            await sendEmail(email, "Reset Password", emailContent);
+
+            res.status(200).json({
+                message: "Please check your email for reset your password"
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+            })
+        }
+    },
+
+    async resetPassword (req, res) {
+        /**
+         #swagger.tags = ['Auth']
+         #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/ResetPasswordRequest"}
+        }
+         */
+        const { oobCode, newPassword } = req.body;
+        try {
+            const result = await resetPasswordService(oobCode, newPassword);
+            res.status(200).json({
+                message: result,
+            })
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+            })
+        }
+    }
 };

@@ -38,9 +38,12 @@ export const registerUser = async ({
             },
         });
         
-        return { user: userPrisma, verificationLink };
+        return { 
+            user: userPrisma, 
+            verificationLink 
+        };
 
     } catch (error) {
-        return error.message;
+       throw new Error(error.message)
     }
 }

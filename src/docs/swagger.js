@@ -31,10 +31,19 @@ const doc = {
                 password: "Password123",
                 confirmation_password: "Password123",
             },
+
+            ForgotPasswordRequest: {
+                email: "example@gmail.com",
+            },
+
+            ResetPasswordRequest: {
+                oobCode: "Aghiheohaogngas",
+                newPassword: "Password123",
+            }
         },
     },
 };
 
 const outputFile = "./swagger_output.json";
-const endpointsFiles = ["../routes/api.js"];
+const endpointsFiles = ["../routes/auth.js"];
 swaggerAutogen({openapi: "3.0.0"})(outputFile, endpointsFiles, doc);

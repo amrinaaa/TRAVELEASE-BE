@@ -6,7 +6,7 @@ import {
   MAIL_PASSWORD,
   MAIL_FROM_ADDRESS,
   MAIL_FROM_NAME,
-} from "../../utils/env.js";
+} from "./env.js";
 
 const transporter = nodemailer.createTransport({
   host: MAIL_HOST,
@@ -28,7 +28,10 @@ export const sendEmail = async (to, subject, htmlContent) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    return { success: true, messageId: info.messageId };
+    return { 
+      success: true, 
+      messageId: info.messageId, 
+    };
   } catch (error) {
     throw new Error("Gagal mengirim email.");
   }

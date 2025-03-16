@@ -42,6 +42,6 @@ export const loginUser = async ({ email, password }) => {
 
         return token;      
     } catch (error) {
-        return error.message;
+        throw new Error(error.message);
     }
 };

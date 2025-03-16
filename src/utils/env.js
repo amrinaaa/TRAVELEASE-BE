@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const SECRET = process.env.SECRET;
+export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 export const FIREBASE_SERVICE_ACCOUNT = process.env.FIREBASE_SERVICE_ACCOUNT;
 export const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
 export const FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET;
@@ -15,3 +16,5 @@ export const MAIL_PASSWORD = process.env.MAIL_PASSWORD;
 export const MAIL_FROM_ADDRESS = process.env.MAIL_FROM_ADDRESS;
 export const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME;
 export const MAIL_ENCRYPTION = process.env.MAIL_ENCRYPTION;
+
+export const FRONTEND_URL = process.env.FRONTEND_URL;
