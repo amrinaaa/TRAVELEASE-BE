@@ -6,23 +6,31 @@ import cookieParser from "cookie-parser";
 import router from "./routes/auth.js";
 import docs from "./docs/route.js";
 
-const app = express();
-const PORT = 3000;
-
-app.use(cors());
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.get("/", (_req, res) =>{
-    res.status(200).json({
-        message: "Server is running",
-        data: null,
+async function init() {
+   try {
+    const app = express();
+    const PORT = 3000;
+    
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(cookieParser());
+    
+    app.get("/", (_req, res) =>{
+        res.status(200).json({
+            message: "Server is running",
+            data: null,
+        }); 
     });
-});
+    
+    app.use("/api", router);
+    docs(app);
+    
+    app.listen( PORT, () => {
+        console.log(`Server run in http://localhost:${PORT}`);
+    }); 
+   } catch (error) {
+    console.log(error)
+   } 
+};
 
-app.use("/api", router);
-docs(app);
-
-app.listen( PORT, () => {
-    console.log(`Server run in http://localhost:${PORT}`);
-});
+init();
