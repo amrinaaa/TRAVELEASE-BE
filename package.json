@@ -24,12 +24,10 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "prisma": "^6.5.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1",
     "travelease-be": "file:",
     "yup": "^1.6.1"
-  },
-  "devDependencies": {
-    "prisma": "^6.5.0"
   }
 }
