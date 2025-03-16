@@ -3,7 +3,7 @@ import prisma from "../../../prisma/prisma.client.js";
 import { FRONTEND_URL } from "../../utils/env.js";
 
 export const forgotPasswordService = async (email) => {
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
                     where: {
                         email: email,
                     }

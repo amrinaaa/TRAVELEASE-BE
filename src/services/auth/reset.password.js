@@ -29,13 +29,13 @@ export const resetPasswordService = async (oobCode, newPassword) => {
             }
         );
 
-        const userInPrisma = await prisma.users.findUnique({
+        const userInPrisma = await prisma.user.findUnique({
             where: {
                 email: data.email,
             },
         });
 
-        await prisma.users.update({
+        await prisma.user.update({
             where: {
                 id: userInPrisma.id,
             },

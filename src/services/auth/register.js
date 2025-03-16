@@ -6,7 +6,7 @@ export const registerUser = async ({
     name, email, password
 }) => {
     try {
-        const existingUserPrisma = await prisma.users.findUnique({ where: {email} });
+        const existingUserPrisma = await prisma.user.findUnique({ where: {email} });
         if(existingUserPrisma){
             throw new Error("email already registered")
         };
@@ -28,7 +28,7 @@ export const registerUser = async ({
         
         const verificationLink = await firebaseAdmin.admin.auth().generateEmailVerificationLink(email);
 
-        const userPrisma = await prisma.users.create({
+        const userPrisma = await prisma.user.create({
             data: {
                 id: userFirebase.uid,
                 name,

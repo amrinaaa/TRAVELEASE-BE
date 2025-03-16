@@ -5,7 +5,7 @@ import { generateToken } from "../../utils/jwt.js";
 
 export const loginUser = async ({ email, password }) => {
     try {
-        const userIdentifier = await prisma.users.findUnique({ where: {email} });
+        const userIdentifier = await prisma.user.findUnique({ where: {email} });
         if(!userIdentifier){
             throw new Error("email or password failed");
         };
@@ -29,7 +29,7 @@ export const loginUser = async ({ email, password }) => {
         }
 
         if (userFromFirebase.emailVerified !== userIdentifier.isVerified) {
-            await prisma.users.update({
+            await prisma.user.update({
                 where: { email },
                 data: { isVerified: userFromFirebase.emailVerified },
             });
