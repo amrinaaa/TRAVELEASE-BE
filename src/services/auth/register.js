@@ -8,12 +8,12 @@ export const registerUser = async ({
     try {
         const existingUserPrisma = await prisma.user.findUnique({ where: {email} });
         if(existingUserPrisma){
-            throw new Error("email already registered!")
+            throw new Error("email already registered")
         };
 
         try {
             await firebaseAdmin.admin.auth().getUserByEmail(email);
-            throw new Error("email already registered!");
+            throw new Error("email already registered");
         } catch (error) {
             if (error.code !== "auth/user-not-found") {
                 throw error;
