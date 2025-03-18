@@ -13,7 +13,7 @@ const doc = {
             description: "Local Server",
         },
         {
-            url: "https://travelease-be.vercel.app/api",
+            url: "https://be-travelease.vercel.app/api",
             description: "Deploy Server",
         }
     ],
