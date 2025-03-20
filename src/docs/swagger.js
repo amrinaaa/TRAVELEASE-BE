@@ -39,6 +39,7 @@ const doc = {
             ResetPasswordRequest: {
                 oobCode: "Aghiheohaogngas",
                 newPassword: "Password123",
+                confirmation_password: "Password123",
             }
         },
     },

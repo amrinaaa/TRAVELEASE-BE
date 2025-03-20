@@ -221,6 +221,10 @@
           "newPassword": {
             "type": "string",
             "example": "Password123"
+          },
+          "confirmation_password": {
+            "type": "string",
+            "example": "Password123"
           }
         },
         "xml": {
