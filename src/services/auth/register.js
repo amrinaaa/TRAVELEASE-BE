@@ -18,7 +18,7 @@ export const registerUser = async ({
             if (error.code !== "auth/user-not-found") {
                 throw error;
             }
-        }
+        };
 
         password= encrypt(password);
 
