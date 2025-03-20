@@ -1,39 +1,13 @@
-import * as Yup from "yup";
+import { 
+    registerValidation,
+    resetPasswordValidation, 
+} from "../utils/request.validation.js";
+
 import { registerUser } from "../services/auth/register.js";
 import { loginUser } from "../services/auth/login.js";
 import { forgotPasswordService } from "../services/auth/forgot.password.js";
 import { resetPasswordService } from "../services/auth/reset.password.js";
 import { sendEmail } from "../utils/email.js";
-
-const registerValidation = Yup.object({
-    name: Yup.string().required(),
-    email: Yup.string().email().required(),
-    password: Yup.string()
-                .required()
-                .min(6, "Password at least 6 characters")
-                .test(
-                    "at-least-one-uppercase-letter", 
-                    "Contains at least one uppercase letter", 
-                    (value)=> {
-                        if(!value) return false;
-                        const regex = /^(?=.*[A-Z])/;
-                        return regex.test(value);
-                    }
-                )
-                .test(
-                    "at-least-one-number", 
-                    "Contains at least one number", 
-                    (value)=> {
-                        if(!value) return false;
-                        const regex = /^(?=.*\d)/;
-                        return regex.test(value);
-                    }
-                ),
-    confirmation_password: Yup.string()
-                            .required()
-                            .oneOf( [Yup.ref("password"), " "], "Password not match"),
-    
-});
 
 export default {
     async register (req, res) {
@@ -162,8 +136,12 @@ export default {
             schema: {$ref: "#/components/schemas/ResetPasswordRequest"}
         }
          */
-        const { oobCode, newPassword } = req.body;
+        const { oobCode, newPassword, confirmation_password } = req.body;
         try {
+            await resetPasswordValidation.validate({
+                newPassword, confirmation_password,
+            })
+
             const result = await resetPasswordService(oobCode, newPassword);
             res.status(200).json({
                 message: result,

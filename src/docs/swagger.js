@@ -13,7 +13,7 @@ const doc = {
             description: "Local Server",
         },
         {
-            url: "https://travelease-be.vercel.app/api",
+            url: "https://be-travelease.vercel.app/api",
             description: "Deploy Server",
         }
     ],
@@ -39,6 +39,7 @@ const doc = {
             ResetPasswordRequest: {
                 oobCode: "Aghiheohaogngas",
                 newPassword: "Password123",
+                confirmation_password: "Password123",
             }
         },
     },

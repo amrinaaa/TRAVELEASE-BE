@@ -11,7 +11,7 @@
       "description": "Local Server"
     },
     {
-      "url": "https://travelease-be-orpin.vercel.app/api",
+      "url": "https://be-travelease.vercel.app/api",
       "description": "Deploy Server"
     }
   ],
@@ -219,6 +219,10 @@
             "example": "Aghiheohaogngas"
           },
           "newPassword": {
+            "type": "string",
+            "example": "Password123"
+          },
+          "confirmation_password": {
             "type": "string",
             "example": "Password123"
           }
