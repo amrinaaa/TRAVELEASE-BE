@@ -27,18 +27,18 @@ export default {
                 name, email, password, confirmation_password,
             });
 
-            const { user, verificationLink } = await registerUser({ name, email, password});
+            const { user } = await registerUser({ name, email, password});
             
-            const emailContent = `
-                <p>Halo ${name},</p>
-                <p>Terima kasih telah mendaftar. Silakan klik link berikut untuk verifikasi email Anda:</p>
-                <a href="${verificationLink}">${verificationLink}</a>
-            `;
+            // const emailContent = `
+            //     <p>Halo ${name},</p>
+            //     <p>Terima kasih telah mendaftar. Silakan klik link berikut untuk verifikasi email Anda:</p>
+            //     <a href="${verificationLink}">${verificationLink}</a>
+            // `;
 
-            await sendEmail(email, "Verifikasi Email Anda", emailContent);
+            // await sendEmail(email, "Verifikasi Email Anda", emailContent);
 
             res.status(200).json({
-                message: "Success registration, please check your email to verify",
+                message: "Success registration",
                 data: user,
             });
         } catch (error) {
