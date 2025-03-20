@@ -24,16 +24,16 @@ export const loginUser = async ({ email, password }) => {
             }
         };
 
-        if (!userFromFirebase.emailVerified) {
-            throw new Error("Email belum diverifikasi. Silakan cek email Anda untuk verifikasi.");
-        }
+        // if (!userFromFirebase.emailVerified) {
+        //     throw new Error("Email belum diverifikasi. Silakan cek email Anda untuk verifikasi.");
+        // }
 
-        if (userFromFirebase.emailVerified !== userIdentifier.isVerified) {
-            await prisma.user.update({
-                where: { email },
-                data: { isVerified: userFromFirebase.emailVerified },
-            });
-        }
+        // if (userFromFirebase.emailVerified !== userIdentifier.isVerified) {
+        //     await prisma.user.update({
+        //         where: { email },
+        //         data: { isVerified: userFromFirebase.emailVerified },
+        //     });
+        // }
 
         const token = generateToken({
             id: userIdentifier.id,

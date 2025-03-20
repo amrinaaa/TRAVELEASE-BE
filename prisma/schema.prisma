@@ -22,7 +22,6 @@ model User {
   role            Role      @default(USER)
   currentAmount   Int       @default(0)
   profilePicture  String?   @default("")
-  isVerified      Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   airlinePartners AirlinePartner[]
