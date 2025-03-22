@@ -27,17 +27,23 @@ export default {
                 name, email, password, confirmation_password,
             });
 
+            if (password !== confirmation_password) {
+                return res.status(400).json({
+                    message: "Password not match",
+                    data: null,
+                });
+            }
+
             const { user } = await registerUser({ name, email, password});
-            
-            // const emailContent = `
-            //     <p>Halo ${name},</p>
-            //     <p>Terima kasih telah mendaftar. Silakan klik link berikut untuk verifikasi email Anda:</p>
-            //     <a href="${verificationLink}">${verificationLink}</a>
-            // `;
 
-            // await sendEmail(email, "Verifikasi Email Anda", emailContent);
+            if (!user) {
+                return res.status(500).json({
+                    message: "Failed to register user",
+                    data: null,
+                });
+            }
 
-            res.status(200).json({
+            res.status(201).json({
                 message: "Success registration",
                 data: user,
             });

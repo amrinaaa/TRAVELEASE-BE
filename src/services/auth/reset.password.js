@@ -1,12 +1,12 @@
-import firebaseAdmin from "../../../firebase/firebase.admin.js";
+import firebaseAdmin from "../../../firebase/config.js";
 import prisma from "../../../prisma/prisma.client.js";
-import { FIREBASE_API_KEY } from "../../utils/env.js";
+import { FIREBASE_CONFIG } from "../../utils/env.js";
 import { encrypt } from "../../utils/encrypt.js";
 
 export const resetPasswordService = async (oobCode, newPassword) => {
     try {
         const response = await fetch(
-            `https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${FIREBASE_API_KEY}`,
+            `https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${FIREBASE_CONFIG.apiKey}`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

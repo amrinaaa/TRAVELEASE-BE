@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma.client.js";
-import firebaseAdmin from "../../../firebase/firebase.admin.js";
+import firebaseAdmin from "../../../firebase/config.js";
 import { FRONTEND_URL } from "../../utils/env.js";
 
 export const forgotPasswordService = async (email) => {
