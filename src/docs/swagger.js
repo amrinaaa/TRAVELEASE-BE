@@ -40,11 +40,25 @@ const doc = {
                 oobCode: "Aghiheohaogngas",
                 newPassword: "Password123",
                 confirmation_password: "Password123",
-            }
+            },
+
+            AddMitraRequest: {
+                name: "Garuda Indonesia",
+                email: "garudaindonesia.business@gmail.com",
+                password: "Password123",
+            },
+
+            SearchMitraRequest: {
+                email: "example@gmail.com",
+            },
+
+            DeleteMitraRequest: {
+                email: "example@gmail.com",
+            },
         },
     },
 };
 
 const outputFile = "./swagger_output.json";
-const endpointsFiles = ["../routes/auth.js"];
+const endpointsFiles = ["../routes/api.js"];
 swaggerAutogen({openapi: "3.0.0"})(outputFile, endpointsFiles, doc);

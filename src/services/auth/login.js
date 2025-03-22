@@ -3,7 +3,7 @@ import firebaseAdmin from "../../../firebase/firebase.admin.js";
 import { encrypt } from "../../utils/encrypt.js";
 import { generateToken } from "../../utils/jwt.js";
 
-export const loginUser = async ({ email, password }) => {
+export const loginService = async ({ email, password }) => {
     try {
         const userIdentifier = await prisma.user.findUnique({ where: {email} });
         if(!userIdentifier){

@@ -3,8 +3,8 @@ import {
     resetPasswordValidation, 
 } from "../utils/request.validation.js";
 
-import { registerUser } from "../services/auth/register.js";
-import { loginUser } from "../services/auth/login.js";
+import { registerService } from "../services/auth/register.js";
+import { loginService } from "../services/auth/login.js";
 import { forgotPasswordService } from "../services/auth/forgot.password.js";
 import { resetPasswordService } from "../services/auth/reset.password.js";
 import { sendEmail } from "../utils/email.js";
@@ -27,7 +27,7 @@ export default {
                 name, email, password, confirmation_password,
             });
 
-            const { user } = await registerUser({ name, email, password});
+            const { user } = await registerService({ name, email, password});
             
             // const emailContent = `
             //     <p>Halo ${name},</p>
@@ -61,7 +61,7 @@ export default {
         const { email, password } = req.body;
 
         try {
-            const userData = await loginUser({email, password});
+            const userData = await loginService({email, password});
     
             res.cookie(
                 "token",

@@ -2,8 +2,8 @@ import prisma from "../../../prisma/prisma.client.js";
 import firebaseAdmin from "../../../firebase/firebase.admin.js";
 import { encrypt } from "../../utils/encrypt.js";
 
-export const registerUser = async ({
-    name, email, password
+export const registerService = async ({
+    name, email, password, role = "USER",
 }) => {
     try {
         const existingUserPrisma = await prisma.user.findUnique({ where: {email} });
@@ -34,6 +34,7 @@ export const registerUser = async ({
                 name,
                 email,
                 password,
+                role
                 // isVerified: false,
             },
         });
