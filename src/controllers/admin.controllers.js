@@ -1,6 +1,8 @@
 import { createUser } from "../services/admin/create.user.js";
 import { getUsersService } from "../services/admin/users.js";
 import { searchUserService } from "../services/admin/search.user.js";
+import { deleteUserService } from "../services/admin/delete.user.js";
+// import { editUserService } from "../services/admin/edit.user.js";
 
 
 export default {
@@ -10,7 +12,7 @@ export default {
          #swagger.requestBody = {
             required: true,
             schema: {
-                $ref: "#/components/schemas/AddMitraRequest"
+                $ref: "#/components/schemas/AddUsersRequest"
             }
          }
          */
@@ -31,9 +33,9 @@ export default {
     },
 
     async getAllMitra (_req, res) {
-         /**
-         #swagger.tags = ['Admin']
-         */
+        /**
+        #swagger.tags = ['Admin']
+        */
         try {
             const result = await getUsersService({role: "MITRA"});
             res.status(200).json({
@@ -47,6 +49,7 @@ export default {
         }
     },
 
+    //buat agar bisa search nama juga, tidak hanya email
     async searchMitra (req, res) {
         /**
          #swagger.tags = ['Admin']
@@ -54,7 +57,7 @@ export default {
             in: 'query',
             required: true,
             schema: {
-                $ref: "#/components/schemas/SearchMitraRequest"
+                $ref: "#/components/schemas/SearchUsersRequest"
             }
         }
          */
@@ -72,22 +75,38 @@ export default {
         };
     },
 
-    // async deleteMitra (req, res) {
-    //     /**
-    //      #swagger.tags = ['Admin']
-    //      #swagger.requestBody = {
-    //         required: true,
-    //         schema: {
-    //             $ref: "#/components/schemas/DeleteMitraRequest"
-    //         }
-    //      }
-    //      */
-    //     const {email} = req.body;
+    async deleteMitra (req, res) {
+        /**
+         #swagger.tags = ['Admin']
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/DeleteUsersRequest"
+            }
+         }
+         */
+        const {uid} = req.body;
+        try {
+            const result = await deleteUserService({uid, role: "MITRA"});
+            res.status(200).json({
+                result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    // async editMitra (req, res) {
+    //     const {uid} = req.body;
     //     try {
-    //         const result = await deleteUserService({email, role: "MITRA"});
+    //         const result = await editUserService({uid, role: "MITRA"});
     //         res.status(200).json({
-    //             result,
-    //         });
+    //             message: "Successfuly edit partner",
+    //             data: result,
+    //         })
     //     } catch (error) {
     //         res.status(400).json({
     //             message: error.message,
@@ -95,4 +114,96 @@ export default {
     //         });
     //     };
     // },
+
+    async addUser (req, res) {
+        /**
+         #swagger.tags = ['Admin']
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/AddUsersRequest"
+            }
+         }
+         */
+         const { name, email, password } = req.body;
+         try {
+             const mitra = await createUser({name, email, password, role: "USER"});
+             
+             res.status(200).json({
+                 message: "User added successfully",
+                 data: mitra,
+             });
+         } catch (error) {
+             res.status(400).json({
+                 message: error.message,
+                 data: null,
+             });
+         };
+    },
+
+    async getUsers (req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        */
+        try {
+            const result = await getUsersService({role: "USER"});
+            res.status(200).json({
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async searchUser (req, res) {
+        /**
+         #swagger.tags = ['Admin']
+         #swagger.parameters['email'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/SearchUsersRequest"
+            }
+        }
+         */
+        const email = req.query.email;
+        try {
+            const result = await searchUserService({email, role: "USER"});
+            res.status(200).json({
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async deleteUser (req, res) {
+        /**
+         #swagger.tags = ['Admin']
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/DeleteUsersRequest"
+            }
+         }
+         */
+         const {uid} = req.body;
+         try {
+             const result = await deleteUserService({uid, role: "USER"});
+             res.status(200).json({
+                 result,
+             });
+         } catch (error) {
+             res.status(400).json({
+                 message: error.message,
+                 data: null,
+             });
+         };
+    },
 };
