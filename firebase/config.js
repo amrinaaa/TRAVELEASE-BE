@@ -9,10 +9,12 @@ import {
   confirmPasswordReset,
   applyActionCode,
 } from "firebase/auth";
+
 import { initializeApp } from "firebase/app";
 import { FIREBASE_CONFIG, FIREBASE_PROJECT_ID, FIREBASE_SERVICE_ACCOUNT } from "../src/utils/env.js";
 
 const app = initializeApp(FIREBASE_CONFIG);
+
 const serviceAccount = JSON.parse(FIREBASE_SERVICE_ACCOUNT);
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

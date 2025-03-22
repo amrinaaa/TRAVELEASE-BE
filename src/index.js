@@ -3,7 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
-import router from "./routes/auth.js";
+import router from "./routes/api.js";
 import guestRoutes from "./routes/airport/guestRoutes.js";
 import docs from "./docs/route.js";
 

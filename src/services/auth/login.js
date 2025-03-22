@@ -1,5 +1,9 @@
 import prisma from "../../../prisma/prisma.client.js";
-import { getAuth, signInWithEmailAndPassword } from "../../../firebase/config.js";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword,
+} from "../../../firebase/config.js";
+
 import { encrypt } from "../../utils/encrypt.js";
 import { generateToken } from "../../utils/jwt.js";
 
@@ -26,7 +30,7 @@ export const loginUser = async ({ email, password }) => {
         const uid = userCredential.user.uid;
 
         const token = generateToken({
-            id: userIdentifier.id,
+            id: uid,
             role: userIdentifier.role,
         })
 

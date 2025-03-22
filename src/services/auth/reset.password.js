@@ -1,19 +1,16 @@
-import { getAuth, confirmPasswordReset } from "../../../firebase/config.js"
 import prisma from "../../../prisma/prisma.client.js";
+import { 
+    getAuth, 
+    confirmPasswordReset, 
+} from "../../../firebase/config.js"
+
 import { FIREBASE_CONFIG } from "../../utils/env.js";
 import { encrypt } from "../../utils/encrypt.js";
 
 export const resetPasswordService = async (oobCode, newPassword) => {
-    if (!oobCode ||
-        !newPassword ) {
-        throw new Error("All fields are required.");
-    }
-
     const auth = getAuth();
 
     try {
-        await confirmPasswordReset(auth, oobCode, newPassword);
-        
         const response = await fetch(
             `https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${FIREBASE_CONFIG.apiKey}`,
             {
@@ -22,9 +19,10 @@ export const resetPasswordService = async (oobCode, newPassword) => {
                 body: JSON.stringify({ oobCode }),
             },
         );
-
         const data = await response.json();
-        
+
+        await confirmPasswordReset(auth, oobCode, newPassword);
+
         newPassword = encrypt(newPassword);
 
         const userInPrisma = await prisma.user.findUnique({

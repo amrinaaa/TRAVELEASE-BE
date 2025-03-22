@@ -2,12 +2,11 @@ import {
     registerValidation,
     resetPasswordValidation, 
 } from "../utils/request.validation.js";
-import prisma from "../../prisma/prisma.client.js";
+
 import { registerUser } from "../services/auth/register.js";
 import { loginUser } from "../services/auth/login.js";
+import { forgotPasswordService } from "../services/auth/forgot.password.js";
 import { resetPasswordService } from "../services/auth/reset.password.js";
-import firebaseAdmin from "../../firebase/config.js";
-import { getAuth, sendPasswordResetEmail } from "../../firebase/config.js";
 
 export default {
     async register (req, res) {
@@ -115,34 +114,10 @@ export default {
         }
         */
         const { email } = req.body;
-        const auth = getAuth();
-
         try {
-            const user = await prisma.user.findUnique({
-                where: { email },
-            });
-    
-            if (!user) {
-                return res.status(404).json({
-                    message: "Email is not registered in our system.",
-                });
-            }
-    
-            try {
-                await firebaseAdmin.admin.auth().getUserByEmail(email);
-            } catch (error) {
-                if (error.code === "auth/user-not-found") {
-                    return res.status(404).json({
-                        message: "Email not registered in our system.",
-                    });
-                }
-                throw error;
-            }
-
-            await sendPasswordResetEmail(auth, email);
-    
+            const result = await forgotPasswordService(email);
             return res.status(200).json({
-                message: "Please check your email to reset your password.",
+                message: result,
             });
         } catch (error) {
             return res.status(400).json({
@@ -150,34 +125,6 @@ export default {
             });
         }
     },
-
-    // async forgotPassword (req, res) {
-    //     /**
-    //     #swagger.tags = ['Auth']
-    //     #swagger.requestBody = {
-    //         required: true,
-    //         schema: {$ref: "#/components/schemas/ForgotPasswordRequest"}
-    //     }
-    //     */
-    //     const { email } = req.body;
-    //     try {
-    //         const resetPasswordLink  = await forgotPasswordService(email);
-    //         const emailContent = `
-    //             <p>Silakan klik link berikut untuk mendapatkan kode:</p>
-    //             <a href="${resetPasswordLink}">${resetPasswordLink}</a>
-    //         `;
-            
-    //         await sendEmail(email, "Reset Password", emailContent);
-
-    //         res.status(200).json({
-    //             message: "Please check your email for reset your password"
-    //         });
-    //     } catch (error) {
-    //         res.status(400).json({
-    //             message: error.message,
-    //         })
-    //     }
-    // },
 
     async resetPassword (req, res) {
         /**
