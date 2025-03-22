@@ -1,50 +1,45 @@
 import prisma from "../../../prisma/prisma.client.js";
-import firebaseAdmin from "../../../firebase/firebase.admin.js";
+
+import {
+    getAuth, 
+    createUserWithEmailAndPassword,
+} from "../../../firebase/config.js";
+
 import { encrypt } from "../../utils/encrypt.js";
 
-export const registerService = async ({
-    name, email, password, role = "USER",
-}) => {
+export const registerUser = async ({ name, email, password }) => {
     try {
-        const existingUserPrisma = await prisma.user.findUnique({ where: {email} });
-        if(existingUserPrisma){
-            throw new Error("email already registered")
-        };
+        const existingUserPrisma = await prisma.user.findUnique({ where: { email } });
+        if (existingUserPrisma) {
+            throw new Error("Email already registered");
+        }
 
-        try {
-            await firebaseAdmin.admin.auth().getUserByEmail(email);
-            throw new Error("email already registered");
-        } catch (error) {
-            if (error.code !== "auth/user-not-found") {
-                throw error;
-            }
-        };
-
-        password= encrypt(password);
-
-        const userFirebase = await firebaseAdmin.admin.auth().createUser({
-            email, password
-        });
+        const auth = getAuth();
+        let userCredential;
         
-        // const verificationLink = await firebaseAdmin.admin.auth().generateEmailVerificationLink(email);
+        try {
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            if (error.code === "auth/email-already-in-use") {
+                throw new Error("Email already registered");
+            }
+            throw new Error(error.message);
+        }
 
-        const userPrisma = await prisma.user.create({
+        const uid = userCredential.user.uid;
+        const hashedPassword = encrypt(password);
+
+        const createdUser = await prisma.user.create({
             data: {
-                id: userFirebase.uid,
+                id: uid,
                 name,
                 email,
-                password,
-                role
-                // isVerified: false,
+                password: hashedPassword,
             },
         });
-        
-        return { 
-            user: userPrisma, 
-            // verificationLink 
-        };
 
+        return { user: createdUser };
     } catch (error) {
-       throw new Error(error.message)
+        throw new Error(error.message);
     }
-}
+};

@@ -19,6 +19,6 @@ router.post("/reset-password", authControllers.resetPassword);
 router.post("/partner", authMiddleware, adminMiddleware, adminControllers.addMitra);
 router.get("/partners", authMiddleware, adminMiddleware, adminControllers.getAllMitra);
 router.get("/partner", authMiddleware, adminMiddleware, adminControllers.searchMitra);
-router.delete("/partner", authMiddleware, adminMiddleware, adminControllers.deleteMitra);
+// router.delete("/partner", authMiddleware, adminMiddleware, adminControllers.deleteMitra);
 
 export default router;

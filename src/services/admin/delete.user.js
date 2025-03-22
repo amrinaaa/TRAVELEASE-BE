@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma.client.js";
-import firebaseAdmin from "../../../firebase/firebase.admin.js";
+import firebaseAdmin from "../../../firebase/config.js";
 
 export const deleteUserService = async ({email, role}) => {
     try {
