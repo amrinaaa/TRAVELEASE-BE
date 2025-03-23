@@ -13,8 +13,8 @@ router.get('/flights', guestController.getFlights);
 router.get('/search-by-departure/:city', guestController.searchByDepartureAirportCity);
 router.get('/search-by-arrival/:city', guestController.searchByArrivalAirportCity);
 router.get('/search-by-airport?', validateSearchFlightCity, guestController.searchByDepartureandArrivalAirportCity);
-router.get('/search-by-date', validateSearchFlightDate, guestController.searchByDepartureorReturnTime);
+router.get('/search-by-date', validateSearchFlightDate, guestController.searchByDepartureOrReturnTime);
 router.get('/search-by-seatCategory/:seatCategory', guestController.searchBySeatCategory);
-// router.get('/search-by-all', guestController.searchByAll);
+router.get('/search-by-all?', validateSearchFlightDate, guestController.searchByAll);
 
 export default router; 

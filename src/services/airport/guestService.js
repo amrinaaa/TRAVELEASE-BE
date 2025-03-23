@@ -126,7 +126,7 @@ export default {
     return flights;
 },
 
-    async getFlightsByDepartureandArrivalAirportService (departureAirportIds, arrivalAirportIds) {
+    async getFlightsByDepartureAndArrivalAirportService (departureAirportIds, arrivalAirportIds) {
         const flights = await prisma.flight.findMany({
             where: {
                 departureAirportId: {
@@ -204,7 +204,7 @@ export default {
         return await this.getFlightsByArrivalAirportService(airportIds);
     },
 
-    async searchByDepartureandArrivalAirportCityService (departureCity, arrivalCity) {
+    async searchByDepartureAndArrivalAirportCityService (departureCity, arrivalCity) {
         const departureAirports = await prisma.airport.findMany({
             where: {
                 city: {
@@ -230,10 +230,10 @@ export default {
         const departureAirportIds = departureAirports.map(airport => airport.id);
         const arrivalAirportIds = arrivalAirports.map(airport => airport.id);
     
-        return await this.getFlightsByDepartureandArrivalAirportService(departureAirportIds, arrivalAirportIds);
+        return await this.getFlightsByDepartureAndArrivalAirportService(departureAirportIds, arrivalAirportIds);
     },
 
-    async searchFlightsByDepartureorReturnTimeService(departureDate, returnDate) {
+    async searchFlightsByDepartureOrReturnTimeService(departureDate, returnDate) {
         let filters = [];
     
         if (departureDate) {
@@ -337,4 +337,106 @@ export default {
         });
         return flights;
     },
-};
+
+    async searchFlightsByAllService({ from, to, departureDate, returnDate, seatClass }) {
+        try {
+            let departureFilters = {};
+            let returnFilters = {};
+    
+            // Filter untuk penerbangan pergi
+            if (departureDate) {
+                departureFilters.departureTime = {
+                    gte: new Date(new Date(departureDate).setHours(0, 0, 0, 0)),
+                    lte: new Date(new Date(departureDate).setHours(23, 59, 59, 999))
+                };
+            }
+    
+            // Filter untuk penerbangan pulang
+            if (returnDate) {
+                returnFilters.departureTime = {
+                    gte: new Date(new Date(returnDate).setHours(0, 0, 0, 0)),
+                    lte: new Date(new Date(returnDate).setHours(23, 59, 59, 999))
+                };
+            }
+    
+            // Pencarian penerbangan pergi
+            const departureFlights = await prisma.flight.findMany({
+                where: {
+                    AND: [
+                        from ? { departureAirport: { city: { contains: from, mode: "insensitive" } } } : {},
+                        to ? { arrivalAirport: { city: { contains: to, mode: "insensitive" } } } : {},
+                        departureFilters.departureTime ? { departureTime: departureFilters.departureTime } : {}
+                    ]
+                },
+                include: {
+                    plane: {
+                        include: {
+                            seatCategories: {
+                                where: seatClass ? { name: seatClass } : {},
+                                include: {
+                                    seats: { select: { name: true } }
+                                }
+                            }
+                        }
+                    },
+                    departureAirport: { select: { name: true, code: true, city: true } },
+                    arrivalAirport: { select: { name: true, code: true, city: true } }
+                }
+            });
+    
+            // Pencarian penerbangan pulang (jika returnDate ada)
+            let returnFlights = [];
+            if (returnDate) {
+                returnFlights = await prisma.flight.findMany({
+                    where: {
+                        AND: [
+                            to ? { departureAirport: { city: { contains: to, mode: "insensitive" } } } : {},
+                            from ? { arrivalAirport: { city: { contains: from, mode: "insensitive" } } } : {},
+                            returnFilters.departureTime ? { departureTime: returnFilters.departureTime } : {}
+                        ]
+                    },
+                    include: {
+                        plane: {
+                            include: {
+                                seatCategories: {
+                                    where: seatClass ? { name: seatClass } : {},
+                                    include: {
+                                        seats: { select: { name: true } }
+                                    }
+                                }
+                            }
+                        },
+                        departureAirport: { select: { name: true, code: true, city: true } },
+                        arrivalAirport: { select: { name: true, code: true, city: true } }
+                    }
+                });
+            }
+    
+            // Format hasil pencarian
+            const formatFlight = (flight) => ({
+                flightCode: flight.flightCode,
+                departureTime: new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(flight.departureTime)),
+                arrivalTime: new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(flight.arrivalTime)),
+                departureAirport: flight.departureAirport,
+                arrivalAirport: flight.arrivalAirport,
+                plane: {
+                    name: flight.plane.name,
+                    seatCategories: flight.plane.seatCategories.map(({ name, price, seats }) => ({
+                        name,
+                        price,
+                        availableSeats: seats.map(({ name }) => name)
+                    }))
+                }
+            });
+    
+            return {
+                departureFlights: departureFlights.map(formatFlight),
+                returnFlights: returnFlights.map(formatFlight)
+            };
+    
+        } catch (error) {
+            console.error("Error fetching flights:", error);
+            return { departureFlights: [], returnFlights: [] };
+        }
+    }
+};    

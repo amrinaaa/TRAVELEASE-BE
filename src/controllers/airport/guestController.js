@@ -118,7 +118,7 @@ async getFlights (req, res) {
     async searchByDepartureandArrivalAirportCity (req, res) {
         try {
             const { departureCity, arrivalCity } = req.query;
-            const flights = await guestService.searchByDepartureandArrivalAirportCityService(departureCity, arrivalCity);
+            const flights = await guestService.searchByDepartureAndArrivalAirportCityService(departureCity, arrivalCity);
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
@@ -138,7 +138,7 @@ async getFlights (req, res) {
         }
     },
 
-    async searchByDepartureorReturnTime (req, res) {
+    async searchByDepartureOrReturnTime (req, res) {
         try {
             const { departureDate, returnDate } = req.query;
     
@@ -152,7 +152,7 @@ async getFlights (req, res) {
             const departureDateObj = departureDate ? new Date(departureDate) : null;
             const returnDateObj = returnDate ? new Date(returnDate) : null;
     
-            const flights = await guestService.searchFlightsByDepartureorReturnTimeService(departureDateObj, returnDateObj);
+            const flights = await guestService.searchFlightsByDepartureOrReturnTimeService(departureDateObj, returnDateObj);
     
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
@@ -194,6 +194,24 @@ async getFlights (req, res) {
             res.status(500).json({
                 message: "Internal Server Error",
                 data: null,
+            });
+        }
+    },
+
+    async searchByAll (req, res) {
+        try {
+            const filters = req.query; 
+            const flights = await guestService.searchFlightsByAllService(filters);
+    
+            res.status(200).json({
+                success: true,
+                message: "Flights fetched successfully",
+                data: flights
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message
             });
         }
     }
