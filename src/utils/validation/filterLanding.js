@@ -1,14 +1,14 @@
 import * as yup from "yup";
 import { parse, isValid } from "date-fns";
 
-// 🔹 Fungsi untuk parsing tanggal dalam format Indonesia (e.g., "23 Maret 2025")
+// 🔹 Fungsi untuk parsing tanggal Format exp 23 Maret 2025
 const parseDateString = (value, originalValue) => {
     if (!originalValue) return null;
-    const parsedDate = parse(originalValue, "d MMMM yyyy", new Date()); // Format: 23 Maret 2025
+    const parsedDate = parse(originalValue, "d MMMM yyyy", new Date());
     return isValid(parsedDate) ? parsedDate : new Date(originalValue);
 };
 
-// 🔹 Validasi tanggal tidak boleh sebelum hari ini
+// Validasi tanggal tidak boleh sebelum hari ini
 const minToday = (value) => {
     if (!value) return true;
     const today = new Date().setHours(0, 0, 0, 0);
@@ -16,7 +16,7 @@ const minToday = (value) => {
     return inputDate >= today;
 };
 
-// 🔹 Validasi kota keberangkatan & tujuan
+// Validasi kota keberangkatan & tujuan
 const searchFlightCitySchema = yup.object().shape({
     departureCity: yup
         .string()
@@ -29,7 +29,7 @@ const searchFlightCitySchema = yup.object().shape({
         .required("Arrival city is required"),
 });
 
-// 🔹 Validasi kategori kursi
+// Validasi kategori kursi
 const searchFlightSeatSchema = yup.object().shape({
     seatCategory: yup
         .string()
@@ -37,7 +37,7 @@ const searchFlightSeatSchema = yup.object().shape({
         .required("Seat category is required"),
 });
 
-// 🔹 Validasi tanggal keberangkatan & kepulangan
+// Validasi tanggal keberangkatan & kepulangan
 const searchFlightDateSchema = yup.object().shape({
     departureDate: yup
         .date()
@@ -52,7 +52,7 @@ const searchFlightDateSchema = yup.object().shape({
         .test("min-today", "Return date cannot be before today", minToday),
 });
 
-// 🔹 Middleware untuk validasi kota keberangkatan & tujuan
+// Validasi kota keberangkatan & tujuan
 const validateSearchFlightCity = async (req, res, next) => {
     try {
         await searchFlightCitySchema.validate(req.query, { abortEarly: false });
@@ -65,7 +65,7 @@ const validateSearchFlightCity = async (req, res, next) => {
     }
 };
 
-// 🔹 Middleware untuk validasi kategori kursi
+// Validasi kategori kursi
 const validateSearchFlightSeat = async (req, res, next) => {
     try {
         await searchFlightSeatSchema.validate(req.query, { abortEarly: false });
@@ -78,7 +78,7 @@ const validateSearchFlightSeat = async (req, res, next) => {
     }
 };
 
-// 🔹 Middleware untuk validasi tanggal
+// Validasi tanggal
 const validateSearchFlightDate = async (req, res, next) => {
     try {
         await searchFlightDateSchema.validate(req.query, { abortEarly: false });
