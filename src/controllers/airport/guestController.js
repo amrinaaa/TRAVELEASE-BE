@@ -1,12 +1,9 @@
-import { 
-    getCityFlightService,
-    getFlightsService,
-    searchByDepartureAirportCityService
-} from '../../services/airport/guestService.js';
+import guestService from '../../services/airport/guestService.js';
 
-export const getCityFlight = async (req, res) => {
+export default {
+    async getCityFlight (req, res) {
     try {
-        const daerah = await getCityFlightService();
+        const daerah = await guestService.getCityFlightService();
         if (!daerah || daerah.length === 0) {
             return res.status(404).json({
                 message: "City not found",
@@ -24,35 +21,35 @@ export const getCityFlight = async (req, res) => {
             data: null,
         });
     }
-}
+},
 
-export const getCityFlightSpesific = async (req, res) => {
-    try {
-        const { city } = req.params;
-        const daerah = await getCityFlightService(city);
-        if (!daerah || daerah.length === 0) {
-            return res.status(404).json({
-                message: "City not found",
+    async getCityFlightSpesific (req, res) {
+        try {
+            const { city } = req.params;
+            const daerah = await guestService.getCityFlightService(city);
+            if (!daerah || daerah.length === 0) {
+                return res.status(404).json({
+                    message: "City not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: daerah,
+            });
+            
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
                 data: null,
             });
         }
-        res.status(200).json({
-            message: "Success",
-            data: daerah,
-        });
-        
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({
-            message: "Internal Server Error",
-            data: null,
-        });
-    }
-};
+    },
 
-export const getFlights = async (req, res) => {
+async getFlights (req, res) {
     try {
-        const flights = await getFlightsService();
+        const flights = await guestService.getFlightsService();
         if (!flights || flights.length === 0) {
             return res.status(404).json({
                 message: "Flights not found",
@@ -70,27 +67,134 @@ export const getFlights = async (req, res) => {
             data: null,
         });
     }
-};
+},
 
-export const searchByDepartureAirportCity = async (req, res) => {
-    try {
-        const { city } = req.params;
-        const flights = await searchByDepartureAirportCityService(city);
-        if (!flights || flights.length === 0) {
-            return res.status(404).json({
-                message: "Flights not found",
+    async searchByDepartureAirportCity (req, res) {
+        try {
+            const { city } = req.params;
+            const flights = await guestService.searchByDepartureAirportCityService(city);
+            if (!flights || flights.length === 0) {
+                return res.status(404).json({
+                    message: "Flights not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: flights,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
                 data: null,
             });
         }
-        res.status(200).json({
-            message: "Success",
-            data: flights,
-        });
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({
-            message: "Internal Server Error",
-            data: null,
-        });
+    },
+
+    async searchByArrivalAirportCity (req, res) {
+        try {
+            const { city } = req.params;
+            const flights = await guestService.searchByArrivalAirportCityService(city);
+            if (!flights || flights.length === 0) {
+                return res.status(404).json({
+                    message: "Flights not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: flights,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
+                data: null,
+            });
+        }
+    },
+
+    async searchByDepartureandArrivalAirportCity (req, res) {
+        try {
+            const { departureCity, arrivalCity } = req.query;
+            const flights = await guestService.searchByDepartureandArrivalAirportCityService(departureCity, arrivalCity);
+            if (!flights || flights.length === 0) {
+                return res.status(404).json({
+                    message: "Flights not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: flights,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
+                data: null,
+            });
+        }
+    },
+
+    async searchByDepartureorReturnTime (req, res) {
+        try {
+            const { departureDate, returnDate } = req.query;
+    
+            if (!departureDate && !returnDate) {
+                return res.status(400).json({
+                    message: "At least one of departureDate or returnDate is required.",
+                    data: null,
+                });
+            }
+
+            const departureDateObj = departureDate ? new Date(departureDate) : null;
+            const returnDateObj = returnDate ? new Date(returnDate) : null;
+    
+            const flights = await guestService.searchFlightsByDepartureorReturnTimeService(departureDateObj, returnDateObj);
+    
+            if (!flights || flights.length === 0) {
+                return res.status(404).json({
+                    message: "Flights not found",
+                    data: null,
+                });
+            }
+    
+            res.status(200).json({
+                message: "Success",
+                data: flights,
+            });
+    
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
+                data: null,
+            });
+        }
+    },
+
+    async searchBySeatCategory (req, res) {
+        try {
+            const { seatCategory } = req.params;
+            const flights = await guestService.searchFlightsBySeatCategoryService(seatCategory);
+            if (!flights || flights.length === 0) {
+                return res.status(404).json({
+                    message: "Flights not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: flights,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
+                data: null,
+            });
+        }
     }
-}
+};    
