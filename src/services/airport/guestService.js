@@ -13,7 +13,7 @@ export default {
         return airport;
     },
 
-    async getFlightsService () {
+    async getFlightsService() {
         const flights = await prisma.flight.findMany({
             select: {
                 flightCode: true,
@@ -23,12 +23,14 @@ export default {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 arrivalAirport: {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 plane: {
@@ -38,16 +40,34 @@ export default {
                             select: {
                                 name: true,
                                 price: true,
+                                seats: {
+                                    where: {
+                                        tickets: { none: {} }
+                                    },
+                                    select: {
+                                        name: true,
+                                    },
+                                },
                             },
                         },
                     },
                 },
             },
         });
-    
-        return flights;
-    },
 
+        return flights.map(flight => ({
+            ...flight,
+            plane: {
+                ...flight.plane,
+                seatCategories: flight.plane.seatCategories.map(category => ({
+                    name: category.name,
+                    price: category.price,
+                    availableSeats: category.seats.map(seat => seat.name)
+                }))
+            }
+        }));
+    },
+    
     async getFlightsByDepartureAirportService (airportIds) {
         const flights = await prisma.flight.findMany({
             where: {
@@ -63,28 +83,48 @@ export default {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 arrivalAirport: {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 plane: {
                     select: {
                         name: true,
                         seatCategories: {
-                        select: {
-                            name: true,
-                            price: true,
-                            },
+                            select: {
+                                name: true,
+                                price: true,
+                                seats: {
+                                where: {
+                                    tickets: { none: {} }
+                                },
+                                select: {
+                                    name: true,
+                                }
+                            }
                         },
                     },
                 },
             },
-        }); 
-    return flights;
+        },
+    }); 
+    return flights.map(flight => ({
+        ...flight,
+        plane: {
+            ...flight.plane,
+            seatCategories: flight.plane.seatCategories.map(category => ({
+                name: category.name,
+                price: category.price,
+                availableSeats: category.seats.map(seat => seat.name)
+            }))
+        }
+    }));
 },
 
     async getFlightsByArrivalAirportService (airportIds) {
@@ -102,29 +142,49 @@ export default {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 arrivalAirport: {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 plane: {
                     select: {
                         name: true,
                         seatCategories: {
-                        select: {
-                            name: true,
-                            price: true,
+                            select: {
+                                name: true,
+                                price: true,
+                                seats: {
+                                    where: {
+                                        tickets: { none: {} }
+                                    },
+                                    select: {
+                                        name: true,
+                                    }
+                                }
                             },
                         },
                     },
                 },
             },
         });
-    return flights;
-},
+        return flights.map(flight => ({
+            ...flight,
+            plane: {
+                ...flight.plane,
+                seatCategories: flight.plane.seatCategories.map(category => ({
+                    name: category.name,
+                    price: category.price,
+                    availableSeats: category.seats.map(seat => seat.name)
+                }))
+            }
+        }));
+    },
 
     async getFlightsByDepartureAndArrivalAirportService (departureAirportIds, arrivalAirportIds) {
         const flights = await prisma.flight.findMany({
@@ -144,29 +204,49 @@ export default {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 arrivalAirport: {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 plane: {
                     select: {
                         name: true,
                         seatCategories: {
-                        select: {
-                            name: true,
-                            price: true,
+                            select: {
+                                name: true,
+                                price: true,
+                                seats: {
+                                    where: {
+                                        tickets: { none: {} }
+                                    },
+                                    select: {
+                                        name: true
+                                    }
+                                }
                             },
                         },
                     },
                 },
             },
         });
-    return flights;
-},
+        return flights.map(flight => ({
+            ...flight,
+            plane: {
+                ...flight.plane,
+                seatCategories: flight.plane.seatCategories.map(category => ({
+                    name: category.name,
+                    price: category.price,
+                    availableSeats: category.seats.map(seat => seat.name)
+                }))
+            }
+        }));
+    },
 
     async searchByDepartureAirportCityService (city) {
         const airports = await prisma.airport.findMany({
@@ -265,18 +345,25 @@ export default {
                 departureAirport: { 
                     select: { 
                         name: true, 
-                        city: true } },
+                        city: true,
+                        code: true } },
                 arrivalAirport: { 
                     select: { 
                         name: true, 
-                        city: true } },
+                        city: true,
+                        code: true } },
                 plane: {
                     select: {
                         name: true,
                         seatCategories: { 
                             select: { 
                                 name: true, 
-                                price: true } }
+                                price: true,
+                                seats: { where: { tickets: { none: {} } },
+                                    select: { name: true } 
+                                } 
+                            } 
+                        }
                     }
                 }
             }
@@ -290,6 +377,14 @@ export default {
             arrivalTime: new Intl.DateTimeFormat("id-ID", {
                 day: "2-digit", month: "long", year: "numeric"
             }).format(new Date(flight.arrivalTime)),
+            plane: {
+                ...flight.plane,
+                seatCategories: flight.plane.seatCategories.map(category => ({
+                    name: category.name,
+                    price: category.price,
+                    availableSeats: category.seats.map(seat => seat.name)
+                }))
+            }
         }));
     },
 
@@ -314,52 +409,71 @@ export default {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 arrivalAirport: {
                     select: {
                         name: true,
                         city: true,
+                        code: true,
                     },
                 },
                 plane: {
                     select: {
                         name: true,
                         seatCategories: {
-                        select: {
-                            name: true,
-                            price: true,
-                        },
+                            select: {
+                                name: true,
+                                price: true,
+                                seats: {
+                                    where: {
+                                        tickets: {
+                                        none: {},
+                                        },
+                                    },
+                                    select: {
+                                        name: true,
+                                    }
+                                },
+                            },
                         },
                     },
                 },
             },
         });
-        return flights;
+        return flights.map(flight => ({
+            ...flight,
+            plane: {
+                ...flight.plane,
+                seatCategories: flight.plane.seatCategories.map(category => ({
+                    name: category.name,
+                    price: category.price,
+                    availableSeats: category.seats.map(seat => seat.name)
+                }))
+            }
+        }));
     },
 
     async searchFlightsByAllService({ from, to, departureDate, returnDate, seatClass }) {
         try {
             let departureFilters = {};
             let returnFilters = {};
-    
-            // Filter untuk penerbangan pergi
+
             if (departureDate) {
                 departureFilters.departureTime = {
                     gte: new Date(new Date(departureDate).setHours(0, 0, 0, 0)),
                     lte: new Date(new Date(departureDate).setHours(23, 59, 59, 999))
                 };
             }
-    
-            // Filter untuk penerbangan pulang
+
             if (returnDate) {
                 returnFilters.departureTime = {
                     gte: new Date(new Date(returnDate).setHours(0, 0, 0, 0)),
                     lte: new Date(new Date(returnDate).setHours(23, 59, 59, 999))
                 };
             }
-    
-            // Pencarian penerbangan pergi
+
             const departureFlights = await prisma.flight.findMany({
                 where: {
                     AND: [
@@ -383,8 +497,7 @@ export default {
                     arrivalAirport: { select: { name: true, code: true, city: true } }
                 }
             });
-    
-            // Pencarian penerbangan pulang (jika returnDate ada)
+
             let returnFlights = [];
             if (returnDate) {
                 returnFlights = await prisma.flight.findMany({
@@ -411,8 +524,6 @@ export default {
                     }
                 });
             }
-    
-            // Format hasil pencarian
             const formatFlight = (flight) => ({
                 flightCode: flight.flightCode,
                 departureTime: new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(flight.departureTime)),
