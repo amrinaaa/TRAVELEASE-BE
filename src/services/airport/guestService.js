@@ -231,21 +231,16 @@ export default {
                     AND: [
                         from ? { departureAirport: { city: { contains: from, mode: "insensitive" } } } : {},
                         to ? { arrivalAirport: { city: { contains: to, mode: "insensitive" } } } : {},
-                        departureFilters.departureTime ? { departureTime: departureFilters.departureTime } : {}
-                    ]
-                },
+                        departureFilters.departureTime ? { departureTime: departureFilters.departureTime } : {} ] },
                 include: {
                     plane: {
                         include: {
                             seatCategories: {
                                 where: seatClass ? { name: seatClass } : {},
                                 include: {
-                                    seats: { select: { name: true } } }
-                            } } 
-                        },
+                                    seats: { select: { name: true } } } } } },
                     departureAirport: { select: { name: true, code: true, city: true } },
-                    arrivalAirport: { select: { name: true, code: true, city: true } }
-                } });
+                    arrivalAirport: { select: { name: true, code: true, city: true } } } });
 
             let returnFlights = [];
             if (returnDate) {
@@ -254,16 +249,13 @@ export default {
                         AND: [
                             to ? { departureAirport: { city: { contains: to, mode: "insensitive" } } } : {},
                             from ? { arrivalAirport: { city: { contains: from, mode: "insensitive" } } } : {},
-                            returnFilters.departureTime ? { departureTime: returnFilters.departureTime } : {}
-                        ] },
+                            returnFilters.departureTime ? { departureTime: returnFilters.departureTime } : {} ] },
                     include: {
                         plane: {
                             include: {
                                 seatCategories: {
                                     where: seatClass ? { name: seatClass } : {},
-                                    include: { seats: { select: { name: true } } } } 
-                                }
-                            },
+                                    include: { seats: { select: { name: true } } } } } },
                         departureAirport: { select: { name: true, code: true, city: true } },
                         arrivalAirport: { select: { name: true, code: true, city: true } }
                     } }); 
@@ -279,17 +271,12 @@ export default {
                     seatCategories: flight.plane.seatCategories.map(({ name, price, seats }) => ({
                         name,
                         price,
-                        availableSeats: seats.map(({ name }) => name) })) 
-                    } 
-                });
-    
-            return {
-                departureFlights: departureFlights.map(formatFlight),
-                returnFlights: returnFlights.map(formatFlight)
-            };
-    
-        } catch (error) {
-            console.error("Error fetching flights:", error);
-            return { departureFlights: [], returnFlights: [] };
-        } } 
-    };    
+                        availableSeats: seats.map(({ name }) => name) })) } });
+            
+                        return {
+                            departureFlights: departureFlights.map(formatFlight),
+                            returnFlights: returnFlights.map(formatFlight) };
+        
+                        } catch (error) {
+                            console.error("Error fetching flights:", error);
+                            return { departureFlights: [], returnFlights: [] }; } } };    
