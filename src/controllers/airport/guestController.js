@@ -151,7 +151,6 @@ async getFlights (req, res) {
 
             const departureDateObj = departureDate ? new Date(departureDate) : null;
             const returnDateObj = returnDate ? new Date(returnDate) : null;
-    
             const flights = await guestService.searchFlightsByDepartureOrReturnTimeService(departureDateObj, returnDateObj);
     
             if (!flights || flights.length === 0) {
@@ -160,12 +159,10 @@ async getFlights (req, res) {
                     data: null,
                 });
             }
-    
             res.status(200).json({
                 message: "Success",
                 data: flights,
             });
-    
         } catch (error) {
             console.error("Error:", error);
             res.status(500).json({
