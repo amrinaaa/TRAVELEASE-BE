@@ -42,18 +42,18 @@ const doc = {
                 confirmation_password: "Password123",
             },
 
-            AddMitraRequest: {
-                name: "Garuda Indonesia",
-                email: "garudaindonesia.business@gmail.com",
+            AddUsersRequest: {
+                name: "Nama",
+                email: "example@gmail.com",
                 password: "Password123",
             },
 
-            SearchMitraRequest: {
+            SearchUsersRequest: {
                 email: "example@gmail.com",
             },
 
-            DeleteMitraRequest: {
-                email: "example@gmail.com",
+            DeleteUsersRequest: {
+                uid: "cm8jygpq50000up74xxny591x",
             },
 
             // FilterFlightsRequest: {

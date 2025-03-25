@@ -32,7 +32,8 @@ model User {
 enum Role {
   USER
   ADMIN
-  MITRA
+  MITRA_HOTEL
+  MITRA_PENERBANGAN
 }
 
 model Airport {

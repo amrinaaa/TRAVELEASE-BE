@@ -1,10 +1,14 @@
 import prisma from "../../../prisma/prisma.client.js";
+import firebaseAdmin from "../../../firebase/config.js";
 
 export const searchUserService = async ({email, role}) => {
     try {
+        //buat memastikan bahwa user ada di firebase dan db
+        const identifierFirebase = await firebaseAdmin.admin.auth().getUserByEmail(email);
+
         const result = await prisma.user.findUnique({
             where: {
-                email,
+                email: identifierFirebase.email,
                 role,
             },
             select: {
@@ -13,6 +17,8 @@ export const searchUserService = async ({email, role}) => {
                 email: true,
                 currentAmount: true,
                 profilePicture: true,
+                createdAt: true,
+                updatedAt: true,
             },
         });
 

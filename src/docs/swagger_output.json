@@ -181,12 +181,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddMitraRequest"
+                "$ref": "#/components/schemas/AddUsersRequest"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/AddMitraRequest"
+                "$ref": "#/components/schemas/AddUsersRequest"
               }
             }
           }
@@ -203,7 +203,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/SearchMitraRequest"
+              "$ref": "#/components/schemas/SearchUsersRequest"
             }
           }
         ],
@@ -216,6 +216,38 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteUsersRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteUsersRequest"
+              }
+            }
           }
         }
       }
@@ -239,132 +271,51 @@
         }
       }
     },
-    "/airport-city": {
-      "get": {
+    "/user": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
           },
-          "404": {
-            "description": "Not Found"
+          "400": {
+            "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "401": {
+            "description": "Unauthorized"
           }
-        }
-      }
-    },
-    "/airport-city/{city}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "city",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUsersRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUsersRequest"
+              }
             }
           }
+        }
+      },
+      "get": {
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/flights": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/filter-by-departure/{city}": {
-      "get": {
         "description": "",
         "parameters": [
           {
-            "name": "city",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/filter-by-arrival/{city}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "city",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/filter-by-airport?": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "departureCity",
+            "name": "email",
             "in": "query",
+            "required": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "arrivalCity",
-            "in": "query",
-            "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/SearchUsersRequest"
             }
           }
         ],
@@ -375,78 +326,15 @@
           "400": {
             "description": "Bad Request"
           },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "401": {
+            "description": "Unauthorized"
           }
         }
-      }
-    },
-    "/filter-by-date": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "departureDate",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "returnDate",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/filter-by-seatCategory/{seatCategory}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "seatCategory",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/filter-by-all?": {
-      "get": {
         "description": "",
         "responses": {
           "200": {
@@ -455,8 +343,42 @@
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteUsersRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteUsersRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -536,16 +458,16 @@
           "name": "ResetPasswordRequest"
         }
       },
-      "AddMitraRequest": {
+      "AddUsersRequest": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "example": "Garuda Indonesia"
+            "example": "Nama"
           },
           "email": {
             "type": "string",
-            "example": "garudaindonesia.business@gmail.com"
+            "example": "example@gmail.com"
           },
           "password": {
             "type": "string",
@@ -553,10 +475,10 @@
           }
         },
         "xml": {
-          "name": "AddMitraRequest"
+          "name": "AddUsersRequest"
         }
       },
-      "SearchMitraRequest": {
+      "SearchUsersRequest": {
         "type": "object",
         "properties": {
           "email": {
@@ -565,19 +487,19 @@
           }
         },
         "xml": {
-          "name": "SearchMitraRequest"
+          "name": "SearchUsersRequest"
         }
       },
-      "DeleteMitraRequest": {
+      "DeleteUsersRequest": {
         "type": "object",
         "properties": {
-          "email": {
+          "uid": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "cm8jygpq50000up74xxny591x"
           }
         },
         "xml": {
-          "name": "DeleteMitraRequest"
+          "name": "DeleteUsersRequest"
         }
       }
     }

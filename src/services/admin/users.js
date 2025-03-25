@@ -12,6 +12,8 @@ export const getUsersService = async ({role}) => {
                 email: true,
                 currentAmount: true,
                 profilePicture: true,
+                createdAt: true,
+                updatedAt: true,
             }
         });
         
