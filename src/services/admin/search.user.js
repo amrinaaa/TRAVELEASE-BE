@@ -17,6 +17,8 @@ export const searchUserService = async ({email, role}) => {
                 email: true,
                 currentAmount: true,
                 profilePicture: true,
+                createdAt: true,
+                updatedAt: true,
             },
         });
 
