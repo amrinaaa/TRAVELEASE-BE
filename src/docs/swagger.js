@@ -55,10 +55,21 @@ const doc = {
             DeleteMitraRequest: {
                 email: "example@gmail.com",
             },
+
+            // FilterFlightsRequest: {
+            //     type: "object",
+            //     properties: {
+            //         from: { type: "string", example: "Jakarta" },
+            //         to: { type: "string", example: "Bali" },
+            //         departureDate: { type: "string", format: "date", example: "2025-03-24" },
+            //         returnDate: { type: "string", format: "date", example: "2025-03-25" },
+            //         seatClass: { type: "string", example: "Economy" }
+            //     }
+            // }
         },
     },
 };
 
 const outputFile = "./swagger_output.json";
-const endpointsFiles = ["../routes/api.js"];
+const endpointsFiles = ["../routes/api.js", "../routes/airport/guestRoutes.js"];
 swaggerAutogen({openapi: "3.0.0"})(outputFile, endpointsFiles, doc);
