@@ -55,6 +55,22 @@ const doc = {
             DeleteUsersRequest: {
                 uid: "cm8jygpq50000up74xxny591x",
             },
+
+            AddMitraRequest: {
+                name: "Nama",
+                email: "example@gmail.com",
+                password: "Password123",
+                role: "MITRA_PENERBANGAN",
+            },
+
+            GetMitraRequest: {
+                role: "MITRA_PENERBANGAN"
+            },
+
+            SearchMitraRequest: {
+                email: "example@gmail.com",
+                role: "MITRA_PENERBANGAN",
+            },
         },
     },
 };
