@@ -19,9 +19,9 @@ async function main() {
     
     await prisma.user.createMany({
         data: [
-            { name: "Mitra A", email: "mitraa@example.com", password: "hashedpassword1", role: "MITRA", currentAmount: 0, profilePicture: "" },
-            { name: "Mitra B", email: "mitrab@example.com", password: "hashedpassword2", role: "MITRA", currentAmount: 0, profilePicture: "" },
-            { name : "Mitra C", email: "mitrac@example.com", password: "hashedpassword3", role: "MITRA", currentAmount: 0, profilePicture: "" },
+            { name: "Mitra A", email: "mitraa@example.com", password: "hashedpassword1", role: "MITRA_PENERBANGAN", currentAmount: 0, profilePicture: "" },
+            { name: "Mitra B", email: "mitrab@example.com", password: "hashedpassword2", role: "MITRA_PENERBANGAN", currentAmount: 0, profilePicture: "" },
+            { name : "Mitra C", email: "mitrac@example.com", password: "hashedpassword3", role: "MITRA_PENERBANGAN", currentAmount: 0, profilePicture: "" },
             { name: "Admin", email: "admin@example.com", password: "hashedpassword3", role: "ADMIN", currentAmount: 0, profilePicture: "" },
             { name: "Customer", email: "customer@example.com", password: "hashedpassword4", role: "USER", currentAmount: 0, profilePicture: "" }
         ]

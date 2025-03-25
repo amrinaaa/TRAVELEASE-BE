@@ -1,6 +1,6 @@
 import express from 'express';
 import guestController from '../../controllers/airport/guestController.js';
-import { validateSearchFlightDate, validateSearchFlightCity } from '../../utils/validation/filterLanding.js';
+import { validateFilterFlightDate, validateFilterFlightCity } from '../../utils/validation/filterLanding.js';
 
 const router = express.Router();
 
@@ -10,11 +10,11 @@ router.get('/airport-city/:city', guestController.getCityFlightSpesific);
 router.get('/flights', guestController.getFlights);
 
 // api filter by
-router.get('/search-by-departure/:city', guestController.searchByDepartureAirportCity);
-router.get('/search-by-arrival/:city', guestController.searchByArrivalAirportCity);
-router.get('/search-by-airport?', validateSearchFlightCity, guestController.searchByDepartureandArrivalAirportCity);
-router.get('/search-by-date', validateSearchFlightDate, guestController.searchByDepartureOrReturnTime);
-router.get('/search-by-seatCategory/:seatCategory', guestController.searchBySeatCategory);
-router.get('/search-by-all?', validateSearchFlightDate, guestController.searchByAll);
+router.get('/filter-by-departure/:city', guestController.filterByDepartureAirportCity);
+router.get('/filter-by-arrival/:city', guestController.filterByArrivalAirportCity);
+router.get('/filter-by-airport?', validateFilterFlightCity, guestController.filterByDepartureandArrivalAirportCity);
+router.get('/filter-by-date', validateFilterFlightDate, guestController.filterByDepartureOrReturnTime);
+router.get('/filter-by-seatCategory/:seatCategory', guestController.filterBySeatCategory);
+router.get('/filter-by-all?', validateFilterFlightDate, guestController.filterByAll);
 
 export default router; 

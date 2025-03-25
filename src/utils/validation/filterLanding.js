@@ -17,7 +17,7 @@ const minToday = (value) => {
 };
 
 // Validasi kota keberangkatan & tujuan
-const searchFlightCitySchema = yup.object().shape({
+const filterFlightCitySchema = yup.object().shape({
     departureCity: yup
         .string()
         .matches(/^[a-zA-Z\s]+$/, "Departure city can only contain letters")
@@ -30,7 +30,7 @@ const searchFlightCitySchema = yup.object().shape({
 });
 
 // Validasi kategori kursi
-const searchFlightSeatSchema = yup.object().shape({
+const filterFlightSeatSchema = yup.object().shape({
     seatCategory: yup
         .string()
         .matches(/^[a-zA-Z\s]+$/, "Seat category can only contain letters")
@@ -38,7 +38,7 @@ const searchFlightSeatSchema = yup.object().shape({
 });
 
 // Validasi tanggal keberangkatan & kepulangan
-const searchFlightDateSchema = yup.object().shape({
+const filterFlightDateSchema = yup.object().shape({
     departureDate: yup
         .date()
         .transform(parseDateString)
@@ -53,9 +53,9 @@ const searchFlightDateSchema = yup.object().shape({
 });
 
 // Validasi kota keberangkatan & tujuan
-const validateSearchFlightCity = async (req, res, next) => {
+const validateFilterFlightCity = async (req, res, next) => {
     try {
-        await searchFlightCitySchema.validate(req.query, { abortEarly: false });
+        await filterFlightCitySchema.validate(req.query, { abortEarly: false });
         next();
     } catch (error) {
         return res.status(400).json({
@@ -66,9 +66,9 @@ const validateSearchFlightCity = async (req, res, next) => {
 };
 
 // Validasi kategori kursi
-const validateSearchFlightSeat = async (req, res, next) => {
+const validateFilterFlightSeat = async (req, res, next) => {
     try {
-        await searchFlightSeatSchema.validate(req.query, { abortEarly: false });
+        await filterFlightSeatSchema.validate(req.query, { abortEarly: false });
         next();
     } catch (error) {
         return res.status(400).json({
@@ -79,9 +79,9 @@ const validateSearchFlightSeat = async (req, res, next) => {
 };
 
 // Validasi tanggal
-const validateSearchFlightDate = async (req, res, next) => {
+const validateFilterFlightDate = async (req, res, next) => {
     try {
-        await searchFlightDateSchema.validate(req.query, { abortEarly: false });
+        await filterFlightDateSchema.validate(req.query, { abortEarly: false });
         next();
     } catch (error) {
         return res.status(400).json({
@@ -91,4 +91,4 @@ const validateSearchFlightDate = async (req, res, next) => {
     }
 };
 
-export { validateSearchFlightCity, validateSearchFlightSeat, validateSearchFlightDate };
+export { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate };

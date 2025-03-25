@@ -69,10 +69,10 @@ async getFlights (req, res) {
     }
 },
 
-    async searchByDepartureAirportCity (req, res) {
+    async filterByDepartureAirportCity (req, res) {
         try {
             const { city } = req.params;
-            const flights = await guestService.searchByDepartureAirportCityService(city);
+            const flights = await guestService.filterByDepartureAirportCityService(city);
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
@@ -92,10 +92,10 @@ async getFlights (req, res) {
         }
     },
 
-    async searchByArrivalAirportCity (req, res) {
+    async filterByArrivalAirportCity (req, res) {
         try {
             const { city } = req.params;
-            const flights = await guestService.searchByArrivalAirportCityService(city);
+            const flights = await guestService.filterByArrivalAirportCityService(city);
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
@@ -115,10 +115,10 @@ async getFlights (req, res) {
         }
     },
 
-    async searchByDepartureandArrivalAirportCity (req, res) {
+    async filterByDepartureandArrivalAirportCity (req, res) {
         try {
             const { departureCity, arrivalCity } = req.query;
-            const flights = await guestService.searchByDepartureAndArrivalAirportCityService(departureCity, arrivalCity);
+            const flights = await guestService.filterByDepartureAndArrivalAirportCityService(departureCity, arrivalCity);
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
@@ -138,7 +138,7 @@ async getFlights (req, res) {
         }
     },
 
-    async searchByDepartureOrReturnTime (req, res) {
+    async filterByDepartureOrReturnTime (req, res) {
         try {
             const { departureDate, returnDate } = req.query;
     
@@ -151,7 +151,7 @@ async getFlights (req, res) {
 
             const departureDateObj = departureDate ? new Date(departureDate) : null;
             const returnDateObj = returnDate ? new Date(returnDate) : null;
-            const flights = await guestService.searchFlightsByDepartureOrReturnTimeService(departureDateObj, returnDateObj);
+            const flights = await guestService.filterFlightsByDepartureOrReturnTimeService(departureDateObj, returnDateObj);
     
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
@@ -172,10 +172,10 @@ async getFlights (req, res) {
         }
     },
 
-    async searchBySeatCategory (req, res) {
+    async filterBySeatCategory (req, res) {
         try {
             const { seatCategory } = req.params;
-            const flights = await guestService.searchFlightsBySeatCategoryService(seatCategory);
+            const flights = await guestService.filterFlightsBySeatCategoryService(seatCategory);
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
@@ -195,10 +195,10 @@ async getFlights (req, res) {
         }
     },
 
-    async searchByAll (req, res) {
+    async filterByAll (req, res) {
         try {
             const filters = req.query; 
-            const flights = await guestService.searchFlightsByAllService(filters);
+            const flights = await guestService.filterFlightsByAllService(filters);
     
             res.status(200).json({
                 success: true,
