@@ -30,12 +30,11 @@ export const forgotPasswordService = async (email) => {
             throw error;
         }
 
-        await sendPasswordResetEmail(auth, email);
-        //await sendPasswordResetEmail(auth, email, {
-        //  url: `${FRONTEND_URL}/reset-password`,
-        //  handleCodeInApp: true
-        //});
-
+        await sendPasswordResetEmail(auth, email, {
+            url: `http://localhost:5173/reset-password?email=${encodeURIComponent(email)}`,
+            handleCodeInApp: true,
+        });
+        
         return "Please check your email";
     } catch (error) {
         throw new Error(error.message);

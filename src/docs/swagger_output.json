@@ -205,49 +205,38 @@
             "schema": {
               "$ref": "#/components/schemas/SearchMitraRequest"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteUsersRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteUsersRequest"
-              }
+          {
+            "name": "in",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
+          },
+          {
+            "name": "required",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "schema",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }

@@ -83,30 +83,6 @@ export default {
         };
     },
 
-    async deleteMitra (req, res) {
-        /**
-         #swagger.tags = ['Admin']
-         #swagger.requestBody = {
-            required: true,
-            schema: {
-                $ref: "#/components/schemas/DeleteUsersRequest"
-            }
-         }
-         */
-        const {uid} = req.body;
-        try {
-            const result = await deleteUserService({uid, role: "MITRA"});
-            res.status(200).json({
-                result,
-            });
-        } catch (error) {
-            res.status(400).json({
-                message: error.message,
-                data: null,
-            });
-        };
-    },
-
     // async editMitra (req, res) {
     //     const {uid} = req.body;
     //     try {
@@ -201,9 +177,9 @@ export default {
             }
          }
          */
-         const {uid} = req.body;
+         const uid = req.body;
          try {
-             const result = await deleteUserService({uid, role: "USER"});
+             const result = await deleteUserService(uid);
              res.status(200).json({
                  result,
              });
