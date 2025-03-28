@@ -4,7 +4,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import router from "./routes/api.js";
-import guestRoutes from "./routes/airport/guestRoutes.js";
 import docs from "./docs/route.js";
 
 async function init() {
@@ -25,7 +24,7 @@ async function init() {
     
     app.use("/api", router);
     docs(app);
-    app.use("/api/guest", guestRoutes);
+    
     
     app.listen( PORT, () => {
         console.log(`Server run in http://localhost:${PORT}`);

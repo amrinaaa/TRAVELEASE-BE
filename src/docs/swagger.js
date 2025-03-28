@@ -71,10 +71,18 @@ const doc = {
                 email: "example@gmail.com",
                 role: "MITRA_PENERBANGAN",
             },
+
+            FilterFLightRequest: {
+                departureCity: "Jakarta",
+                arrivalCity: "Bali",
+                departureDate: "28 Maret 2025",
+                returnDate: "29 Maret 2025",
+                seatCategory: "Economy",
+            }
         },
     },
 };
 
 const outputFile = "./swagger_output.json";
-const endpointsFiles = ["../routes/api.js", "../routes/airport/guestRoutes.js"];
+const endpointsFiles = ["../routes/api.js"];
 swaggerAutogen({openapi: "3.0.0"})(outputFile, endpointsFiles, doc);
