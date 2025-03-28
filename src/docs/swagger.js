@@ -71,6 +71,12 @@ const doc = {
                 email: "example@gmail.com",
                 role: "MITRA_PENERBANGAN",
             },
+
+            TopupRequest: {
+                uid: "cm8jygpq50000up74xxny591x",
+                amount: 50000,
+                type: "adding",
+            },
         },
     },
 };

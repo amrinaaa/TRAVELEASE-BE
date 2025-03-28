@@ -361,6 +361,38 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopupRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/TopupRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/users": {
@@ -551,6 +583,26 @@
         },
         "xml": {
           "name": "SearchMitraRequest"
+        }
+      },
+      "TopupRequest": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "example": "cm8jygpq50000up74xxny591x"
+          },
+          "amount": {
+            "type": "number",
+            "example": 50000
+          },
+          "type": {
+            "type": "string",
+            "example": "adding"
+          }
+        },
+        "xml": {
+          "name": "TopupRequest"
         }
       }
     }

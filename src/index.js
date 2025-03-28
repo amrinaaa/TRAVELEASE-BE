@@ -24,8 +24,8 @@ async function init() {
     });
     
     app.use("/api", router);
-    docs(app);
     app.use("/api/guest", guestRoutes);
+    docs(app);
     
     app.listen( PORT, () => {
         console.log(`Server run in http://localhost:${PORT}`);
