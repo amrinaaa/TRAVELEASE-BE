@@ -4,7 +4,7 @@ import {
     getAuth, 
     sendPasswordResetEmail,
 } from "../../../firebase/config.js";
-// import { FRONTEND_URL } from "../../utils/env.js";
+import { FRONTEND_URL } from "../../utils/env.js";
 
 export const forgotPasswordService = async (email) => {
     const auth = getAuth(); 
@@ -31,7 +31,7 @@ export const forgotPasswordService = async (email) => {
         }
 
         await sendPasswordResetEmail(auth, email, {
-            url: `http://localhost:5173/reset-password?email=${encodeURIComponent(email)}`,
+            url: `${FRONTEND_URL}/reset-password?email=${encodeURIComponent(email)}`,
             handleCodeInApp: true,
         });
         
