@@ -54,135 +54,55 @@ export default {
                     return {
                         name: category.name, price: category.price, availableSeats, notAvailableSeats, }; }), }, }));
     },
-    
-    async filterByDepartureAirportCityService(city) {
-        const flights = await this.getFlightsService();
-        return flights.filter(flight =>
-            flight.departureAirport.city.toLowerCase().includes(city.toLowerCase())
-        );
-    },
 
-    async filterByArrivalAirportCityService (city) {
-        const flights = await this.getFlightsService();
-        return flights.filter(flight =>
-            flight.arrivalAirport.city.toLowerCase().includes(city.toLowerCase())
-        );
-    },
-
-    async filterByDepartureAndArrivalAirportCityService (departureCity, arrivalCity) {
-        const flights = await this.getFlightsService();
-        return flights.filter(flight =>
-            flight.departureAirport.city.toLowerCase().includes(departureCity.toLowerCase()) &&
-            flight.arrivalAirport.city.toLowerCase().includes(arrivalCity.toLowerCase())
-        );
-    },
-
-    async filterFlightsByDepartureOrReturnTimeService(departureDate, returnDate) {
-        const flights = await this.getFlightsService();
-
-        return flights.filter(flight => {
-            const flightDeparture = new Date(flight.departureTime).setHours(0, 0, 0, 0);
-            const filterDeparture = departureDate ? new Date(departureDate).setHours(0, 0, 0, 0) : null;
-            const filterReturn = returnDate ? new Date(returnDate).setHours(0, 0, 0, 0) : null;
-
-            return (!filterDeparture || flightDeparture === filterDeparture) ||
-                (!filterReturn || flightDeparture === filterReturn);
-        });
-    },
-
-    async filterFlightsBySeatCategoryService(seatCategory) {
+    async filterFlightsByAllService({ departureCity, arrivalCity, departureDate, returnDate, seatCategory }) {
         const flights = await this.getFlightsService();
     
-        return flights
-            .map(flight => {
-                const filteredCategories = flight.plane.seatCategories.filter(category =>
-                    category.name.toLowerCase().includes(seatCategory.toLowerCase())
+        const filterSeatsByCategory = (flight) => {
+            if (!seatCategory) return flight;
+    
+            const filteredSeatCategories = flight.plane.seatCategories
+                .filter(category => category.name.toLowerCase() === seatCategory.toLowerCase())
+                .map(category => ({
+                    name: category.name,
+                    price: category.price,
+                    availableSeats: category.availableSeats,
+                    notAvailableSeats: category.notAvailableSeats
+                }));
+    
+            return { ...flight, plane: { ...flight.plane, seatCategories: filteredSeatCategories } };
+        };
+    
+        const filteredFlights = flights
+            .filter(flight => {
+                const flightDepartureDate = new Date(flight.departureTime).setHours(0, 0, 0, 0);
+                const inputDepartureDate = new Date(departureDate).setHours(0, 0, 0, 0);
+    
+                return (
+                    flight.departureAirport.city.toLowerCase() === departureCity.toLowerCase() &&
+                    flight.arrivalAirport.city.toLowerCase() === arrivalCity.toLowerCase() &&
+                    flightDepartureDate === inputDepartureDate
                 );
-                if (filteredCategories.length === 0) {
-                    return null; }
-
-                return {
-                    ...flight,
-                    plane: {
-                        ...flight.plane, seatCategories: filteredCategories } }; })
-            .filter(flight => flight !== null);
-    },
-
-
-    async filterFlightsByAllService({ from, to, departureDate, returnDate, seatClass }) {
-        try {
-            let departureFilters = {};
-            let returnFilters = {};
-
-            if (departureDate) {
-                departureFilters.departureTime = {
-                    gte: new Date(new Date(departureDate).setHours(0, 0, 0, 0)),
-                    lte: new Date(new Date(departureDate).setHours(23, 59, 59, 999)) }; }
-
-            if (returnDate) {
-                returnFilters.departureTime = {
-                    gte: new Date(new Date(returnDate).setHours(0, 0, 0, 0)),
-                    lte: new Date(new Date(returnDate).setHours(23, 59, 59, 999)) }; }
-
-            const departureFlights = await prisma.flight.findMany({
-                where: {
-                    AND: [
-                        from ? { departureAirport: { city: { contains: from, mode: "insensitive" } } } : {},
-                        to ? { arrivalAirport: { city: { contains: to, mode: "insensitive" } } } : {},
-                        departureFilters.departureTime ? { departureTime: departureFilters.departureTime } : {} ] },
-                include: {
-                    plane: {
-                        include: {
-                            seatCategories: {
-                                where: seatClass ? { name: seatClass } : {},
-                                include: {
-                                    seats: {
-                                        select: {
-                                            name: true,
-                                            tickets: { select: { id: true } } } } } } } },
-                    departureAirport: { select: { name: true, code: true, city: true } },
-                    arrivalAirport: { select: { name: true, code: true, city: true } } } });
-
-            let returnFlights = [];
-            if (returnDate) {
-                returnFlights = await prisma.flight.findMany({
-                    where: {
-                        AND: [
-                            to ? { departureAirport: { city: { contains: to, mode: "insensitive" } } } : {},
-                            from ? { arrivalAirport: { city: { contains: from, mode: "insensitive" } } } : {},
-                            returnFilters.departureTime ? { departureTime: returnFilters.departureTime } : {} ] },
-                    include: {
-                        plane: {
-                            include: {
-                                seatCategories: {
-                                    where: seatClass ? { name: seatClass } : {},
-                                    include: {
-                                        seats: {
-                                            select: {
-                                                name: true,
-                                                tickets: { select: { id: true } } } } } } } },
-                        departureAirport: { select: { name: true, code: true, city: true } },
-                        arrivalAirport: { select: { name: true, code: true, city: true } }
-                    } }); 
-                }
-            
-            const formatFlight = (flight) => ({
-                flightCode: flight.flightCode,
-                departureTime: new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(flight.departureTime)),
-                arrivalTime: new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(flight.arrivalTime)),
-                departureAirport: flight.departureAirport,
-                arrivalAirport: flight.arrivalAirport,
-                plane: {
-                    name: flight.plane.name,
-                    seatCategories: flight.plane.seatCategories.map(({ name, price, seats }) => {
-                        const availableSeats = seats.filter(seat => seat.tickets.length === 0).map(({ name }) => name);
-                        const notAvailableSeats = seats.filter(seat => seat.tickets.length > 0).map(({ name }) => name);
-                        return { name, price, availableSeats, notAvailableSeats }; }) } });
-            
-            return {
-                departureFlights: departureFlights.map(formatFlight),
-                returnFlights: returnFlights.map(formatFlight) };
-        
-        } catch (error) {
-            console.error("Error fetching flights:", error);
-            return { departureFlights: [], returnFlights: [] }; } }};
+            })
+            .map(filterSeatsByCategory);
+    
+        let returnFlights = [];
+        if (returnDate) {
+            returnFlights = flights
+                .filter(flight => {
+                    const flightReturnDate = new Date(flight.departureTime).setHours(0, 0, 0, 0);
+                    const inputReturnDate = new Date(returnDate).setHours(0, 0, 0, 0);
+    
+                    return (
+                        flight.departureAirport.city.toLowerCase() === arrivalCity.toLowerCase() &&
+                        flight.arrivalAirport.city.toLowerCase() === departureCity.toLowerCase() &&
+                        flightReturnDate === inputReturnDate
+                    );
+                })
+                .map(filterSeatsByCategory);
+        }
+    
+        return [...filteredFlights, ...returnFlights];
+    }
+    
+};    
