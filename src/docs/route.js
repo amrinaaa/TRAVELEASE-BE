@@ -19,13 +19,8 @@ export default function docs(app) {
     );
 
     app.use(
-        "/api-docs",
-        swaggerUi.serve,
-        swaggerUi.setup(
-            swaggerOutput, 
-            {
-                customCss: css
-            },
-        )
+        "/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput, {
+            customCss: css
+        })
     );
 }

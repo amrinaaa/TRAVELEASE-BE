@@ -1,14 +1,13 @@
 import prisma from "../../../prisma/prisma.client.js";
 import firebaseAdmin from "../../../firebase/config.js";
 
-export const deleteUserService = async ({uid, role}) => {
+export const deleteUserService = async (uid) => {
     try {
         await firebaseAdmin.admin.auth().deleteUser(uid);
 
         await prisma.user.delete({
             where: {
                 id: uid,
-                role,
             }
         });
 

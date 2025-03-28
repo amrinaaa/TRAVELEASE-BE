@@ -12,13 +12,13 @@ export default {
          #swagger.requestBody = {
             required: true,
             schema: {
-                $ref: "#/components/schemas/AddUsersRequest"
+                $ref: "#/components/schemas/AddMitraRequest"
             }
          }
          */
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
         try {
-            const mitra = await createUser({name, email, password, role: "MITRA"});
+            const mitra = await createUser({name, email, password, role});
             
             res.status(200).json({
                 message: "Partner added successfully",
@@ -32,12 +32,20 @@ export default {
         };
     },
 
-    async getAllMitra (_req, res) {
+    async getAllMitra (req, res) {
         /**
         #swagger.tags = ['Admin']
+        #swagger.parameters['role'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/GetMitraRequest"
+            }
+        }
         */
+        const role = req.query.role;
         try {
-            const result = await getUsersService({role: "MITRA"});
+            const result = await getUsersService(role);
             res.status(200).json({
                 data: result,
             });
@@ -53,43 +61,19 @@ export default {
     async searchMitra (req, res) {
         /**
          #swagger.tags = ['Admin']
-         #swagger.parameters['email'] = {
+         #swagger.parameters['email','role'] = {
             in: 'query',
             required: true,
             schema: {
-                $ref: "#/components/schemas/SearchUsersRequest"
+                $ref: "#/components/schemas/SearchMitraRequest"
             }
         }
-         */
-        const email = req.query.email;
+        */
+        const {email, role} = req.query;
         try {
-            const result = await searchUserService({email, role: "MITRA"});
+            const result = await searchUserService({email, role});
             res.status(200).json({
                 data: result,
-            });
-        } catch (error) {
-            res.status(400).json({
-                message: error.message,
-                data: null,
-            });
-        };
-    },
-
-    async deleteMitra (req, res) {
-        /**
-         #swagger.tags = ['Admin']
-         #swagger.requestBody = {
-            required: true,
-            schema: {
-                $ref: "#/components/schemas/DeleteUsersRequest"
-            }
-         }
-         */
-        const {uid} = req.body;
-        try {
-            const result = await deleteUserService({uid, role: "MITRA"});
-            res.status(200).json({
-                result,
             });
         } catch (error) {
             res.status(400).json({
@@ -193,9 +177,9 @@ export default {
             }
          }
          */
-         const {uid} = req.body;
+         const uid = req.body;
          try {
-             const result = await deleteUserService({uid, role: "USER"});
+             const result = await deleteUserService(uid);
              res.status(200).json({
                  result,
              });

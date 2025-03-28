@@ -56,16 +56,21 @@ const doc = {
                 uid: "cm8jygpq50000up74xxny591x",
             },
 
-            // FilterFlightsRequest: {
-            //     type: "object",
-            //     properties: {
-            //         from: { type: "string", example: "Jakarta" },
-            //         to: { type: "string", example: "Bali" },
-            //         departureDate: { type: "string", format: "date", example: "2025-03-24" },
-            //         returnDate: { type: "string", format: "date", example: "2025-03-25" },
-            //         seatClass: { type: "string", example: "Economy" }
-            //     }
-            // }
+            AddMitraRequest: {
+                name: "Nama",
+                email: "example@gmail.com",
+                password: "Password123",
+                role: "MITRA_PENERBANGAN",
+            },
+
+            GetMitraRequest: {
+                role: "MITRA_PENERBANGAN"
+            },
+
+            SearchMitraRequest: {
+                email: "example@gmail.com",
+                role: "MITRA_PENERBANGAN",
+            },
         },
     },
 };

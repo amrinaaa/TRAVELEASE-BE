@@ -181,12 +181,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddUsersRequest"
+                "$ref": "#/components/schemas/AddMitraRequest"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/AddUsersRequest"
+                "$ref": "#/components/schemas/AddMitraRequest"
               }
             }
           }
@@ -199,11 +199,32 @@
         "description": "",
         "parameters": [
           {
-            "name": "email",
+            "name": "email,role",
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/SearchUsersRequest"
+              "$ref": "#/components/schemas/SearchMitraRequest"
+            }
+          },
+          {
+            "name": "in",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "required",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "schema",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -216,38 +237,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteUsersRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteUsersRequest"
-              }
-            }
           }
         }
       }
@@ -258,6 +247,16 @@
           "Admin"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetMitraRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -500,6 +499,58 @@
         },
         "xml": {
           "name": "DeleteUsersRequest"
+        }
+      },
+      "AddMitraRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Nama"
+          },
+          "email": {
+            "type": "string",
+            "example": "example@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123"
+          },
+          "role": {
+            "type": "string",
+            "example": "MITRA_PENERBANGAN"
+          }
+        },
+        "xml": {
+          "name": "AddMitraRequest"
+        }
+      },
+      "GetMitraRequest": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "example": "MITRA_PENERBANGAN"
+          }
+        },
+        "xml": {
+          "name": "GetMitraRequest"
+        }
+      },
+      "SearchMitraRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "example@gmail.com"
+          },
+          "role": {
+            "type": "string",
+            "example": "MITRA_PENERBANGAN"
+          }
+        },
+        "xml": {
+          "name": "SearchMitraRequest"
         }
       }
     }

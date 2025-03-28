@@ -4,7 +4,7 @@ import {
     getAuth, 
     sendPasswordResetEmail,
 } from "../../../firebase/config.js";
-// import { FRONTEND_URL } from "../../utils/env.js";
+import { FRONTEND_URL } from "../../utils/env.js";
 
 export const forgotPasswordService = async (email) => {
     const auth = getAuth(); 
@@ -30,12 +30,11 @@ export const forgotPasswordService = async (email) => {
             throw error;
         }
 
-        await sendPasswordResetEmail(auth, email);
-        //await sendPasswordResetEmail(auth, email, {
-        //  url: `${FRONTEND_URL}/reset-password`,
-        //  handleCodeInApp: true
-        //});
-
+        await sendPasswordResetEmail(auth, email, {
+            url: `${FRONTEND_URL}/reset-password?email=${encodeURIComponent(email)}`,
+            handleCodeInApp: true,
+        });
+        
         return "Please check your email";
     } catch (error) {
         throw new Error(error.message);
