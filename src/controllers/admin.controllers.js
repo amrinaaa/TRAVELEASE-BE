@@ -62,7 +62,7 @@ export default {
     async searchMitra (req, res) {
         /**
          #swagger.tags = ['Admin']
-         #swagger.parameters['email','role'] = {
+         #swagger.parameters['identifier','role'] = {
             in: 'query',
             required: true,
             schema: {
@@ -70,9 +70,9 @@ export default {
             }
         }
         */
-        const {email, role} = req.query;
+        const {identifier, role} = req.query;
         try {
-            const result = await searchUserService({email, role});
+            const result = await searchUserService({identifier, role});
             res.status(200).json({
                 data: result,
             });
@@ -146,7 +146,7 @@ export default {
     async searchUser (req, res) {
         /**
          #swagger.tags = ['Admin']
-         #swagger.parameters['email'] = {
+         #swagger.parameters['identifier'] = {
             in: 'query',
             required: true,
             schema: {
@@ -154,9 +154,9 @@ export default {
             }
         }
          */
-        const email = req.query.email;
+        const identifier = req.query.identifier;
         try {
-            const result = await searchUserService({email, role: "USER"});
+            const result = await searchUserService({identifier, role: "USER"});
             res.status(200).json({
                 data: result,
             });

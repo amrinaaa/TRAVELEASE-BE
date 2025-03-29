@@ -49,7 +49,7 @@ const doc = {
             },
 
             SearchUsersRequest: {
-                email: "example@gmail.com",
+                identifier: "name or email",
             },
 
             DeleteUsersRequest: {
@@ -68,7 +68,7 @@ const doc = {
             },
 
             SearchMitraRequest: {
-                email: "example@gmail.com",
+                identifier: "name or email",
                 role: "MITRA_PENERBANGAN",
             },
 

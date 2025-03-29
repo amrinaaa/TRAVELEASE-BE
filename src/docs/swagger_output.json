@@ -199,7 +199,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "email,role",
+            "name": "identifier,role",
             "in": "query",
             "required": true,
             "schema": {
@@ -310,11 +310,18 @@
         "description": "",
         "parameters": [
           {
-            "name": "email",
+            "name": "identifier",
             "in": "query",
             "required": true,
             "schema": {
               "$ref": "#/components/schemas/SearchUsersRequest"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -512,9 +519,9 @@
       "SearchUsersRequest": {
         "type": "object",
         "properties": {
-          "email": {
+          "identifier": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "name or email"
           }
         },
         "xml": {
@@ -572,9 +579,9 @@
       "SearchMitraRequest": {
         "type": "object",
         "properties": {
-          "email": {
+          "identifier": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "name or email"
           },
           "role": {
             "type": "string",
