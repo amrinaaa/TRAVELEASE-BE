@@ -6,6 +6,9 @@ import adminControllers from "../controllers/admin.controllers.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
 
+import guestController from '../controllers/airport/guestController.js';
+import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
+
 const router = express.Router();
 
 //router auth
@@ -24,5 +27,13 @@ router.get("/users", authMiddleware, adminMiddleware, adminControllers.getUsers)
 router.get("/user", authMiddleware, adminMiddleware, adminControllers.searchUser);
 router.delete("/user", authMiddleware, adminMiddleware, adminControllers.deleteUser);
 router.put("/user", authMiddleware, adminMiddleware, adminControllers.topup);
+
+//route guest
+// api get
+router.get('/airport-city', guestController.getCityFlight);
+router.get('/airport-city/:city', guestController.getCityFlightSpesific);
+router.get('/flights', guestController.getFlights);
+// api filter
+router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, guestController.filterByAll);
 
 export default router;

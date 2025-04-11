@@ -72,6 +72,14 @@ const doc = {
                 role: "MITRA_PENERBANGAN",
             },
 
+            FilterFLightRequest: {
+                departureCity: "Jakarta",
+                arrivalCity: "Bali",
+                departureDate: "28 Maret 2025",
+                returnDate: "29 Maret 2025",
+                seatCategory: "Economy",
+            },
+
             TopupRequest: {
                 uid: "cm8jygpq50000up74xxny591x",
                 amount: 50000,
