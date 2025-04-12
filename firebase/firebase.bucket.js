@@ -1,23 +1,16 @@
-import { FIREBASE_STORAGE_BUCKET } from "../src/utils/env.js";
-import { bucket } from "./config.js";
+import { Storage } from '@google-cloud/storage';
+import { SERVICE_ACCOUNT_FOR_UPLOAD } from '../src/utils/env.js';
 
-const storage_url = FIREBASE_STORAGE_BUCKET;
+const storage = new Storage({
+  projectId: SERVICE_ACCOUNT_FOR_UPLOAD.project_id,
+  credentials: {
+    client_email: SERVICE_ACCOUNT_FOR_UPLOAD.client_email,
+    private_key: SERVICE_ACCOUNT_FOR_UPLOAD.private_key,
+  },
+});
 
-export const uploadFile = async (fileBuffer, destination) => {
-    try {
-        const file = bucket.file(destination);
-        await file.save(
-            fileBuffer,
-            {
-                public: true,
-                metadata: {
-                    contentType: 'image/jpeg',
-                },
-            },
-        );
-
-        return `${storage_url}${bucket.name}/${destination}`;
-    } catch (error) {
-        console.log(error);
-    }
+const getBucket = (bucketName) => {
+  return storage.bucket(bucketName);
 };
+
+export default getBucket;

@@ -9,7 +9,11 @@ import adminMiddleware from "../middlewares/admin.middleware.js";
 import guestController from '../controllers/airport/guestController.js';
 import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
 
+import { uploadFile } from "../controllers/uploadControllers.js";
+import multer from "multer";
+
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 //router auth
 router.post("/register", authControllers.register);
@@ -35,5 +39,9 @@ router.get('/airport-city/:city', guestController.getCityFlightSpesific);
 router.get('/flights', guestController.getFlights);
 // api filter
 router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, guestController.filterByAll);
+
+// Upload Route
+router.post('/upload', upload.single('file'), uploadFile);
+
 
 export default router;
