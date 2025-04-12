@@ -417,7 +417,7 @@
     "/airport-city": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "responses": {
@@ -436,7 +436,7 @@
     "/airport-city/{city}": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "parameters": [
@@ -445,17 +445,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "Jakarta"
-                }
-              }
+              "type": "string"
             }
           }
         ],
@@ -475,7 +465,7 @@
     "/flights": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "responses": {
@@ -493,7 +483,20 @@
     },
     "/filter-by-all?": {
       "get": {
+        "tags": [
+          "Flight"
+        ],
         "description": "",
+        "parameters": [
+          {
+            "name": "departureCity, arrivalCity, departureDate, returnDate, seatCategory",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/FilterFLightRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -503,6 +506,32 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/flights/{flightId}": {
+      "get": {
+        "tags": [
+          "Seat"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "flightId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }

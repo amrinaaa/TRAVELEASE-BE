@@ -58,7 +58,6 @@ export default {
         }
     },
 
-    //buat agar bisa search nama juga, tidak hanya email
     async searchMitra (req, res) {
         /**
          #swagger.tags = ['Admin']
@@ -215,4 +214,5 @@ export default {
             });
         };
     },
+
 };

@@ -85,6 +85,7 @@ const doc = {
                 amount: 50000,
                 type: "adding",
             },
+
         },
     },
 };
