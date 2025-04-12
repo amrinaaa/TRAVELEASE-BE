@@ -8,9 +8,7 @@ export default {
             return airport; 
         },
 
-    async getFlightsService() {
-        // const now = new Date();
-    
+    async getFlightsService() {    
         const flights = await prisma.flight.findMany({
             select: {
                 id: true,
@@ -32,34 +30,18 @@ export default {
                 plane: {
                     select: { 
                         name: true,
+                        planeType: {
+                            select: {
+                                name: true,
+                                manufacture: true,
+                            },
+                        },
                     }, 
                 }, 
             }, 
         });
 
         return flights;
-    
-        // return flights.map((flight) => ({
-        //     ...flight,
-        //     plane: {
-        //         ...flight.plane,
-        //         seatCategories: flight.plane.seatCategories.map((category) => {
-        //             const { availableSeats, notAvailableSeats } = category.seats.reduce(
-        //                 (acc, seat) => {
-        //                     const isBooked = seat.tickets.some(ticket => ticket.flight.arrivalTime > now);
-    
-        //                     if (isBooked) {
-        //                         acc.notAvailableSeats.push(seat.name);
-        //                     } else {
-        //                         acc.availableSeats.push(seat.name);
-        //                     }
-        //                     return acc;
-        //                 },
-        //                 { availableSeats: [], notAvailableSeats: [] }
-        //             );
-    
-        //             return {
-        //                 name: category.name, price: category.price, availableSeats, notAvailableSeats, }; }), }, }));
     },
 
     async filterFlightsByAllService({ departureCity, arrivalCity, departureDate, returnDate, seatCategory }) {
