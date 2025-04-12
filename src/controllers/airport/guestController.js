@@ -85,6 +85,8 @@ export default {
             });
         }
     },
+
+    async filterByAll (req, res) {
     /**
     #swagger.tags = ['Guest']
     #swagger.parameters['departureCity', 'arrivalCity', 'departureDate', 'returnDate', 'seatCategory'] = {
@@ -95,8 +97,6 @@ export default {
         }
     }
     */
-    async filterByAll (req, res) {
-    
         try {
             const filters = req.query; 
             const flights = await guestService.filterFlightsByAllService(filters);

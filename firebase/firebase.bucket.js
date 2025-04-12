@@ -1,5 +1,5 @@
 import { FIREBASE_STORAGE_BUCKET } from "../src/utils/env.js";
-import { bucket } from "./firebase.admin.js";
+import { bucket } from "./config.js";
 
 const storage_url = FIREBASE_STORAGE_BUCKET;
 
