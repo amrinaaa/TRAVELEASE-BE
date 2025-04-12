@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma.client.js";
 
-export const getUsersService = async (role) => {
+export const getUsersService = async ({role}) => {
     try {
         const result = await prisma.user.findMany({
             where: {

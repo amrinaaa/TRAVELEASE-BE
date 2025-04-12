@@ -3,6 +3,7 @@ import { getUsersService } from "../services/admin/users.js";
 import { searchUserService } from "../services/admin/search.user.js";
 import { deleteUserService } from "../services/admin/delete.user.js";
 // import { editUserService } from "../services/admin/edit.user.js";
+import { topupService } from "../services/admin/topup.js";
 
 
 export default {
@@ -45,7 +46,7 @@ export default {
         */
         const role = req.query.role;
         try {
-            const result = await getUsersService(role);
+            const result = await getUsersService({role});
             res.status(200).json({
                 data: result,
             });
@@ -61,7 +62,7 @@ export default {
     async searchMitra (req, res) {
         /**
          #swagger.tags = ['Admin']
-         #swagger.parameters['email','role'] = {
+         #swagger.parameters['identifier','role'] = {
             in: 'query',
             required: true,
             schema: {
@@ -69,9 +70,9 @@ export default {
             }
         }
         */
-        const {email, role} = req.query;
+        const {identifier, role} = req.query;
         try {
-            const result = await searchUserService({email, role});
+            const result = await searchUserService({identifier, role});
             res.status(200).json({
                 data: result,
             });
@@ -145,7 +146,7 @@ export default {
     async searchUser (req, res) {
         /**
          #swagger.tags = ['Admin']
-         #swagger.parameters['email'] = {
+         #swagger.parameters['identifier'] = {
             in: 'query',
             required: true,
             schema: {
@@ -153,9 +154,9 @@ export default {
             }
         }
          */
-        const email = req.query.email;
+        const identifier = req.query.identifier;
         try {
-            const result = await searchUserService({email, role: "USER"});
+            const result = await searchUserService({identifier, role: "USER"});
             res.status(200).json({
                 data: result,
             });
@@ -189,5 +190,29 @@ export default {
                  data: null,
              });
          };
+    },
+
+    async topup (req, res) {
+        /**
+         #swagger.tags = ['Admin']
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/TopupRequest"
+            }
+         }
+         */
+        const {uid, amount, type} = req.body;
+        try {
+            const result = await topupService(uid, amount, type)
+            res.status(200).json({
+                message: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
     },
 };

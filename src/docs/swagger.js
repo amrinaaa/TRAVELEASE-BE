@@ -49,7 +49,7 @@ const doc = {
             },
 
             SearchUsersRequest: {
-                email: "example@gmail.com",
+                identifier: "name or email",
             },
 
             DeleteUsersRequest: {
@@ -68,7 +68,7 @@ const doc = {
             },
 
             SearchMitraRequest: {
-                email: "example@gmail.com",
+                identifier: "name or email",
                 role: "MITRA_PENERBANGAN",
             },
 
@@ -78,7 +78,13 @@ const doc = {
                 departureDate: "28 Maret 2025",
                 returnDate: "29 Maret 2025",
                 seatCategory: "Economy",
-            }
+            },
+
+            TopupRequest: {
+                uid: "cm8jygpq50000up74xxny591x",
+                amount: 50000,
+                type: "adding",
+            },
         },
     },
 };

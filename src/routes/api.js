@@ -26,6 +26,7 @@ router.post("/user", authMiddleware, adminMiddleware, adminControllers.addUser);
 router.get("/users", authMiddleware, adminMiddleware, adminControllers.getUsers);
 router.get("/user", authMiddleware, adminMiddleware, adminControllers.searchUser);
 router.delete("/user", authMiddleware, adminMiddleware, adminControllers.deleteUser);
+router.put("/user", authMiddleware, adminMiddleware, adminControllers.topup);
 
 //route guest
 // api get

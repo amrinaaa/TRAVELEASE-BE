@@ -1,14 +1,22 @@
 import prisma from "../../../prisma/prisma.client.js";
-import firebaseAdmin from "../../../firebase/config.js";
+// import firebaseAdmin from "../../../firebase/config.js";
 
-export const searchUserService = async ({email, role}) => {
+export const searchUserService = async ({identifier, role}) => {
     try {
         //buat memastikan bahwa user ada di firebase dan db
-        const identifierFirebase = await firebaseAdmin.admin.auth().getUserByEmail(email);
+        //kalau dibuat bisa filter menggunakan nama atau email maka tidak bisa cek di firebase
+        // const identifierFirebase = await firebaseAdmin.admin.auth().getUserByEmail(email);
 
-        const result = await prisma.user.findUnique({
+        const result = await prisma.user.findMany({
             where: {
-                email: identifierFirebase.email,
+                OR: [
+                    {
+                        name: identifier,
+                    },
+                    {
+                        email: identifier,
+                    }
+                ],
                 role,
             },
             select: {

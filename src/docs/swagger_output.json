@@ -199,7 +199,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "email,role",
+            "name": "identifier,role",
             "in": "query",
             "required": true,
             "schema": {
@@ -310,7 +310,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "email",
+            "name": "identifier",
             "in": "query",
             "required": true,
             "schema": {
@@ -357,6 +357,38 @@
             "application/xml": {
               "schema": {
                 "$ref": "#/components/schemas/DeleteUsersRequest"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopupRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/TopupRequest"
               }
             }
           }
@@ -586,9 +618,9 @@
       "SearchUsersRequest": {
         "type": "object",
         "properties": {
-          "email": {
+          "identifier": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "name or email"
           }
         },
         "xml": {
@@ -646,9 +678,9 @@
       "SearchMitraRequest": {
         "type": "object",
         "properties": {
-          "email": {
+          "identifier": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "name or email"
           },
           "role": {
             "type": "string",
@@ -685,6 +717,26 @@
         },
         "xml": {
           "name": "FilterFLightRequest"
+        }
+      },
+      "TopupRequest": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "example": "cm8jygpq50000up74xxny591x"
+          },
+          "amount": {
+            "type": "number",
+            "example": 50000
+          },
+          "type": {
+            "type": "string",
+            "example": "adding"
+          }
+        },
+        "xml": {
+          "name": "TopupRequest"
         }
       }
     }
