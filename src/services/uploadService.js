@@ -1,15 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import getBucket from '../../firebase/firebase.bucket.js';
+import { FIREBASE_BUCKET, FIREBASE_PUBLIC_URL, PATH_DEFAULT, PATH_PROFILE, PATH_AIRPORT, PATH_HOTEL } from '../utils/env.js';
+
 
 export default {
   async deleteService(filename) {
-    const bucketName = 'tes-online-ippl.appspot.com';
+    const bucketName = FIREBASE_BUCKET;
     const bucket = getBucket(bucketName);
     const file = bucket.file(filename);
 
     try {
       await file.delete();
-      console.log(`File deleted: ${filename}`);
     } catch (error) {
       console.error('Error deleting file:', error.message);
       throw new Error(error.message);
@@ -18,21 +19,21 @@ export default {
 
   async uploadFile(file, type = 'default', customFilename = null) {
     return new Promise((resolve, reject) => {
-      const bucketName = 'tes-online-ippl.appspot.com';
+      const bucketName = FIREBASE_BUCKET;
 
       let folderPath;
       switch (type) {
         case 'profile':
-          folderPath = 'travelease/profile';
+          folderPath = PATH_PROFILE;
           break;
         case 'airport':
-          folderPath = 'travelease/airport';
+          folderPath = PATH_AIRPORT;
           break;
         case 'hotel':
-          folderPath = 'travelease/hotel';
+          folderPath = PATH_HOTEL;
           break;
         default:
-          folderPath = 'travelease/default';
+          folderPath = PATH_DEFAULT;
       }
 
       const filename = customFilename
@@ -49,7 +50,7 @@ export default {
 
       stream.on('error', (err) => reject(err));
       stream.on('finish', () => {
-        const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+        const publicUrl = `${FIREBASE_PUBLIC_URL}${bucketName}/${blob.name}`;
         resolve(publicUrl);
       });
 

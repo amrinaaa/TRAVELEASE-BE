@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-
 dotenv.config();
 
 export const DATABASE_URL = process.env.DATABASE_URL;
@@ -18,7 +17,15 @@ export const FIREBASE_CONFIG = {
 export const FIREBASE_SERVICE_ACCOUNT = process.env.FIREBASE_SERVICE_ACCOUNT;
 export const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
 
+// Firebase Storage
 export const SERVICE_ACCOUNT_FOR_UPLOAD = JSON.parse(process.env.SERVICE_ACCOUNT_FOR_UPLOAD);
+export const FIREBASE_BUCKET = process.env.FIREBASE_BUCKET;
+export const FIREBASE_PUBLIC_URL= process.env.FIREBASE_PUBLIC_URL;
+export const PATH_PROFILE = process.env.PATH_PROFILE;
+export const PATH_AIRPORT = process.env.PATH_AIRPORT;
+export const PATH_HOTEL = process.env.PATH_HOTEL;
+export const PATH_DEFAULT = process.env.PATH_DEFAULT;
+
 
 export const MAIL_MAILER = process.env.MAIL_MAILER;
 export const MAIL_HOST = process.env.MAIL_HOST;
