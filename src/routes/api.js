@@ -9,7 +9,7 @@ import adminMiddleware from "../middlewares/admin.middleware.js";
 import guestController from '../controllers/airport/guestController.js';
 import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
 
-import { uploadFile } from "../controllers/uploadControllers.js";
+import uploadController from "../controllers/uploadControllers.js";
 import multer from "multer";
 
 const router = express.Router();
@@ -41,7 +41,7 @@ router.get('/flights', guestController.getFlights);
 router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, guestController.filterByAll);
 
 // Upload Route
-router.post('/upload', upload.single('file'), uploadFile);
+router.post('/upload', upload.single('file'), authMiddleware,uploadController.uploadProfile);
 
 
 export default router;
