@@ -41,6 +41,6 @@ router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat
 
 
 //route Seat
-router.get('/flights/:flightId', seatsController.getSeat);
+router.get('/seats/:flightId', seatsController.getSeat);
 
 export default router;
