@@ -1,12 +1,12 @@
-import guestService from '../../services/airport/guestService.js';
+import flightsService from '../../services/airport/flights.js';
 
 export default {
     async getCityFlight (req, res) {
     /**
-    #swagger.tags = ['Guest']
+    #swagger.tags = ['Flight']
     */
     try {
-        const daerah = await guestService.getCityFlightService();
+        const daerah = await flightsService.getCityFlightService();
         if (!daerah || daerah.length === 0) {
             return res.status(404).json({
                 message: "City not found",
@@ -27,20 +27,17 @@ export default {
 },
 
     async getCityFlightSpesific (req, res) {
-    /**
-    #swagger.tags = ['Guest']
-    #swagger.parameters['city'] = {
-        in: 'path',
-        required: true,
-        schema: {
+        /**
+        #swagger.tags = ['Flight']
+        #swagger.parameters['city'] = {
+            in: 'path',
+            required: true,
             type: 'string',
-            example: 'Jakarta'
         }
-    }
-    */
+        */
         try {
             const { city } = req.params;
-            const daerah = await guestService.getCityFlightService(city);
+            const daerah = await flightsService.getCityFlightService(city);
             if (!daerah || daerah.length === 0) {
                 return res.status(404).json({
                     message: "City not found",
@@ -62,11 +59,11 @@ export default {
     },
 
     async getFlights (req, res) {
-    /**
-    #swagger.tags = ['Guest']
-    */
+        /**
+        #swagger.tags = ['Flight']
+        */
         try {
-            const flights = await guestService.getFlightsService();
+            const flights = await flightsService.getFlightsService();
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
@@ -87,19 +84,19 @@ export default {
     },
 
     async filterByAll (req, res) {
-    /**
-    #swagger.tags = ['Guest']
-    #swagger.parameters['departureCity', 'arrivalCity', 'departureDate', 'returnDate', 'seatCategory'] = {
-        in: 'query',
-        required: true,
-        schema: {
-            $ref: "#/components/schemas/FilterFLightRequest"
+        /**
+        #swagger.tags = ['Flight']
+        #swagger.parameters['departureCity', 'arrivalCity', 'departureDate', 'returnDate', 'seatCategory'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/FilterFLightRequest"
+            }
         }
-    }
-    */
+        */
         try {
             const filters = req.query; 
-            const flights = await guestService.filterFlightsByAllService(filters);
+            const flights = await flightsService.filterFlightsByAllService(filters);
     
             res.status(200).json({
                 success: true,

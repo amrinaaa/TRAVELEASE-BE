@@ -56,6 +56,12 @@ const doc = {
                 uid: "cm8jygpq50000up74xxny591x",
             },
 
+            EditUsersRequest: {
+                uid: "cm8jygpq50000up74xxny591x",
+                name: "Nama Baru / Kosong",
+                email: "EmailBaru@gmail.com / Kosong"
+            },
+
             AddMitraRequest: {
                 name: "Nama",
                 email: "example@gmail.com",
@@ -85,6 +91,7 @@ const doc = {
                 amount: 50000,
                 type: "adding",
             },
+
         },
     },
 };

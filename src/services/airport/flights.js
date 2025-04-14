@@ -8,51 +8,40 @@ export default {
             return airport; 
         },
 
-    async getFlightsService() {
-        const now = new Date();
-    
+    async getFlightsService() {    
         const flights = await prisma.flight.findMany({
             select: {
+                id: true,
                 flightCode: true,
                 departureTime: true,
                 arrivalTime: true,
                 departureAirport: {
-                    select: { name: true, city: true, code: true },
+                    select: { 
+                        name: true, 
+                        city: true, 
+                        code: true },
                 },
                 arrivalAirport: {
-                    select: { name: true, city: true, code: true },
+                    select: { 
+                        name: true, 
+                        city: true, 
+                        code: true },
                 },
                 plane: {
-                    select: { name: true,
-                        seatCategories: {
-                            select: { name: true, price: true,
-                                seats: {
-                                    select: { name: true,
-                                        tickets: {
-                                            select: { flight: {
-                                                    select: { arrivalTime: true }, }, }, }, }, }, }, }, }, }, }, });
-    
-        return flights.map((flight) => ({
-            ...flight,
-            plane: {
-                ...flight.plane,
-                seatCategories: flight.plane.seatCategories.map((category) => {
-                    const { availableSeats, notAvailableSeats } = category.seats.reduce(
-                        (acc, seat) => {
-                            const isBooked = seat.tickets.some(ticket => ticket.flight.arrivalTime > now);
-    
-                            if (isBooked) {
-                                acc.notAvailableSeats.push(seat.name);
-                            } else {
-                                acc.availableSeats.push(seat.name);
-                            }
-                            return acc;
+                    select: { 
+                        name: true,
+                        planeType: {
+                            select: {
+                                name: true,
+                                manufacture: true,
+                            },
                         },
-                        { availableSeats: [], notAvailableSeats: [] }
-                    );
-    
-                    return {
-                        name: category.name, price: category.price, availableSeats, notAvailableSeats, }; }), }, }));
+                    }, 
+                }, 
+            }, 
+        });
+
+        return flights;
     },
 
     async filterFlightsByAllService({ departureCity, arrivalCity, departureDate, returnDate, seatCategory }) {

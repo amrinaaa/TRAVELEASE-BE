@@ -330,6 +330,38 @@
           }
         }
       },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUsersRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUsersRequest"
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "Admin"
@@ -361,7 +393,28 @@
             }
           }
         }
-      },
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/amount": {
       "put": {
         "tags": [
           "Admin"
@@ -395,29 +448,10 @@
         }
       }
     },
-    "/users": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/airport-city": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "responses": {
@@ -436,7 +470,7 @@
     "/airport-city/{city}": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "parameters": [
@@ -445,17 +479,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "Jakarta"
-                }
-              }
+              "type": "string"
             }
           }
         ],
@@ -475,7 +499,7 @@
     "/flights": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "responses": {
@@ -494,7 +518,7 @@
     "/filter-by-all?": {
       "get": {
         "tags": [
-          "Guest"
+          "Flight"
         ],
         "description": "",
         "parameters": [
@@ -516,6 +540,32 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/seats/{flightId}": {
+      "get": {
+        "tags": [
+          "Seat"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "flightId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -637,6 +687,26 @@
         },
         "xml": {
           "name": "DeleteUsersRequest"
+        }
+      },
+      "EditUsersRequest": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "example": "cm8jygpq50000up74xxny591x"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nama Baru / Kosong"
+          },
+          "email": {
+            "type": "string",
+            "example": "EmailBaru@gmail.com / Kosong"
+          }
+        },
+        "xml": {
+          "name": "EditUsersRequest"
         }
       },
       "AddMitraRequest": {

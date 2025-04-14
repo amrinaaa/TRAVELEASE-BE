@@ -2,7 +2,7 @@ import { createUser } from "../services/admin/create.user.js";
 import { getUsersService } from "../services/admin/users.js";
 import { searchUserService } from "../services/admin/search.user.js";
 import { deleteUserService } from "../services/admin/delete.user.js";
-// import { editUserService } from "../services/admin/edit.user.js";
+import { editUserService } from "../services/admin/edit.user.js";
 import { topupService } from "../services/admin/topup.js";
 
 
@@ -58,7 +58,6 @@ export default {
         }
     },
 
-    //buat agar bisa search nama juga, tidak hanya email
     async searchMitra (req, res) {
         /**
          #swagger.tags = ['Admin']
@@ -168,6 +167,31 @@ export default {
         };
     },
 
+    async editUser (req, res) {
+        /**
+         #swagger.tags = ['Admin']
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/EditUsersRequest"
+            }
+         }
+         */
+        const {uid, name, email} = req.body;
+        try {
+            const result = await editUserService(uid, name, email);
+            res.status(200).json({
+                message: "Updated sucessfull",
+                data: result,
+            })
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async deleteUser (req, res) {
         /**
          #swagger.tags = ['Admin']
@@ -185,10 +209,10 @@ export default {
                  result,
              });
          } catch (error) {
-             res.status(400).json({
-                 message: error.message,
-                 data: null,
-             });
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
          };
     },
 
@@ -215,4 +239,5 @@ export default {
             });
         };
     },
+
 };
