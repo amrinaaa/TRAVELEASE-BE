@@ -330,6 +330,38 @@
           }
         }
       },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUsersRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUsersRequest"
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "Admin"
@@ -361,7 +393,28 @@
             }
           }
         }
-      },
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/amount": {
       "put": {
         "tags": [
           "Admin"
@@ -391,25 +444,6 @@
                 "$ref": "#/components/schemas/TopupRequest"
               }
             }
-          }
-        }
-      }
-    },
-    "/users": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -653,6 +687,26 @@
         },
         "xml": {
           "name": "DeleteUsersRequest"
+        }
+      },
+      "EditUsersRequest": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "example": "cm8jygpq50000up74xxny591x"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nama Baru / Kosong"
+          },
+          "email": {
+            "type": "string",
+            "example": "EmailBaru@gmail.com / Kosong"
+          }
+        },
+        "xml": {
+          "name": "EditUsersRequest"
         }
       },
       "AddMitraRequest": {

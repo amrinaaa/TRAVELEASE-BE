@@ -27,8 +27,9 @@ router.get("/partner", authMiddleware, adminMiddleware, adminControllers.searchM
 router.post("/user", authMiddleware, adminMiddleware, adminControllers.addUser);
 router.get("/users", authMiddleware, adminMiddleware, adminControllers.getUsers);
 router.get("/user", authMiddleware, adminMiddleware, adminControllers.searchUser);
+router.put("/user", authMiddleware, adminMiddleware, adminControllers.editUser);
 router.delete("/user", authMiddleware, adminMiddleware, adminControllers.deleteUser);
-router.put("/user", authMiddleware, adminMiddleware, adminControllers.topup);
+router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
 
 //route flights
 // api get
