@@ -17,6 +17,7 @@ export default {
             if (user?.profilePicture) {
                 const fileUrl = new URL(user.profilePicture);
                 const bucketPath = fileUrl.pathname.split('/').slice(2).join('/');
+                console.log(`Deleting file from Firebase Storage: ${bucketPath}`);
                 await uploadService.deleteService(bucketPath);
             }
 

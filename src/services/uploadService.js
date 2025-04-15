@@ -2,17 +2,18 @@ import { v4 as uuidv4 } from 'uuid';
 import getBucket from '../../firebase/firebase.bucket.js';
 import { FIREBASE_BUCKET, FIREBASE_PUBLIC_URL, PATH_DEFAULT, PATH_PROFILE, PATH_AIRPORT, PATH_HOTEL } from '../utils/env.js';
 
-
 export default {
   async deleteService(filename) {
     const bucketName = FIREBASE_BUCKET;
     const bucket = getBucket(bucketName);
     const file = bucket.file(filename);
-
+  
     try {
-      await file.delete();
+      const [exists] = await file.exists();
+      if (exists) {
+        await file.delete();
+      }
     } catch (error) {
-      console.error('Error deleting file:', error.message);
       throw new Error(error.message);
     }
   },

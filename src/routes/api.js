@@ -12,6 +12,7 @@ import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFligh
 import seatsController from "../controllers/airport/seatsController.js";
 
 import uploadController from "../controllers/uploadControllers.js";
+import uploadMiddleware from "../middlewares/fileImage.middleware.js";
 import multer from "multer";
 
 const router = express.Router();
@@ -48,7 +49,7 @@ router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat
 router.get('/seats/:flightId', seatsController.getSeat);
 
 // Upload Route
-router.post('/upload', upload.single('file'), authMiddleware,uploadController.uploadProfile);
+router.post('/upload', upload.single('file'), authMiddleware,uploadMiddleware, uploadController.uploadProfile);
 
 
 export default router;
