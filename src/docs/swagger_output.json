@@ -570,8 +570,11 @@
         }
       }
     },
-    "/upload": {
+    "/upload-profile": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "201": {
@@ -585,6 +588,26 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "File gambar yang akan diupload sebagai foto profil"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
           }
         }
       }

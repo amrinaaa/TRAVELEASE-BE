@@ -3,10 +3,32 @@ import prisma from "../../prisma/prisma.client.js";
 import path from "path";
 
 export default {
-    async uploadProfile (req, res) {
+    async uploadProfile(req, res) {
+        /**
+        #swagger.tags = ['User']
+        #swagger.consumes = ['multipart/form-data']
+        #swagger.requestBody = {
+            required: true,
+            content: {
+            "multipart/form-data": {
+                schema: {
+                type: "object",
+                properties: {
+                    file: {
+                    type: "string",
+                    format: "binary",
+                    description: "File gambar yang akan diupload sebagai foto profil"
+                    },
+                },
+                required: ["file"]
+                }
+            }
+            }
+        }
+        */
         const file = req.file;
-        const id  = res.locals.payload.id;
-        
+        const id = res.locals.payload.id;
+
         try {
             if (!file) {
                 return res.status(400).json({
@@ -37,7 +59,7 @@ export default {
             });
         }
         catch (error) {
-            console.error('Upload error:', error); 
+            console.error('Upload error:', error);
             return res.status(500).json({
                 message: "Internal Server Error",
                 data: null,
