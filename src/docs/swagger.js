@@ -92,21 +92,6 @@ const doc = {
                 type: "adding",
             },
 
-            UploadProfileRequest: {
-                type: "object",
-                properties: {
-                    file: {
-                        type: "string",
-                        format: "binary"
-                    },
-                    type: {
-                        type: "string",
-                        example: "profile"
-                    }
-                },
-                required: ["file", "type"]
-            }
-            
         },
     },
 };
