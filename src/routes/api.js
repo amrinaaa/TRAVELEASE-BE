@@ -49,6 +49,6 @@ router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat
 router.get('/seats/:flightId', seatsController.getSeat);
 
 // Upload Route
-router.post('/upload-profile', upload.single('file'), authMiddleware, uploadController.uploadProfile);
+router.post('/upload-profile', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadProfile);
 
 export default router;
