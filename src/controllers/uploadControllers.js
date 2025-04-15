@@ -10,19 +10,19 @@ export default {
         #swagger.requestBody = {
             required: true,
             content: {
-                "multipart/form-data": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            file: {
-                                type: "string",
-                                format: "binary",
-                                description: "Gambar untuk dijadikan foto profil"
-                            }
-                        },
-                        required: ["file"]
-                    }
+            "multipart/form-data": {
+                schema: {
+                type: "object",
+                properties: {
+                    file: {
+                    type: "string",
+                    format: "binary",
+                    description: "File gambar yang akan diupload sebagai foto profil"
+                    },
+                },
+                required: ["file"]
                 }
+            }
             }
         }
         */

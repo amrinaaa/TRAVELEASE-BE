@@ -600,7 +600,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "Gambar untuk dijadikan foto profil"
+                    "description": "File gambar yang akan diupload sebagai foto profil"
                   }
                 },
                 "required": [

@@ -10,9 +10,11 @@ export default {
     const file = bucket.file(filename);
 
     try {
-      await file.delete();
+      const [exists] = await file.exists();
+      if (exists) {
+        await file.delete();
+      }
     } catch (error) {
-      console.error('Error deleting file:', error.message);
       throw new Error(error.message);
     }
   },
