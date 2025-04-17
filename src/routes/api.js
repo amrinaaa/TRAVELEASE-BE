@@ -43,7 +43,6 @@ router.get('/flights', flightsController.getFlights);
 // api filter
 router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, flightsController.filterByAll);
 
-
 //route Seat
 router.get('/seats/:flightId', seatsController.getSeat);
 
