@@ -24,6 +24,7 @@ export const FIREBASE_PUBLIC_URL= process.env.FIREBASE_PUBLIC_URL;
 export const PATH_PROFILE = process.env.PATH_PROFILE;
 export const PATH_AIRPORT = process.env.PATH_AIRPORT;
 export const PATH_HOTEL = process.env.PATH_HOTEL;
+export const PATH_ROOM = process.env.PATH_ROOM;
 export const PATH_DEFAULT = process.env.PATH_DEFAULT;
 
 

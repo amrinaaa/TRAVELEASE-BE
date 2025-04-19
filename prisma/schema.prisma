@@ -204,7 +204,7 @@ model RoomType {
 
 model Facility {
   id                  String   @id @default(cuid())
-  facilityName        String
+  facilityName        String   @unique
   roomTypeFacilities  RoomTypeFacility[]
 }
 

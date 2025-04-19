@@ -178,6 +178,7 @@ export default {
          }
          */
         const {uid, name, email} = req.body;
+        console.log("Received request data:", { uid, name, email });
         try {
             const result = await editUserService(uid, name, email);
             res.status(200).json({
@@ -185,6 +186,7 @@ export default {
                 data: result,
             })
         } catch (error) {
+            console.error("Error updating user:", error.message);
             res.status(400).json({
                 message: error.message,
                 data: null,
