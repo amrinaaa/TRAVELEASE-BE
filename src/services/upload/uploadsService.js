@@ -132,5 +132,5 @@ export default {
                 console.error('Error:', error);
                 throw new Error(error.message);
             }
-        },
+        }
 };
