@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,25 +9,18 @@ datasource db {
 }
 
 model User {
-  id              String    @id @default(cuid())
+  id              String           @id @default(cuid())
   name            String
-  email           String    @unique
+  email           String           @unique
   password        String
-  role            Role      @default(USER)
-  currentAmount   Int       @default(0)
-  profilePicture  String?   @default("")
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  role            Role             @default(USER)
+  currentAmount   Int              @default(0)
+  profilePicture  String?          @default("")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   airlinePartners AirlinePartner[]
-  transactions    Transaction[]
   HotelPartnerS   HotelPartner[]
-}
-
-enum Role {
-  USER
-  ADMIN
-  MITRA_HOTEL
-  MITRA_PENERBANGAN
+  transactions    Transaction[]
 }
 
 model Airport {
@@ -41,55 +28,56 @@ model Airport {
   name             String
   code             String
   city             String
-  departureFlights Flight[] @relation("DepartureRelation")
+  imageUrl         String?
   arrivalFlights   Flight[] @relation("ArrivalRelation")
+  departureFlights Flight[] @relation("DepartureRelation")
 }
 
 model Airline {
-  id               String   @id @default(cuid())
-  name             String
-  description      String  
-  planes           Plane[]
-  airlinePartners  AirlinePartner[]
+  id              String           @id @default(cuid())
+  name            String
+  description     String
+  airlinePartners AirlinePartner[]
+  planes          Plane[]
 }
 
 model PlaneType {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   manufacture String
   planes      Plane[]
 }
 
 model Plane {
-  id              String   @id @default(cuid())
-  planeTypeId     String  
-  airlineId       String
-  name            String
-  planeType       PlaneType @relation(fields: [planeTypeId], references: [id])
-  airline         Airline @relation(fields: [airlineId], references: [id]) 
-  seatCategories  SeatCategory[]  
-  flights         Flight[]
+  id             String         @id @default(cuid())
+  planeTypeId    String
+  airlineId      String
+  name           String
+  flights        Flight[]
+  airline        Airline        @relation(fields: [airlineId], references: [id])
+  planeType      PlaneType      @relation(fields: [planeTypeId], references: [id])
+  seatCategories SeatCategory[]
 }
 
 model AirlinePartner {
-  id          String  @id @default(cuid())
-  airlineId   String
-  partnerId   String
-  airline     Airline @relation(fields: [airlineId], references: [id])
-  partner     User   @relation(fields: [partnerId], references: [id])
+  id        String  @id @default(cuid())
+  airlineId String
+  partnerId String
+  airline   Airline @relation(fields: [airlineId], references: [id])
+  partner   User    @relation(fields: [partnerId], references: [id])
 }
 
 model SeatCategory {
-  id          String  @id @default(cuid())
-  planeId     String
-  name        String
-  price       Int
-  plane       Plane @relation(fields: [planeId], references: [id])
-  seats       Seat[]
+  id      String @id @default(cuid())
+  planeId String
+  name    String
+  price   Int
+  seats   Seat[]
+  plane   Plane  @relation(fields: [planeId], references: [id])
 }
 
 model Seat {
-  id             String  @id @default(cuid())
+  id             String       @id @default(cuid())
   seatCategoryId String
   name           String
   seatCategory   SeatCategory @relation(fields: [seatCategoryId], references: [id])
@@ -104,21 +92,138 @@ model Flight {
   flightCode         String
   departureTime      DateTime
   arrivalTime        DateTime
-  plane              Plane @relation(fields: [planeId], references: [id])
-  departureAirport   Airport @relation(fields: [departureAirportId], references: [id], name: "DepartureRelation")
-  arrivalAirport     Airport @relation(fields: [arrivalAirportId], references: [id], name: "ArrivalRelation")
+  arrivalAirport     Airport  @relation("ArrivalRelation", fields: [arrivalAirportId], references: [id])
+  departureAirport   Airport  @relation("DepartureRelation", fields: [departureAirportId], references: [id])
+  plane              Plane    @relation(fields: [planeId], references: [id])
   tickets            Ticket[]
 }
 
 model Transaction {
-  id              String   @id @default(cuid())
+  id              String            @id @default(cuid())
   userId          String
-  transactionType TransactionType @default(PURCHASE)
+  transactionType TransactionType   @default(PURCHASE)
   price           Int
-  status          StatusTransaction   @default(ORDERED)
-  user            User   @relation(fields: [userId], references: [id])
-  tickets         Ticket[]
+  status          StatusTransaction @default(ORDERED)
   reservations    Reservation[]
+  tickets         Ticket[]
+  user            User              @relation(fields: [userId], references: [id])
+}
+
+model Ticket {
+  id            String      @id @default(cuid())
+  seatId        String
+  flightId      String
+  transactionId String
+  name          String
+  nik           String
+  type          Type        @default(ADULT)
+  gender        Gender      @default(MALE)
+  flight        Flight      @relation(fields: [flightId], references: [id])
+  seat          Seat        @relation(fields: [seatId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+}
+
+model Location {
+  id      String  @id @default(cuid())
+  city    String
+  country String
+  hotels  Hotel[]
+}
+
+model Hotel {
+  id            String         @id @default(cuid())
+  locationId    String
+  name          String
+  description   String
+  contact       String
+  address       String
+  location      Location       @relation(fields: [locationId], references: [id])
+  hotelImages   HotelImage[]
+  hotelPartners HotelPartner[]
+  roomTypes     RoomType[]
+}
+
+model HotelImage {
+  id       String @id @default(cuid())
+  hotelId  String
+  imageUrl String
+  hotel    Hotel  @relation(fields: [hotelId], references: [id])
+}
+
+model HotelPartner {
+  id        String @id @default(cuid())
+  partnerId String
+  hotelId   String
+  hotel     Hotel  @relation(fields: [hotelId], references: [id])
+  partner   User   @relation(fields: [partnerId], references: [id])
+}
+
+model RoomType {
+  id                 String             @id @default(cuid())
+  hotelId            String
+  typeName           String
+  capacity           Int
+  price              Int
+  rooms              Room[]
+  hotel              Hotel              @relation(fields: [hotelId], references: [id])
+  roomTypeFacilities RoomTypeFacility[]
+}
+
+model Facility {
+  id                 String             @id @default(cuid())
+  facilityName       String             @unique
+  roomTypeFacilities RoomTypeFacility[]
+}
+
+model RoomTypeFacility {
+  id         String   @id @default(cuid())
+  facilityId String
+  roomTypeId String
+  amount     Int
+  facility   Facility @relation(fields: [facilityId], references: [id])
+  roomType   RoomType @relation(fields: [roomTypeId], references: [id])
+}
+
+model Room {
+  id               String            @id @default(cuid())
+  roomTypeId       String
+  name             String
+  isAvailable      Boolean
+  roomType         RoomType          @relation(fields: [roomTypeId], references: [id])
+  roomImages       RoomImage[]
+  roomReservations RoomReservation[]
+}
+
+model RoomImage {
+  id       String @id @default(cuid())
+  roomId   String
+  urlImage String
+  room     Room   @relation(fields: [roomId], references: [id])
+}
+
+model Reservation {
+  id               String            @id @default(cuid())
+  transactionId    String
+  startDate        DateTime
+  endDate          DateTime
+  transaction      Transaction       @relation(fields: [transactionId], references: [id])
+  roomReservations RoomReservation[]
+}
+
+model RoomReservation {
+  id            String      @id @default(cuid())
+  reservationId String
+  roomId        String
+  amount        Int
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  room          Room        @relation(fields: [roomId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+  MITRA_HOTEL
+  MITRA_PENERBANGAN
 }
 
 enum StatusTransaction {
@@ -132,20 +237,6 @@ enum TransactionType {
   PURCHASE
 }
 
-model Ticket {
-  id            String   @id @default(cuid())
-  seatId        String
-  flightId      String
-  transactionId String
-  name          String
-  nik           String
-  type          Type   @default(ADULT)
-  gender        Gender @default(MALE)
-  seat          Seat   @relation(fields: [seatId], references: [id])
-  flight        Flight   @relation(fields: [flightId], references: [id])
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-}
-
 enum Type {
   ADULT
   CHILDREN
@@ -154,100 +245,4 @@ enum Type {
 enum Gender {
   MALE
   FEMALE
-}
-
-model Location {
-  id          String   @id @default(cuid())
-  city        String
-  country     String
-  hotels      Hotel[]
-}
-
-model Hotel {
-  id            String   @id @default(cuid())
-  locationId    String
-  name          String
-  description   String
-  contact       String
-  address       String
-  location      Location @relation(fields: [locationId], references: [id])
-  hotelImages   HotelImage[]
-  hotelPartners HotelPartner[]
-  roomTypes     RoomType[]
-}
-
-model HotelImage {
-  id          String   @id @default(cuid())
-  hotelId     String
-  imageUrl    String
-  hotel       Hotel @relation(fields: [hotelId], references: [id])
-}
-
-model HotelPartner {
-  id          String   @id @default(cuid())
-  partnerId   String
-  hotelId     String
-  partner     User   @relation(fields: [partnerId], references: [id])
-  hotel       Hotel @relation(fields: [hotelId], references: [id])
-}
-
-model RoomType {
-  id                  String   @id @default(cuid())
-  hotelId             String
-  typeName            String
-  capacity            Int
-  price               Int
-  hotel               Hotel @relation(fields: [hotelId], references: [id])
-  rooms               Room[]
-  roomTypeFacilities  RoomTypeFacility[]
-}
-
-model Facility {
-  id                  String   @id @default(cuid())
-  facilityName        String
-  roomTypeFacilities  RoomTypeFacility[]
-}
-
-model RoomTypeFacility {
-  id          String   @id @default(cuid())
-  facilityId  String
-  roomTypeId  String
-  amount      Int
-  facility    Facility @relation(fields: [facilityId], references: [id])
-  roomType    RoomType @relation(fields: [roomTypeId], references: [id])
-}
-
-model Room {
-  id                String   @id @default(cuid())
-  roomTypeId        String
-  name              String
-  isAvailable       Boolean
-  roomType          RoomType @relation(fields: [roomTypeId], references: [id])
-  roomImages        RoomImage[]
-  roomReservations  RoomReservation[]
-}
-
-model RoomImage {
-  id          String   @id @default(cuid())
-  roomId      String
-  urlImage    String
-  room        Room @relation(fields: [roomId], references: [id])
-}
-
-model Reservation {
-  id                String   @id @default(cuid())
-  transactionId     String
-  startDate         DateTime
-  endDate           DateTime
-  transaction       Transaction @relation(fields: [transactionId], references: [id])
-  roomReservations  RoomReservation[]
-}
-
-model RoomReservation {
-  id            String   @id @default(cuid())
-  reservationId String
-  roomId        String
-  amount        Int
-  reservation   Reservation @relation(fields: [reservationId], references: [id])
-  room          Room @relation(fields: [roomId], references: [id])
 }

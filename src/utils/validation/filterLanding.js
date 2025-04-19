@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { parse, isValid } from "date-fns";
 
-// 🔹 Fungsi untuk parsing tanggal Format exp 23 Maret 2025
+// Fungsi untuk parsing tanggal Format exp 23 Maret 2025
 const parseDateString = (value, originalValue) => {
     if (!originalValue) return null;
     const parsedDate = parse(originalValue, "d MMMM yyyy", new Date());

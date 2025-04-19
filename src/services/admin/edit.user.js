@@ -1,9 +1,10 @@
 import prisma from "../../../prisma/prisma.client.js";
+import firebaseadmin from "../../../firebase/config.js";
 
 export const editUserService = async (id, name, email) => {
     try {
         const existingUser = await prisma.user.findUnique({
-             where: { 
+            where: { 
                 id 
             }, 
         });
@@ -19,7 +20,10 @@ export const editUserService = async (id, name, email) => {
             });
             if (emailExists) {
                 throw new Error("email is exists");
-            };
+            }
+
+            await firebaseadmin.admin.auth().updateUser(existingUser.id, { email });
+
         };
 
         const updatedUser = await prisma.user.update({
