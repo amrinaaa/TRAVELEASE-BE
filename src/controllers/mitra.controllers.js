@@ -1,5 +1,12 @@
 export default {
     async addSeatAvailability(req, res) {
+        /**
+        #swagger.tags = ['Auth']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/ForgotPasswordRequest"}
+        }
+        */
         const mitraId = res.locals.payload.id;
         const {
             airlineId,
