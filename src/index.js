@@ -6,25 +6,14 @@ import cookieParser from "cookie-parser";
 import router from "./routes/api.js";
 import docs from "./docs/route.js";
 
-import { FRONTEND_URL } from "./utils/env.js";
+// import { FRONTEND_URL } from "./utils/env.js";
 
 async function init() {
     try {
         const app = express();
         const PORT = 3000;
 
-        app.use(cors({
-            origin: function (origin, callback) {
-                const allowedOrigins = 'https://localhost:5173';
-                if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-                    callback(null, true);
-                } else {
-                    callback(new Error('Not allowed by CORS'));
-                }
-            },
-            credentials: true,
-        }));
-
+        app.use(cors());
         app.use(bodyParser.json());
         app.use(cookieParser());
 
