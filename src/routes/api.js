@@ -17,6 +17,8 @@ import multer from "multer";
 
 import deleteFileController from "../controllers/deleteFileControllers.js";
 
+import hotelControllers from "../controllers/hotel/hotelControllers.js";
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -53,10 +55,17 @@ router.get('/seats/:flightId', seatsController.getSeat);
 router.post('/profileImage', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadProfile);
 router.post('/hotelImage/:hotelId', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadHotelImage);
 router.post('/roomImage/:roomId', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadRoomImage);
+router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadAirportImage);
 
 // Delete File Image
 router.delete('/profileImage', authMiddleware, deleteFileController.deleteProfileImage);
 router.delete('/hotelImage/:id', authMiddleware, deleteFileController.deleteHotelImage);
 router.delete('/roomImage/:id', authMiddleware, deleteFileController.deleteRoomImage);
+router.delete('/airportImage/:id', authMiddleware, deleteFileController.deleteAirportImage);
+
+// Hotels
+router.get('/hotels', hotelControllers.getHotel);
+router.get('/hotel/:hotelId', hotelControllers.getHotelById);
+// router.get('/hotel/:hotelId/rooms?', hotelControllers.getAvailableRoom);
 
 export default router;

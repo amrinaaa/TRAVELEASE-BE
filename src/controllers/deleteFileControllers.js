@@ -72,5 +72,25 @@ export default {
                 message: error.message
             });
         }
+    },
+
+    async deleteAirportImage(req, res) {
+        try {
+            const imageId = req.params.id;
+            if (!imageId) {
+                return res.status(400).json({ 
+                    message: "Image ID is required" });
+            }
+
+            await deleteFileService.deleteAirportImage(imageId);
+            return res.status(200).json({
+                message: "Deleted successful"
+                });
+
+        } catch (error) {
+            console.error("Error deleting hotel image:", error);
+            return res.status(500).json({ 
+                message: error.message });
+        }
     }
 };

@@ -112,31 +112,18 @@ async function main() {
     await prisma.plane.createMany({
         data: [
             { name: "Garuda Boeing 737", planeTypeId: planeTypeMap["Boeing 737"], airlineId: airlineMap["Garuda Indonesia"] },
-            { name: "Garuda Boeing 777", planeTypeId: planeTypeMap["Boeing 777"], airlineId: airlineMap["Garuda Indonesia"] },
-            { name: "Garuda Boeing 787", planeTypeId: planeTypeMap["Boeing 787"], airlineId: airlineMap["Garuda Indonesia"] },
-            { name: "Garuda Boeing 747", planeTypeId: planeTypeMap["Boeing 747"], airlineId: airlineMap["Garuda Indonesia"] },
-            { name: "Garuda Boeing 767", planeTypeId: planeTypeMap["Boeing 767"], airlineId: airlineMap["Garuda Indonesia"] },
-            
             { name: "Lion Airbus A320", planeTypeId: planeTypeMap["Airbus A320"], airlineId: airlineMap["Lion Air"] },
-            { name: "Lion Airbus A330", planeTypeId: planeTypeMap["Airbus A330"], airlineId: airlineMap["Lion Air"] },
-            { name: "Lion Airbus A350", planeTypeId: planeTypeMap["Airbus A350"], airlineId: airlineMap["Lion Air"] },
-            { name: "Lion Airbus A380", planeTypeId: planeTypeMap["Airbus A380"], airlineId: airlineMap["Lion Air"] },
-            { name: "Lion Airbus A340", planeTypeId: planeTypeMap["Airbus A340"], airlineId: airlineMap["Lion Air"] },
-
-            { name: "Batik ATR 72", planeTypeId: planeTypeMap["ATR 72"], airlineId: airlineMap["Batik Air"] },
-            { name: "Batik ATR 42", planeTypeId: planeTypeMap["ATR 42"], airlineId: airlineMap["Batik Air"] },
-            { name: "Batik ATR 82", planeTypeId: planeTypeMap["ATR 82"], airlineId: airlineMap["Batik Air"] },
-            { name: "Batik ATR 92", planeTypeId: planeTypeMap["ATR 92"], airlineId: airlineMap["Batik Air"] },
         ]
     });
 
-    // Ambil kembali pesawat yang telah dibuat
     const planes = await prisma.plane.findMany();
     const planeMap = Object.fromEntries(planes.map(p => [p.name, p.id]));
     
     await prisma.seatCategory.createMany({
         data: [
             { name: "Economy", price: 1000000, planeId: planeMap["Garuda Boeing 737"] },
+            { name: "Business", price: 5000000, planeId: planeMap["Garuda Boeing 737"] },
+            { name: "Economy", price: 1000000, planeId: planeMap["Lion Airbus A320"] },
             { name: "Business", price: 5000000, planeId: planeMap["Lion Airbus A320"] }
         ]
     });
@@ -144,7 +131,7 @@ async function main() {
     await prisma.flight.createMany({
         data: [
             {
-                planeId: planeMap["Garuda Boeing 737"], // Menggunakan planeMap
+                planeId: planeMap["Garuda Boeing 737"],
                 departureAirportId: (await prisma.airport.findFirst({ where: { code: "CGK" } }))?.id || null,
                 arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "DPS" } }))?.id || null,
                 flightCode: "GA123",
@@ -158,108 +145,9 @@ async function main() {
                 flightCode: "JT456",
                 departureTime: new Date(),
                 arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Batik ATR 72"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "SUB" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "JOG" } }))?.id || null,
-                flightCode: "ID789",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Garuda Boeing 777"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "JOG" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "KNO" } }))?.id || null,
-                flightCode: "GA1011",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Lion Airbus A330"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "KNO" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "UPG" } }))?.id || null,
-                flightCode: "JT1213",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Batik ATR 42"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "UPG" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "PKU" } }))?.id || null,
-                flightCode: "ID1415",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Garuda Boeing 787"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "PKU" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "BDO" } }))?.id || null,
-                flightCode: "GA1617",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Lion Airbus A350"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "BDO" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "PDG" } }))?.id || null,
-                flightCode: "JT1819",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Batik ATR 82"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "PDG" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "PLM" } }))?.id || null,
-                flightCode: "ID2021",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Garuda Boeing 747"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "PLM" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "BTJ" } }))?.id || null,
-                flightCode: "GA2223",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Lion Airbus A380"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "BTJ" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "DJB" } }))?.id || null,
-                flightCode: "JT2425",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Batik ATR 92"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "DJB" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "MDC" } }))?.id || null,
-                flightCode: "ID2627",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Garuda Boeing 767"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "MDC" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "CGK" } }))?.id || null,
-                flightCode: "GA2829",
-                departureTime: new Date(),
-                arrivalTime: new Date()
-            },
-            {
-                planeId: planeMap["Lion Airbus A340"],
-                departureAirportId: (await prisma.airport.findFirst({ where: { code: "CGK" } }))?.id || null,
-                arrivalAirportId: (await prisma.airport.findFirst({ where: { code: "SUB" } }))?.id || null,
-                flightCode: "JT3031",
-                departureTime: new Date(),
-                arrivalTime: new Date()
             }
-            
         ]
     });
-
-    // Ambil kembali data flight setelah createMany()
     const flights = await prisma.flight.findMany();
     const flightMap = Object.fromEntries(flights.map(f => [f.flightCode, f.id]));
     

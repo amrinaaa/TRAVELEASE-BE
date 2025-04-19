@@ -122,5 +122,23 @@ export default {
                 message: error.message
             });
         }
+    },
+
+    async uploadAirportImage(req, res) {
+        const file = req.file;
+        const { airportId } = req.params;
+
+        try {
+            await uploadsController.uploadAirportImage(file, airportId);
+            return res.status(201).json({
+                message: "Upload successful"
+            });
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            return res.status(500).json({
+                message: error.message
+            });
+        }
     }
 };
