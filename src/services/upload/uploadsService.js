@@ -3,6 +3,12 @@ import deleteService from "../deleteFileService.js";
 import prisma from "../../../prisma/prisma.client.js";
 import path from "path";
 
+function generateFileName(originalName, prefixId) {
+    const ext = path.extname(originalName);
+    const uniqueSuffix = Date.now();
+    return `${prefixId}-${uniqueSuffix}${ext}`;
+}
+
 export default {
     async uploadProfile(file, userId) {
     try {
@@ -13,11 +19,9 @@ export default {
         const user = await prisma.user.findUnique({ where: { id: userId } });
 
         if (user?.profilePicture) {
-        const fileUrl = new URL(user.profilePicture);
+        const filePath = deleteService.extractFilePath(user.profilePicture);
 
-        const bucketPath = fileUrl.pathname.split('/').slice(2).join('/');
-
-        await deleteService.deleteFile(bucketPath);
+        await deleteService.deleteFile(filePath);
         }
 
         const ext = path.extname(file.originalname);
@@ -26,9 +30,6 @@ export default {
         const url = await uploadService.uploadFile(
             file, "profile", 
             filename);
-        
-        console.log("Uploading file:", filename);
-        console.log("Full path to Firebase:", "profile/" + filename);
             
         await prisma.user.update({
         where: { 
@@ -38,7 +39,7 @@ export default {
         });
 
         } catch (error) {
-            console.error('Upload error:', error);
+            console.error('Error:', error);
             throw new Error("Failed to upload profile image");
         }
     },
@@ -48,11 +49,16 @@ export default {
             if (!file) {
                 throw new Error("File not found");
             }
+
+            const hotel = await prisma.hotel.findUnique({
+                where: { id: hotelId }
+            });
+    
+            if (!hotel) {
+                throw new Error("Hotel ID not found in database");
+            }
         
-            const ext = path.extname(file.originalname);
-            const uniqueSuffix = Date.now();
-            const filename = `${hotelId}-${uniqueSuffix}${ext}`; 
-        
+            const filename = generateFileName(file.originalname, hotelId);
             const url = await uploadService.uploadFile(file, "hotel", filename);
         
             await prisma.hotelImage.create({
@@ -64,7 +70,7 @@ export default {
         
         } catch (error) {
             console.error("Error:", error);
-            throw new Error("Failed to upload hotel image");
+            throw new Error(error.message);
         }
     },
 
@@ -82,10 +88,7 @@ export default {
                 throw new Error("Room ID not found in database");
             }
         
-            const ext = path.extname(file.originalname);
-            const uniqueSuffix = Date.now();
-            const filename = `${roomId}-${uniqueSuffix}${ext}`; 
-        
+            const filename = generateFileName(file.originalname, roomId);
             const url = await uploadService.uploadFile(file, "room", filename);
         
             await prisma.roomImage.create({
@@ -97,7 +100,7 @@ export default {
         
         } catch (error) {
             console.error("Error:", error);
-            throw new Error("Failed to upload hotel image");
+            throw new Error(error.message);
         }
     },
 };
