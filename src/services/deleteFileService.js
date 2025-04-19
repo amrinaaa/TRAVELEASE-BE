@@ -3,9 +3,15 @@ import { FIREBASE_BUCKET } from '../utils/env.js';
 import prisma from '../../prisma/prisma.client.js';
 
 function extractFilePath(imageUrl) {
-  const url = new URL(imageUrl);
-  const pathname = url.pathname;
-  return pathname.startsWith("/") ? pathname.slice(1) : pathname;
+  try {
+    const fileUrl = new URL(imageUrl);
+    const filePath = fileUrl.pathname.split('/').slice(2).join('/');
+
+    return filePath;
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
+  }
 }
 
 export default {
@@ -24,6 +30,35 @@ export default {
       }
   },
 
+  async deleteProfileImage(userId) {
+    try {
+        const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    if (!user.profilePicture) {
+        throw new Error("Profile image not found");
+    }
+
+    const filePath = extractFilePath(user.profilePicture);
+
+    await this.deleteFile(filePath);
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { profilePicture: null },
+    });
+
+    return { message: "Profile image deleted successfully" };
+      } catch (error) {
+        throw new Error(error.message);
+      }
+  },
+
   async deleteHotelImage(imageId) {
     try {
         const image = await prisma.hotelImage.findUnique({
@@ -35,6 +70,7 @@ export default {
     }
 
     const filePath = extractFilePath(image.imageUrl);
+
     await this.deleteFile(filePath);
 
     await prisma.hotelImage.delete({
@@ -44,8 +80,8 @@ export default {
     return { message: "Hotel image deleted successfully" };
       } catch (error) {
         throw new Error(error.message);
-      }
-},
+        }
+  },
 
   async deleteRoomImage(imageId) {
       try {
@@ -58,9 +94,10 @@ export default {
       }
 
         const filePath = extractFilePath(image.urlImage);
+
         await this.deleteFile(filePath);
 
-          await prisma.roomImage.delete({
+        await prisma.roomImage.delete({
           where: { id: imageId },
       });
 
@@ -68,5 +105,5 @@ export default {
       } catch (error) {
         throw new Error(error.message);
       }
-    }
-};
+      }
+  };

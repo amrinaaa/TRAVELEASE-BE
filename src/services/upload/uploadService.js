@@ -40,7 +40,7 @@ export default {
 
       stream.on('error', (err) => reject(err));
       stream.on('finish', async () => {
-        const publicUrl = `${FIREBASE_PUBLIC_URL}${bucketName}/${blob.name}`;
+        const publicUrl = `${FIREBASE_PUBLIC_URL}/${bucketName}/${blob.name}`;
         resolve(publicUrl);
       });
 

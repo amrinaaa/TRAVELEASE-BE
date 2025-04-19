@@ -26,7 +26,10 @@ export default {
         const url = await uploadService.uploadFile(
             file, "profile", 
             filename);
-
+        
+        console.log("Uploading file:", filename);
+        console.log("Full path to Firebase:", "profile/" + filename);
+            
         await prisma.user.update({
         where: { 
             id: userId },
