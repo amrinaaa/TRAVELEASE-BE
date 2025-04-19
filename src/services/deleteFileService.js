@@ -105,5 +105,34 @@ export default {
       } catch (error) {
         throw new Error(error.message);
       }
+    },
+
+    async deleteAirportImage(airportId) {
+      try {
+          const airport = await prisma.airport.findUnique({
+          where: { id: airportId },
+      });
+  
+      if (!airport) {
+          throw new Error("User not found");
       }
+  
+      if (!airport.imageUrl) {
+          throw new Error("Airport image not found");
+      }
+  
+      const filePath = extractFilePath(airport.imageUrl);
+  
+      await this.deleteFile(filePath);
+  
+      await prisma.airport.update({
+          where: { id: airportId },
+          data: { imageUrl: null },
+      });
+  
+      return { message: "Airport image deleted successfully" };
+        } catch (error) {
+          throw new Error(error.message);
+        }
+    },
   };

@@ -9,14 +9,20 @@ function generateFileName(originalName, prefixId) {
     return `${prefixId}-${uniqueSuffix}${ext}`;
 }
 
+function generateFileNamee(airportId, originalFileName) {
+    const ext = path.extname(originalFileName);
+    const filename = `${airportId}${ext}`;
+    return filename;
+}
+
 export default {
     async uploadProfile(file, userId) {
     try {
-        if (!file) {
-        throw new Error("File not found");
-        }
-
         const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        if (!user) {
+            throw new Error("User Id not found in database");
+        }
 
         if (user?.profilePicture) {
         const filePath = deleteService.extractFilePath(user.profilePicture);
@@ -24,8 +30,7 @@ export default {
         await deleteService.deleteFile(filePath);
         }
 
-        const ext = path.extname(file.originalname);
-        const filename = `${userId}${ext}`;
+        const filename = generateFileNamee(userId, file.originalname);
 
         const url = await uploadService.uploadFile(
             file, "profile", 
@@ -46,10 +51,6 @@ export default {
 
     async uploadHotelImage(file, hotelId) {
         try {
-            if (!file) {
-                throw new Error("File not found");
-            }
-
             const hotel = await prisma.hotel.findUnique({
                 where: { id: hotelId }
             });
@@ -76,10 +77,6 @@ export default {
 
     async uploadRoomImage(file, roomId) {
         try {
-            if (!file) {
-                throw new Error("File not found");
-            }
-
             const room = await prisma.room.findUnique({
                 where: { id: roomId }
             });
@@ -103,4 +100,37 @@ export default {
             throw new Error(error.message);
         }
     },
+
+    async uploadAirportImage(file, airportId) {
+        try {
+            const airport = await prisma.airport.findUnique({ where: { id: airportId } });
+    
+            if (!airport) {
+                throw new Error("Airport Id not found in database");
+            }
+
+            if (airport?.imageUrl) {
+            const filePath = deleteService.extractFilePath(airport.imageUrl);
+    
+            await deleteService.deleteFile(filePath);
+            }
+    
+            const filename = generateFileNamee(airportId, file.originalname);
+
+            const url = await uploadService.uploadFile(
+                file, "airport", 
+                filename);
+                
+            await prisma.airport.update({
+            where: { 
+                id: airportId },
+            data: { 
+                imageUrl: url },
+            });
+    
+            } catch (error) {
+                console.error('Error:', error);
+                throw new Error(error.message);
+            }
+        },
 };
