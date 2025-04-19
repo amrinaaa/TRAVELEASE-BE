@@ -1,6 +1,6 @@
-import { 
+import {
     registerValidation,
-    resetPasswordValidation, 
+    resetPasswordValidation,
 } from "../utils/request.validation.js";
 
 import { registerUser } from "../services/auth/register.js";
@@ -9,7 +9,7 @@ import { forgotPasswordService } from "../services/auth/forgot.password.js";
 import { resetPasswordService } from "../services/auth/reset.password.js";
 
 export default {
-    async register (req, res) {
+    async register(req, res) {
         /**
          #swagger.tags = ['Auth']
          #swagger.requestBody = {
@@ -20,7 +20,7 @@ export default {
          }
          */
         const { name, email, password, confirmation_password } = req.body;
-    
+
         try {
             await registerValidation.validate({
                 name, email, password, confirmation_password,
@@ -33,7 +33,7 @@ export default {
                 });
             }
 
-            const { user } = await registerUser({ name, email, password});
+            const { user } = await registerUser({ name, email, password });
 
             if (!user) {
                 return res.status(500).json({
@@ -54,7 +54,7 @@ export default {
         }
     },
 
-    async login (req, res) {
+    async login(req, res) {
         /**
         #swagger.tags = ['Auth']
         #swagger.requestBody = {
@@ -66,8 +66,8 @@ export default {
         const { email, password } = req.body;
 
         try {
-            const userData = await loginUser({email, password});
-    
+            const userData = await loginUser({ email, password });
+
             res.cookie(
                 "token",
                 userData,
@@ -91,21 +91,24 @@ export default {
     async logout(_req, res) {
         /**
          #swagger.tags = ['Auth']
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
         res.cookie(
             "token",
             " ",
             {
-              maxAge: 0
+                maxAge: 0
             }
-          );
-        
+        );
+
         res.status(200).json({
             message: "Logout Berhasil"
         });
     },
 
-    async forgotPassword (req, res) {
+    async forgotPassword(req, res) {
         /**
         #swagger.tags = ['Auth']
         #swagger.requestBody = {
@@ -126,7 +129,7 @@ export default {
         }
     },
 
-    async resetPassword (req, res) {
+    async resetPassword(req, res) {
         /**
          #swagger.tags = ['Auth']
          #swagger.requestBody = {

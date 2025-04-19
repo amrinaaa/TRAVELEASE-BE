@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma.client.js";
-import { 
-    getAuth, 
+import {
+    getAuth,
     signInWithEmailAndPassword,
 } from "../../../firebase/config.js";
 
@@ -9,13 +9,13 @@ import { generateToken } from "../../utils/jwt.js";
 
 export const loginUser = async ({ email, password }) => {
     try {
-        const userIdentifier = await prisma.user.findUnique({ where: {email} });
-        if(!userIdentifier){
+        const userIdentifier = await prisma.user.findUnique({ where: { email } });
+        if (!userIdentifier) {
             throw new Error("email or password failed");
         };
 
         const validatePassword = encrypt(password) === userIdentifier.password;
-        if(!validatePassword){
+        if (!validatePassword) {
             throw new Error("email or password failed")
         };
 
@@ -34,7 +34,7 @@ export const loginUser = async ({ email, password }) => {
             role: userIdentifier.role,
         })
 
-        return token;      
+        return token;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -77,7 +77,7 @@ export const loginUser = async ({ email, password }) => {
 //             role: userIdentifier.role,
 //         })
 
-//         return token;      
+//         return token;
 //     } catch (error) {
 //         throw new Error(error.message);
 //     }

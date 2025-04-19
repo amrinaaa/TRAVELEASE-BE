@@ -19,6 +19,13 @@ const doc = {
     ],
 
     components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: "http",
+                scheme: "bearer"
+            },
+        },
+
         schemas: {
             LoginRequest: {
                 email: "example@gmail.com",
@@ -98,4 +105,4 @@ const doc = {
 
 const outputFile = "./swagger_output.json";
 const endpointsFiles = ["../routes/api.js"];
-swaggerAutogen({openapi: "3.0.0"})(outputFile, endpointsFiles, doc);
+swaggerAutogen({ openapi: "3.0.0" })(outputFile, endpointsFiles, doc);
