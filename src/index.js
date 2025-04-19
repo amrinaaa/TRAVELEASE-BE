@@ -14,6 +14,14 @@ async function init() {
         const PORT = 3000;
 
         app.use(cors({
+            origin: function (origin, callback) {
+                const allowedOrigins = 'https://localhost:5173';
+                if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
             credentials: true,
         }));
 
