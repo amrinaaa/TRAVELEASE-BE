@@ -65,7 +65,6 @@ router.delete('/airportImage/:id', authMiddleware, deleteFileController.deleteAi
 
 // Hotels
 router.get('/hotels', hotelControllers.getHotel);
-router.get('/hotel/:hotelId', hotelControllers.getHotelById);
-// router.get('/hotel/:hotelId/rooms?', hotelControllers.getAvailableRoom);
+router.get('/hotel/:id', hotelControllers.getHotelById);
 
 export default router;

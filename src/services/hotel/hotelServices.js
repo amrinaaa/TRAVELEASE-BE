@@ -4,13 +4,17 @@ export default {
     async getHotelService () {
     try {
         const hotels = await prisma.hotel.findMany({
-            include: {
+            select:{
+                id: true,
+                name: true,
+                description: true,
+                contact: true,
+                address: true,
                 location: true,
                 hotelImages: true,
-                hotelPartners: true,
-                roomTypes: true,
             }
         }); 
+
         return hotels;
         } catch (error) {
             console.error("Error fetching hotels:", error);
@@ -19,14 +23,15 @@ export default {
     },
 
     async getHotelByIdService (id) {
-    try {
+        if (!id) {
+            throw new Error("Hotel ID is required");
+        }
+        try {
         const hotel = await prisma.hotel.findUnique({
             where: { id },
             include: {
                 location: true,
                 hotelImages: true,
-                hotelPartners: true,
-                roomTypes: true,
             }
         }); 
         return hotel;

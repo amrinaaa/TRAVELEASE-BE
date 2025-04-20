@@ -21,7 +21,6 @@ async function main() {
         data: [
             { name: "Mitra A", email: "mitraa@example.com", password: "hashedpassword1", role: "MITRA_PENERBANGAN", currentAmount: 0, profilePicture: "" },
             { name: "Mitra B", email: "mitrab@example.com", password: "hashedpassword2", role: "MITRA_PENERBANGAN", currentAmount: 0, profilePicture: "" },
-            { name : "Mitra C", email: "mitrac@example.com", password: "hashedpassword3", role: "MITRA_PENERBANGAN", currentAmount: 0, profilePicture: "" },
             { name: "Admin", email: "admin@example.com", password: "hashedpassword3", role: "ADMIN", currentAmount: 0, profilePicture: "" },
             { name: "Customer", email: "customer@example.com", password: "hashedpassword4", role: "USER", currentAmount: 0, profilePicture: "" }
         ]
@@ -32,36 +31,14 @@ async function main() {
             { name: "Soekarno-Hatta International Airport", code: "CGK", city: "Jakarta" },
             { name: "Ngurah Rai International Airport", code: "DPS", city: "Bali" },
             { name: "Juanda International Airport", code: "SUB", city: "Surabaya" },
-            { name: "Adisutjipto International Airport", code: "JOG", city: "Yogyakarta" },
-            { name: "Kualanamu International Airport", code: "KNO", city: "Medan" },
-            { name: "Sultan Hasanuddin International Airport", code: "UPG", city: "Makassar" },
-            { name: "Sultan Syarif Kasim II International Airport", code: "PKU", city: "Pekanbaru" },
-            { name: "Husein Sastranegara International Airport", code: "BDO", city: "Bandung" },
-            { name: "Minangkabau International Airport", code: "PDG", city: "Padang" },
-            { name: "Sultan Mahmud Badaruddin II International Airport", code: "PLM", city: "Palembang" },
-            { name: "Sultan Iskandar Muda International Airport", code: "BTJ", city: "Banda Aceh" },
-            { name: "Sultan Thaha Airport", code: "DJB", city: "Jambi" },
-            { name: "Sultan Aji Muhammad Sulaiman Airport", code: "BPN", city: "Balikpapan" },
-            { name: "Sam Ratulangi International Airport", code: "MDC", city: "Manado" }
+            { name: "Adisutjipto International Airport", code: "JOG", city: "Yogyakarta" }
         ]
     });
     
     await prisma.airline.createMany({
         data: [
             { name: "Garuda Indonesia", description: "National airline of Indonesia" },
-            { name: "Lion Air", description: "Low-cost airline in Indonesia" },
-            { name: "Batik Air", description: "Full-service airline under Lion Air Group" },
-            { name: "Citilink", description: "Low-cost airline under Garuda Indonesia" },
-            { name: "Sriwijaya Air", description: "Full-service airline in Indonesia" },
-            { name: "NAM Air", description: "Low-cost airline under Sriwijaya Air" },
-            { name: "Wings Air", description: "Low-cost airline under Lion Air Group" },
-            { name: "AirAsia Indonesia", description: "Low-cost airline in Indonesia" },
-            { name: "Trigana Air", description: "Regional airline in Indonesia" },
-            { name: "Susi Air", description: "Regional airline in Indonesia" },
-            { name: "Indonesia AirAsia", description: "Low-cost airline in Indonesia" },
-            { name: "Xpress Air", description: "Regional airline in Indonesia" },
-            { name: "Jatayu Airlines", description: "Regional airline in Indonesia" },
-            { name: "Kalstar Aviation", description: "Regional airline in Indonesia" }
+            { name: "Lion Air", description: "Low-cost airline in Indonesia" }
         ]
     });
 
@@ -74,10 +51,6 @@ async function main() {
             {
                 airlineId: (await prisma.airline.findFirst({ where: { name: "Lion Air" } }))?.id,
                 partnerId: (await prisma.user.findFirst({ where: { email: "mitrab@example.com" } }))?.id
-            },
-            {
-                airlineId: (await prisma.airline.findFirst({ where: { name: "Batik Air" } }))?.id,
-                partnerId: (await prisma.user.findFirst({ where: { email: "mitrac@example.com" } }))?.id
             }
         ]
     });
@@ -85,19 +58,7 @@ async function main() {
     await prisma.planeType.createMany({
         data: [
             { name: "Boeing 737", manufacture: "Boeing" },
-            { name: "Airbus A320", manufacture: "Airbus" },
-            { name: "ATR 72", manufacture: "ATR" },
-            { name: "Boeing 777", manufacture: "Boeing" },
-            { name: "Airbus A330", manufacture: "Airbus" },
-            { name: "ATR 42", manufacture: "ATR" },
-            { name: "Boeing 787", manufacture: "Boeing" },
-            { name: "Airbus A350", manufacture: "Airbus" },
-            { name: "ATR 82", manufacture: "ATR" },
-            { name: "Boeing 747", manufacture: "Boeing" },
-            { name: "Airbus A380", manufacture: "Airbus" },
-            { name: "ATR 92", manufacture: "ATR" },
-            { name: "Boeing 767", manufacture: "Boeing" },
-            { name: "Airbus A340", manufacture: "Airbus" },
+            { name: "Airbus A320", manufacture: "Airbus" }
         ]
     });
 

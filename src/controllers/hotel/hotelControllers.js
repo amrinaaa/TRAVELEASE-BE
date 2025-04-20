@@ -32,23 +32,5 @@ export default {
                 data: null,
             });
         };
-    },
-
-    async getAvailableRoom (req, res) {
-        const { hotelId } = req.params;
-        const { checkInDate, checkOutDate } = req.query;
-        try {
-            const availableRooms = await hotelServices.getAvailableRoomService(hotelId, checkInDate, checkOutDate);
-            res.status(200).json({
-                message: "Get available rooms successfully",
-                data: availableRooms,
-            });
-        }
-        catch (error) {
-            res.status(400).json({
-                message: error.message,
-                data: null,
-            });
-        };
     }
 };
