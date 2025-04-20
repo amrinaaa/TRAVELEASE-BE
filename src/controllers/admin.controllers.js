@@ -228,7 +228,7 @@ export default {
             "bearerAuth": []
          }]
          */
-        const uid = req.body;
+        const { uid } = req.body;
         try {
             const result = await deleteUserService(uid);
             res.status(200).json({

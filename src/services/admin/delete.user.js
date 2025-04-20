@@ -3,11 +3,20 @@ import firebaseAdmin from "../../../firebase/config.js";
 
 export const deleteUserService = async (uid) => {
     try {
-        await firebaseAdmin.admin.auth().deleteUser(uid);
+        const existingUser = await prisma.user.findUnique({
+            where: {
+                id: uid,
+            },
+        });
+        if (!existingUser) {
+            throw new Error("user not found");
+        };
+
+        await firebaseAdmin.admin.auth().deleteUser(existingUser.id);
 
         await prisma.user.delete({
             where: {
-                id: uid,
+                id: existingUser.id,
             }
         });
 
@@ -15,6 +24,6 @@ export const deleteUserService = async (uid) => {
             message: "Removing partner successful",
         };
     } catch (error) {
-        throw new Error(error.message);   
+        throw new Error(error.message);
     }
 };

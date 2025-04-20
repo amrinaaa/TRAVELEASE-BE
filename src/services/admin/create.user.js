@@ -1,46 +1,46 @@
 import prisma from "../../../prisma/prisma.client.js";
-import firebaseAdmin from "../../../firebase/config.js";
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+} from "../../../firebase/config.js";
 import { encrypt } from "../../utils/encrypt.js";
 
 export const createUser = async ({
     name, email, password, role
 }) => {
     try {
-        const existingUserPrisma = await prisma.user.findUnique({ where: {email} });
-        if(existingUserPrisma){
-            throw new Error("email already registered")
-        };
+        const existingUserPrisma = await prisma.user.findUnique({ where: { email } });
+        if (existingUserPrisma) {
+            throw new Error("Email already registered");
+        }
+
+        const auth = getAuth();
+        let userCredential;
 
         try {
-            await firebaseAdmin.admin.auth().getUserByEmail(email);
-            throw new Error("email already registered");
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
         } catch (error) {
-            if (error.code !== "auth/user-not-found") {
-                throw error;
+            if (error.code === "auth/email-already-in-use") {
+                throw new Error("Email already registered");
             }
-        };
+            throw new Error(error.message);
+        }
 
-        password= encrypt(password);
+        const uid = userCredential.user.uid;
+        const hashedPassword = encrypt(password);
 
-        const userFirebase = await firebaseAdmin.admin.auth().createUser({
-            email, password
-        });
-        
-        const userPrisma = await prisma.user.create({
+        const createdUser = await prisma.user.create({
             data: {
-                id: userFirebase.uid,
+                id: uid,
                 name,
                 email,
-                password,
+                password: hashedPassword,
                 role,
             },
         });
-        
-        return { 
-            user: userPrisma, 
-        };
 
+        return { user: createdUser };
     } catch (error) {
-       throw new Error(error.message)
+        throw new Error(error.message)
     }
 }

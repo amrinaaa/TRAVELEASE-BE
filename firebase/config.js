@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import { 
+import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -18,14 +18,14 @@ const app = initializeApp(FIREBASE_CONFIG);
 const serviceAccount = JSON.parse(FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  credential: admin.credential.cert(serviceAccount),
+});
 
 export default {
-    app, admin
+  app, admin
 };
 
-export { 
+export {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
