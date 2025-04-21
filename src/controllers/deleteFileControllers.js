@@ -4,6 +4,9 @@ export default {
     async deleteProfileImage(req, res) {
         /**
          #swagger.tags = ['User']
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
         try {
             const id = res.locals.payload.id;
@@ -27,6 +30,9 @@ export default {
     async deleteHotelImage(req, res) {
         /**
          #swagger.tags = ['Hotel']
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
         try {
             const imageId = req.params.id;
@@ -52,6 +58,9 @@ export default {
     async deleteRoomImage(req, res) {
         /**
          #swagger.tags = ['Hotel']
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
         try {
             const imageId = req.params.id;

@@ -7,7 +7,7 @@ import { topupService } from "../services/admin/topup.js";
 
 
 export default {
-    async addMitra (req, res) {
+    async addMitra(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.requestBody = {
@@ -15,12 +15,15 @@ export default {
             schema: {
                 $ref: "#/components/schemas/AddMitraRequest"
             }
-         }
+         },
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
         const { name, email, password, role } = req.body;
         try {
-            const mitra = await createUser({name, email, password, role});
-            
+            const mitra = await createUser({ name, email, password, role });
+
             res.status(200).json({
                 message: "Partner added successfully",
                 data: mitra,
@@ -33,7 +36,7 @@ export default {
         };
     },
 
-    async getAllMitra (req, res) {
+    async getAllMitra(req, res) {
         /**
         #swagger.tags = ['Admin']
         #swagger.parameters['role'] = {
@@ -42,11 +45,14 @@ export default {
             schema: {
                 $ref: "#/components/schemas/GetMitraRequest"
             }
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
         const role = req.query.role;
         try {
-            const result = await getUsersService({role});
+            const result = await getUsersService({ role });
             res.status(200).json({
                 data: result,
             });
@@ -58,7 +64,7 @@ export default {
         }
     },
 
-    async searchMitra (req, res) {
+    async searchMitra(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.parameters['identifier','role'] = {
@@ -67,11 +73,14 @@ export default {
             schema: {
                 $ref: "#/components/schemas/SearchMitraRequest"
             }
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
-        const {identifier, role} = req.query;
+        const { identifier, role } = req.query;
         try {
-            const result = await searchUserService({identifier, role});
+            const result = await searchUserService({ identifier, role });
             res.status(200).json({
                 data: result,
             });
@@ -99,7 +108,7 @@ export default {
     //     };
     // },
 
-    async addUser (req, res) {
+    async addUser(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.requestBody = {
@@ -107,30 +116,36 @@ export default {
             schema: {
                 $ref: "#/components/schemas/AddUsersRequest"
             }
-         }
+         },
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
-         const { name, email, password } = req.body;
-         try {
-             const mitra = await createUser({name, email, password, role: "USER"});
-             
-             res.status(200).json({
-                 message: "User added successfully",
-                 data: mitra,
-             });
-         } catch (error) {
-             res.status(400).json({
-                 message: error.message,
-                 data: null,
-             });
-         };
+        const { name, email, password } = req.body;
+        try {
+            const mitra = await createUser({ name, email, password, role: "USER" });
+
+            res.status(200).json({
+                message: "User added successfully",
+                data: mitra,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
     },
 
-    async getUsers (req, res) {
+    async getUsers(req, res) {
         /**
         #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
         try {
-            const result = await getUsersService({role: "USER"});
+            const result = await getUsersService({ role: "USER" });
             res.status(200).json({
                 data: result,
             });
@@ -142,7 +157,7 @@ export default {
         }
     },
 
-    async searchUser (req, res) {
+    async searchUser(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.parameters['identifier'] = {
@@ -152,10 +167,13 @@ export default {
                 $ref: "#/components/schemas/SearchUsersRequest"
             }
         }
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
         const identifier = req.query.identifier;
         try {
-            const result = await searchUserService({identifier, role: "USER"});
+            const result = await searchUserService({ identifier, role: "USER" });
             res.status(200).json({
                 data: result,
             });
@@ -167,7 +185,7 @@ export default {
         };
     },
 
-    async editUser (req, res) {
+    async editUser(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.requestBody = {
@@ -176,8 +194,11 @@ export default {
                 $ref: "#/components/schemas/EditUsersRequest"
             }
          }
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
-        const {uid, name, email} = req.body;
+        const { uid, name, email } = req.body;
         console.log("Received request data:", { uid, name, email });
         try {
             const result = await editUserService(uid, name, email);
@@ -194,7 +215,7 @@ export default {
         }
     },
 
-    async deleteUser (req, res) {
+    async deleteUser(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.requestBody = {
@@ -203,22 +224,25 @@ export default {
                 $ref: "#/components/schemas/DeleteUsersRequest"
             }
          }
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
-         const uid = req.body;
-         try {
-             const result = await deleteUserService(uid);
-             res.status(200).json({
-                 result,
-             });
-         } catch (error) {
+        const { uid } = req.body;
+        try {
+            const result = await deleteUserService(uid);
+            res.status(200).json({
+                result,
+            });
+        } catch (error) {
             res.status(400).json({
                 message: error.message,
                 data: null,
             });
-         };
+        };
     },
 
-    async topup (req, res) {
+    async topup(req, res) {
         /**
          #swagger.tags = ['Admin']
          #swagger.requestBody = {
@@ -226,9 +250,12 @@ export default {
             schema: {
                 $ref: "#/components/schemas/TopupRequest"
             }
-         }
+         },
+         #swagger.security = [{
+            "bearerAuth": []
+         }]
          */
-        const {uid, amount, type} = req.body;
+        const { uid, amount, type } = req.body;
         try {
             const result = await topupService(uid, amount, type)
             res.status(200).json({

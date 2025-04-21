@@ -22,7 +22,10 @@ export default {
                 }
             }
             }
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
         const file = req.file;
         const id = res.locals.payload.id;
@@ -64,7 +67,10 @@ export default {
                 }
             }
             }
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
         const file = req.file;
         const { hotelId } = req.params;
@@ -104,7 +110,10 @@ export default {
                 }
             }
             }
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
         const file = req.file;
         const { roomId } = req.params;
