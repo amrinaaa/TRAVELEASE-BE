@@ -897,6 +897,32 @@
           }
         ]
       }
+    },
+    "/planes": {
+      "get": {
+        "tags": [
+          "Penerbangan"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mitraId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetPlanesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1141,6 +1167,18 @@
         },
         "xml": {
           "name": "TopupRequest"
+        }
+      },
+      "GetPlanesRequest": {
+        "type": "object",
+        "properties": {
+          "mitraId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetPlanesRequest"
         }
       }
     }

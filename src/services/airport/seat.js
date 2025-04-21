@@ -30,8 +30,8 @@ export default {
           categoryId: category.id,
           categoryName: category.name,
           price: category.price,
-          availableSeats: category.seats.filter(seat => !bookedSeatIds.has(seat.id)).length,
           totalSeats: category.seats.length,
+          availableSeats: category.seats.filter(seat => !bookedSeatIds.has(seat.id)).length,
           seats: category.seats.map(seat => {
             return {
               id: seat.id,
@@ -43,8 +43,8 @@ export default {
       });
 
       return {
-        totalAvailableSeats: allSeatIds.length - bookedSeatIds.size,
         totalSeats: allSeatIds.length,
+        totalAvailableSeats: allSeatIds.length - bookedSeatIds.size,
         bookedSeats: bookedSeatIds.size,
         seatCategories: formattedCategories
       }

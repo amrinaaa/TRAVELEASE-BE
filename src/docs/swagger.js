@@ -99,6 +99,17 @@ const doc = {
                 type: "adding",
             },
 
+            //sementara saja
+            GetPlanesRequest: {
+                mitraId: "",
+            },
+
+            // AddSeatAvailabilityRequest: {
+            //     mitraId: "",
+            //     planeId: "",
+            //     seatCategoryId: "",
+            //     seatNames: ["A1", "B1"],
+            // },
         },
     },
 };

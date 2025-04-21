@@ -1,9 +1,43 @@
 import prisma from "../../../prisma/prisma.client.js";
 
 export default {
+    async getPlanesService(mitraId) {
+        try {
+            const partnerRelation = await prisma.airlinePartner.findFirst({
+                where: {
+                    partnerId: mitraId,
+                }
+            });
+            if (!partnerRelation.airlineId) {
+                throw new Error('Airline not found')
+            };
+
+            const plane = await prisma.plane.findMany({
+                where: {
+                    airlineId: partnerRelation.airlineId
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    planeType: {
+                        select: {
+                            name: true,
+                            manufacture: true,
+                        },
+                    },
+                },
+            });
+
+            return plane;
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
+    //seharusnya udah bisa di coba, tapi buat endpoint untuk melihat daftar pesawatnya dulu
     async addSeatAvailabilityService(
         mitraId,
-        airlineId,
+        // airlineId,
         planeId,
         seatCategoryId,
         seatNames,
@@ -12,17 +46,17 @@ export default {
             const partnerRelation = await prisma.airlinePartner.findFirst({
                 where: {
                     partnerId: mitraId,
-                    airlineId: airlineId
+                    // airlineId: airlineId
                 }
             });
-            if (!partnerRelation) {
+            if (!partnerRelation.airlineId) {
                 throw new Error('Anda tidak memiliki akses ke maskapai ini')
             };
 
             const plane = await prisma.plane.findFirst({
                 where: {
                     id: planeId,
-                    airlineId: airlineId
+                    airlineId: partnerRelation.airlineId
                 }
             });
             if (!plane) {
@@ -36,6 +70,7 @@ export default {
                 }
             });
 
+            //jika ingin dibuat agar bisa menambahkan kategori didalam if buat daftar kategorinya
             if (!seatCategory) {
                 throw new Error('Kategori kursi tidak ditemukan untuk pesawat ini')
             };
