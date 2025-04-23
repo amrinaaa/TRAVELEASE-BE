@@ -918,8 +918,50 @@
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "500": {
             "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/seats": {
+      "post": {
+        "tags": [
+          "Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+              }
+            }
           }
         }
       }
@@ -1179,6 +1221,36 @@
         },
         "xml": {
           "name": "GetPlanesRequest"
+        }
+      },
+      "AddSeatAvailabilityRequest": {
+        "type": "object",
+        "properties": {
+          "mitraId": {
+            "type": "string",
+            "example": ""
+          },
+          "planeId": {
+            "type": "string",
+            "example": ""
+          },
+          "seatCategoryId": {
+            "type": "string",
+            "example": ""
+          },
+          "seatNames": {
+            "type": "array",
+            "example": [
+              "A1",
+              "B1"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "xml": {
+          "name": "AddSeatAvailabilityRequest"
         }
       }
     }

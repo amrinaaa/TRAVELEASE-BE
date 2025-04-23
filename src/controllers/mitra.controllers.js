@@ -10,7 +10,10 @@ export default {
             schema: {
                 $ref: "#/components/schemas/GetPlanesRequest"
             }
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
         */
         const mitraId = req.query.mitraId; //sementara pake body buat test aja, nnti pake payload;
         try {
@@ -27,6 +30,7 @@ export default {
         }
     },
 
+    //sudah berhasil, tinggal di sempurnakan 
     async addSeatAvailability(req, res) {
         /**
         #swagger.tags = ['Penerbangan']
@@ -35,13 +39,14 @@ export default {
             schema: {$ref: "#/components/schemas/AddSeatAvailabilityRequest"}
         }
         */
+
         // const mitraId = res.locals.payload.id;
         const {
             mitraId, //sementara saja karena pake data seeder
 
             // airlineId, //ini bisa didapatkan berdasarkan mitraId
             planeId,   //dari enpoint melihat pesawat (sebelum menambahkan lihat daftar pesawat yang dimiliki)
-            seatCategoryId, //arternatif menggunakan markdown dengan nilai (first class, bisnis, ekonomi) & untuk sementara tidak bisa menambah katergori baru
+            seatCategoryId, //arternatif menggunakan markdown dengan nilai (first class, bisnis, ekonomi) bukan id & untuk sementara tidak bisa menambah katergori baru
             seatNames //sebuah list / array
         } = req.body;
 

@@ -104,12 +104,12 @@ const doc = {
                 mitraId: "",
             },
 
-            // AddSeatAvailabilityRequest: {
-            //     mitraId: "",
-            //     planeId: "",
-            //     seatCategoryId: "",
-            //     seatNames: ["A1", "B1"],
-            // },
+            AddSeatAvailabilityRequest: {
+                mitraId: "",
+                planeId: "",
+                seatCategoryId: "",
+                seatNames: ["A1", "B1"],
+            },
         },
     },
 };

@@ -39,7 +39,7 @@ export default {
         mitraId,
         // airlineId,
         planeId,
-        seatCategoryId,
+        seatCategoryId, //seharusnya category name bukan id
         seatNames,
     ) {
         try {
@@ -63,6 +63,7 @@ export default {
                 throw new Error('Pesawat tidak ditemukan atau bukan milik maskapai Anda')
             };
 
+            //disini ambil id nya, berdasarkan name dan planeId
             const seatCategory = await prisma.seatCategory.findFirst({
                 where: {
                     id: seatCategoryId,
@@ -70,7 +71,9 @@ export default {
                 }
             });
 
-            //jika ingin dibuat agar bisa menambahkan kategori didalam if buat daftar kategorinya
+            //jika ingin menambahkan kursi yg dari ketergori yang belum ada bisa di buat didalam IF
+            //tujuannya agar ketika mitra menambah pesawat baru,
+            //cukup pakai endpoint/service ini
             if (!seatCategory) {
                 throw new Error('Kategori kursi tidak ditemukan untuk pesawat ini')
             };
@@ -78,7 +81,6 @@ export default {
             const createdSeats = [];
 
             for (const seatName of seatNames) {
-                // Periksa apakah kursi dengan nama tersebut sudah ada
                 const existingSeat = await prisma.seat.findFirst({
                     where: {
                         seatCategoryId: seatCategoryId,
@@ -94,7 +96,6 @@ export default {
                     continue;
                 }
 
-                // Buat kursi baru
                 const newSeat = await prisma.seat.create({
                     data: {
                         seatCategoryId: seatCategoryId,
