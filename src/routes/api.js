@@ -66,5 +66,8 @@ router.delete('/roomImage/:id', authMiddleware, deleteFileController.deleteRoomI
 //perbaiki lagi penamaan path nya
 router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
 router.post('/seats', mitraControllers.addSeatAvailability);
+router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
+router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
+router.get('/plane-type', mitraControllers.getPlaneType);
 
 export default router;

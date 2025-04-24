@@ -1,6 +1,121 @@
 import prisma from "../../../prisma/prisma.client.js";
 
 export default {
+    async addAirlineService(mitraId, name, description) {
+        try {
+            const existingAirline = await prisma.airline.findFirst({
+                where: { name }
+            });
+
+            if (existingAirline) {
+                throw new Error('Airline is exist')
+            };
+
+            const result = await prisma.$transaction(async (tx) => {
+                // Buat airline baru
+                const newAirline = await tx.airline.create({
+                    data: {
+                        name,
+                        description
+                    }
+                });
+
+                // Periksa apakah mitra/partner ada
+                const partner = await tx.user.findUnique({
+                    where: { id: mitraId }
+                });
+
+                if (!partner) {
+                    throw new Error('Partner not found');
+                }
+
+                // Buat relasi airlinePartner
+                await tx.airlinePartner.create({
+                    data: {
+                        airlineId: newAirline.id,
+                        partnerId: mitraId
+                    }
+                });
+
+                // Ambil data airline lengkap dengan relasi
+                const airlineWithRelations = await tx.airline.findUnique({
+                    where: { id: newAirline.id },
+                    include: {
+                        airlinePartners: {
+                            include: {
+                                partner: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                return airlineWithRelations;
+            });
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
+    async getAirlinesService(mitraId) {
+        try {
+            const mitra = await prisma.user.findUnique({
+                where: { id: mitraId }
+            });
+
+            if (!mitra) {
+                throw new Error('Partner not found');
+            }
+
+            const mitraAirlines = await prisma.airlinePartner.findMany({
+                where: {
+                    partnerId: mitraId
+                },
+                include: {
+                    airline: {
+                        include: {
+                            planes: true
+                        }
+                    }
+                }
+            });
+
+            // Format output agar lebih mudah dikonsumsi frontend
+            const formattedAirlines = mitraAirlines.map(item => ({
+                id: item.airline.id,
+                name: item.airline.name,
+                description: item.airline.description,
+                planes: item.airline.planes,
+                partnershipId: item.id
+            }));
+
+            return formattedAirlines;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async getPlaneTypesService() {
+        try {
+            const planeTypes = await prisma.planeType.findMany({
+                orderBy: {
+                    name: 'asc'
+                }
+            });
+
+            return planeTypes;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async getPlanesService(mitraId) {
         try {
             const partnerRelation = await prisma.airlinePartner.findFirst({

@@ -1,9 +1,76 @@
 import mitraPenerbangan from "../services/mitra/mitra.penerbangan.js";
 
 export default {
+    async addAirline(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/AddAirlineRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const mitraId = res.locals.payload.id;
+        const { name, description } = req.body;
+        try {
+            const result = await mitraPenerbangan.addAirlineService(mitraId, name, description);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: "Internal Server Error",
+                data: null,
+            });
+        }
+    },
+
+    async getAirlines(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const mitraId = res.locals.payload.id;
+        try {
+            const result = await mitraPenerbangan.getAirlinesService(mitraId);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async getPlaneType(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        */
+        try {
+            const planeTypes = await mitraPenerbangan.getPlaneTypesService();
+            res.status(200).json({
+                message: "Success",
+                data: planeTypes,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
     async getPlanes(req, res) {
         /**
-        #swagger.tags = ['Penerbangan']
+        #swagger.tags = ['Mitra Penerbangan']
         #swagger.parameters['mitraId'] = {
             in: 'query',
             required: true,
@@ -23,17 +90,17 @@ export default {
                 data: result,
             });
         } catch (error) {
-            return res.status(500).json({
-                message: "Internal Server Error",
+            return res.status(400).json({
+                message: error.message,
                 data: null,
             });
-        }
+        };
     },
 
     //sudah berhasil, tinggal di sempurnakan 
     async addSeatAvailability(req, res) {
         /**
-        #swagger.tags = ['Penerbangan']
+        #swagger.tags = ['Mitra Penerbangan']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/AddSeatAvailabilityRequest"}

@@ -110,6 +110,11 @@ const doc = {
                 seatCategoryId: "",
                 seatNames: ["A1", "B1"],
             },
+
+            AddAirlineRequest: {
+                name: "Super Air Jet",
+                description: "Sangat Cepat",
+            },
         },
     },
 };
