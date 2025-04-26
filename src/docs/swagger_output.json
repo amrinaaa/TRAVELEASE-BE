@@ -1047,6 +1047,56 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/plane": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPlaneRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPlaneRequest"
+              }
+            }
           }
         }
       }
@@ -1352,6 +1402,26 @@
         },
         "xml": {
           "name": "AddAirlineRequest"
+        }
+      },
+      "AddPlaneRequest": {
+        "type": "object",
+        "properties": {
+          "planeTypeId": {
+            "type": "string",
+            "example": ""
+          },
+          "airlineId": {
+            "type": "string",
+            "example": ""
+          },
+          "name": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "AddPlaneRequest"
         }
       }
     }

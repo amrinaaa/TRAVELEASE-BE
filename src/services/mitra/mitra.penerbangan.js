@@ -149,40 +149,63 @@ export default {
         };
     },
 
+    async addPlaneService(planeTypeId, airlineId, name) {
+        try {
+            const result = await prisma.plane.create({
+                data: {
+                    planeTypeId,
+                    airlineId,
+                    name,
+                },
+            });
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
+    async addSeatCategoryService(planeId, name, price) {
+        try {
+
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
     //seharusnya udah bisa di coba, tapi buat endpoint untuk melihat daftar pesawatnya dulu
     async addSeatAvailabilityService(
-        mitraId,
-        // airlineId,
         planeId,
-        seatCategoryId, //seharusnya category name bukan id
+        seatCategoryName, //seharusnya category name bukan id
         seatNames,
     ) {
         try {
-            const partnerRelation = await prisma.airlinePartner.findFirst({
-                where: {
-                    partnerId: mitraId,
-                    // airlineId: airlineId
-                }
-            });
-            if (!partnerRelation.airlineId) {
-                throw new Error('Anda tidak memiliki akses ke maskapai ini')
-            };
+            //code ini mungkin bisa untuk admin
 
-            const plane = await prisma.plane.findFirst({
-                where: {
-                    id: planeId,
-                    airlineId: partnerRelation.airlineId
-                }
-            });
-            if (!plane) {
-                throw new Error('Pesawat tidak ditemukan atau bukan milik maskapai Anda')
-            };
+            // const partnerRelation = await prisma.airlinePartner.findFirst({
+            //     where: {
+            //         partnerId: mitraId,
+            //         // airlineId: airlineId
+            //     }
+            // });
+            // if (!partnerRelation.airlineId) {
+            //     throw new Error('Anda tidak memiliki akses ke maskapai ini')
+            // };
+
+            // const plane = await prisma.plane.findFirst({
+            //     where: {
+            //         id: planeId,
+            //         airlineId: partnerRelation.airlineId
+            //     }
+            // });
+            // if (!plane) {
+            //     throw new Error('Pesawat tidak ditemukan atau bukan milik maskapai Anda')
+            // };
 
             //disini ambil id nya, berdasarkan name dan planeId
             const seatCategory = await prisma.seatCategory.findFirst({
                 where: {
-                    id: seatCategoryId,
-                    planeId: planeId
+                    planeId: planeId,
+                    name: seatCategoryName,
                 }
             });
 

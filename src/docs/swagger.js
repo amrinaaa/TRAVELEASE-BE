@@ -115,6 +115,12 @@ const doc = {
                 name: "Super Air Jet",
                 description: "Sangat Cepat",
             },
+
+            AddPlaneRequest: {
+                planeTypeId: "",
+                airlineId: "",
+                name: "",
+            },
         },
     },
 };

@@ -53,6 +53,9 @@ export default {
     async getPlaneType(_req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
         */
         try {
             const planeTypes = await mitraPenerbangan.getPlaneTypesService();
@@ -97,6 +100,48 @@ export default {
         };
     },
 
+    async addPlane(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/AddPlaneRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { planeTypeId, airlineId, name } = req.body;
+        try {
+            const result = await mitraPenerbangan.addPlaneService(planeTypeId, airlineId, name);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            })
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async addSeatCategory(req, res) {
+        const { planeId, name, price } = req.body;
+        try {
+            const result = await mitraPenerbangan.addSeatCategoryService(planeId, name, price);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
     //sudah berhasil, tinggal di sempurnakan 
     async addSeatAvailability(req, res) {
         /**
@@ -106,23 +151,17 @@ export default {
             schema: {$ref: "#/components/schemas/AddSeatAvailabilityRequest"}
         }
         */
-
-        // const mitraId = res.locals.payload.id;
+        // const mitraId = res.locals.payload.id;   tidak perlu sepertinya
         const {
-            mitraId, //sementara saja karena pake data seeder
-
-            // airlineId, //ini bisa didapatkan berdasarkan mitraId
-            planeId,   //dari enpoint melihat pesawat (sebelum menambahkan lihat daftar pesawat yang dimiliki)
-            seatCategoryId, //arternatif menggunakan markdown dengan nilai (first class, bisnis, ekonomi) bukan id & untuk sementara tidak bisa menambah katergori baru
+            planeId,
+            seatCategoryName, //bisa dibuat markdown
             seatNames //sebuah list / array
         } = req.body;
 
         try {
             const result = await mitraPenerbangan.addSeatAvailabilityService(
-                mitraId,
-                // airlineId,
                 planeId,
-                seatCategoryId,
+                seatCategoryName,
                 seatNames,
             );
 
