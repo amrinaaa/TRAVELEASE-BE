@@ -91,10 +91,15 @@
           "200": {
             "description": "OK"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/forgot-password": {
@@ -174,8 +179,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -237,8 +250,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/partners": {
@@ -266,8 +287,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/user": {
@@ -285,8 +314,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -327,8 +364,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "patch": {
         "tags": [
@@ -344,8 +389,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -376,8 +429,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -410,8 +471,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/amount": {
@@ -429,8 +498,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -580,13 +657,18 @@
           "201": {
             "description": "Created"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -620,13 +702,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/hotelImage/{hotelId}": {
@@ -649,13 +736,18 @@
           "201": {
             "description": "Created"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -698,13 +790,18 @@
           "201": {
             "description": "Created"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -750,13 +847,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/roomImage/{id}": {
@@ -782,17 +884,231 @@
           "400": {
             "description": "Bad Request"
           },
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/planes": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mitraId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetPlanesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/seats": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/airline": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAirlineRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAirlineRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/airlines": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/plane-type": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/plane": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPlaneRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPlaneRequest"
+              }
+            }
           }
         }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "schemas": {
       "LoginRequest": {
         "type": "object",
@@ -1028,6 +1344,84 @@
         },
         "xml": {
           "name": "TopupRequest"
+        }
+      },
+      "GetPlanesRequest": {
+        "type": "object",
+        "properties": {
+          "mitraId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetPlanesRequest"
+        }
+      },
+      "AddSeatAvailabilityRequest": {
+        "type": "object",
+        "properties": {
+          "mitraId": {
+            "type": "string",
+            "example": ""
+          },
+          "planeId": {
+            "type": "string",
+            "example": ""
+          },
+          "seatCategoryId": {
+            "type": "string",
+            "example": ""
+          },
+          "seatNames": {
+            "type": "array",
+            "example": [
+              "A1",
+              "B1"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "xml": {
+          "name": "AddSeatAvailabilityRequest"
+        }
+      },
+      "AddAirlineRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Super Air Jet"
+          },
+          "description": {
+            "type": "string",
+            "example": "Sangat Cepat"
+          }
+        },
+        "xml": {
+          "name": "AddAirlineRequest"
+        }
+      },
+      "AddPlaneRequest": {
+        "type": "object",
+        "properties": {
+          "planeTypeId": {
+            "type": "string",
+            "example": ""
+          },
+          "airlineId": {
+            "type": "string",
+            "example": ""
+          },
+          "name": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "AddPlaneRequest"
         }
       }
     }

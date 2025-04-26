@@ -19,6 +19,9 @@ import deleteFileController from "../controllers/deleteFileControllers.js";
 
 import hotelControllers from "../controllers/hotel/hotelControllers.js";
 
+import mitraControllers from "../controllers/mitra.controllers.js";
+import mitraMiddleware from "../middlewares/mitra.middleware.js";
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -62,12 +65,5 @@ router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, u
 router.delete('/profileImage', authMiddleware, deleteFileController.deleteProfileImage);
 router.delete('/hotelImage/:id', authMiddleware, deleteFileController.deleteHotelImage);
 router.delete('/roomImage/:id', authMiddleware, deleteFileController.deleteRoomImage);
-router.delete('/airportImage/:id', authMiddleware, deleteFileController.deleteAirportImage);
-
-// Hotels
-router.get('/hotels', hotelControllers.getHotel);
-router.get('/city', hotelControllers.getLocation);
-router.get('/hotel/:id', hotelControllers.getHotelByIdLocation);
-router.get('/hotel/:id', hotelControllers.getHotelById);
 
 export default router;

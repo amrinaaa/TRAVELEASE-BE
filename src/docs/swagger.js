@@ -19,6 +19,13 @@ const doc = {
     ],
 
     components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: "http",
+                scheme: "bearer"
+            },
+        },
+
         schemas: {
             LoginRequest: {
                 email: "example@gmail.com",
@@ -92,10 +99,32 @@ const doc = {
                 type: "adding",
             },
 
+            //sementara saja
+            GetPlanesRequest: {
+                mitraId: "",
+            },
+
+            AddSeatAvailabilityRequest: {
+                mitraId: "",
+                planeId: "",
+                seatCategoryId: "",
+                seatNames: ["A1", "B1"],
+            },
+
+            AddAirlineRequest: {
+                name: "Super Air Jet",
+                description: "Sangat Cepat",
+            },
+
+            AddPlaneRequest: {
+                planeTypeId: "",
+                airlineId: "",
+                name: "",
+            },
         },
     },
 };
 
 const outputFile = "./swagger_output.json";
 const endpointsFiles = ["../routes/api.js"];
-swaggerAutogen({openapi: "3.0.0"})(outputFile, endpointsFiles, doc);
+swaggerAutogen({ openapi: "3.0.0" })(outputFile, endpointsFiles, doc);
