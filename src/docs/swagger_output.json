@@ -898,22 +898,12 @@
         ]
       }
     },
-    "/planes": {
+    "/airlines": {
       "get": {
         "tags": [
           "Mitra Penerbangan"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "mitraId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/GetPlanesRequest"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -933,37 +923,6 @@
             "bearerAuth": []
           }
         ]
-      }
-    },
-    "/seats": {
-      "post": {
-        "tags": [
-          "Mitra Penerbangan"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
-              }
-            }
-          }
-        }
       }
     },
     "/airline": {
@@ -1008,33 +967,6 @@
         }
       }
     },
-    "/airlines": {
-      "get": {
-        "tags": [
-          "Mitra Penerbangan"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/plane-type": {
       "get": {
         "tags": [
@@ -1047,6 +979,43 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/planes": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "airlineId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetPlanesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -1095,6 +1064,125 @@
             "application/xml": {
               "schema": {
                 "$ref": "#/components/schemas/AddPlaneRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/seat-category": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatCategoryRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatCategoryRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "planeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetSeatCategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/seats": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
               }
             }
           }
@@ -1349,7 +1437,7 @@
       "GetPlanesRequest": {
         "type": "object",
         "properties": {
-          "mitraId": {
+          "airlineId": {
             "type": "string",
             "example": ""
           }
@@ -1361,10 +1449,6 @@
       "AddSeatAvailabilityRequest": {
         "type": "object",
         "properties": {
-          "mitraId": {
-            "type": "string",
-            "example": ""
-          },
           "planeId": {
             "type": "string",
             "example": ""
@@ -1422,6 +1506,38 @@
         },
         "xml": {
           "name": "AddPlaneRequest"
+        }
+      },
+      "AddSeatCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "planeId": {
+            "type": "string",
+            "example": ""
+          },
+          "name": {
+            "type": "string",
+            "example": ""
+          },
+          "price": {
+            "type": "number",
+            "example": 1000000
+          }
+        },
+        "xml": {
+          "name": "AddSeatCategoryRequest"
+        }
+      },
+      "GetSeatCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "planeId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetSeatCategoryRequest"
         }
       }
     }

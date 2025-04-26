@@ -116,20 +116,11 @@ export default {
         }
     },
 
-    async getPlanesService(mitraId) {
+    async getPlanesService(airlineId) {
         try {
-            const partnerRelation = await prisma.airlinePartner.findFirst({
-                where: {
-                    partnerId: mitraId,
-                }
-            });
-            if (!partnerRelation.airlineId) {
-                throw new Error('Airline not found')
-            };
-
             const plane = await prisma.plane.findMany({
                 where: {
-                    airlineId: partnerRelation.airlineId
+                    airlineId,
                 },
                 select: {
                     id: true,
@@ -166,52 +157,61 @@ export default {
 
     async addSeatCategoryService(planeId, name, price) {
         try {
+            const existingCategory = await prisma.seatCategory.findFirst({
+                where: {
+                    name,
+                }
+            });
 
+            if (existingCategory) {
+                throw new Error("Category is exist");
+            };
+
+            const seatCategory = await prisma.seatCategory.create({
+                data: {
+                    planeId,
+                    name,
+                    price,
+                },
+            });
+
+            return seatCategory;
         } catch (error) {
             throw new Error(error.message);
         };
     },
 
-    //seharusnya udah bisa di coba, tapi buat endpoint untuk melihat daftar pesawatnya dulu
+    async getSeatCategoryService(planeId) {
+        try {
+            const categories = await prisma.seatCategory.findMany({
+                where: {
+                    planeId
+                },
+                select: {
+                    id: true,
+                    name: true,
+                },
+            });
+
+            return categories;
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
     async addSeatAvailabilityService(
         planeId,
-        seatCategoryName, //seharusnya category name bukan id
+        seatCategoryId,
         seatNames,
     ) {
         try {
-            //code ini mungkin bisa untuk admin
-
-            // const partnerRelation = await prisma.airlinePartner.findFirst({
-            //     where: {
-            //         partnerId: mitraId,
-            //         // airlineId: airlineId
-            //     }
-            // });
-            // if (!partnerRelation.airlineId) {
-            //     throw new Error('Anda tidak memiliki akses ke maskapai ini')
-            // };
-
-            // const plane = await prisma.plane.findFirst({
-            //     where: {
-            //         id: planeId,
-            //         airlineId: partnerRelation.airlineId
-            //     }
-            // });
-            // if (!plane) {
-            //     throw new Error('Pesawat tidak ditemukan atau bukan milik maskapai Anda')
-            // };
-
-            //disini ambil id nya, berdasarkan name dan planeId
             const seatCategory = await prisma.seatCategory.findFirst({
                 where: {
                     planeId: planeId,
-                    name: seatCategoryName,
+                    id: seatCategoryId,
                 }
             });
 
-            //jika ingin menambahkan kursi yg dari ketergori yang belum ada bisa di buat didalam IF
-            //tujuannya agar ketika mitra menambah pesawat baru,
-            //cukup pakai endpoint/service ini
             if (!seatCategory) {
                 throw new Error('Kategori kursi tidak ditemukan untuk pesawat ini')
             };

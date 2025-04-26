@@ -74,7 +74,7 @@ export default {
     async getPlanes(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
-        #swagger.parameters['mitraId'] = {
+        #swagger.parameters['airlineId'] = {
             in: 'query',
             required: true,
             schema: {
@@ -85,9 +85,9 @@ export default {
             "bearerAuth": []
          }]
         */
-        const mitraId = req.query.mitraId; //sementara pake body buat test aja, nnti pake payload;
+        const airlineId = req.query.airlineId;
         try {
-            const result = await mitraPenerbangan.getPlanesService(mitraId);
+            const result = await mitraPenerbangan.getPlanesService(airlineId);
             res.status(200).json({
                 message: "Success",
                 data: result,
@@ -127,6 +127,16 @@ export default {
     },
 
     async addSeatCategory(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/AddSeatCategoryRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { planeId, name, price } = req.body;
         try {
             const result = await mitraPenerbangan.addSeatCategoryService(planeId, name, price);
@@ -142,26 +152,56 @@ export default {
         };
     },
 
-    //sudah berhasil, tinggal di sempurnakan 
+    async getSeatCategory(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.parameters['planeId'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/GetSeatCategoryRequest"
+            }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const planeId = req.query.planeId;
+        try {
+            const result = await mitraPenerbangan.getSeatCategoryService(planeId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async addSeatAvailability(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/AddSeatAvailabilityRequest"}
-        }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
         */
-        // const mitraId = res.locals.payload.id;   tidak perlu sepertinya
         const {
             planeId,
-            seatCategoryName, //bisa dibuat markdown
+            seatCategoryId,
             seatNames //sebuah list / array
         } = req.body;
 
         try {
             const result = await mitraPenerbangan.addSeatAvailabilityService(
                 planeId,
-                seatCategoryName,
+                seatCategoryId,
                 seatNames,
             );
 
@@ -170,8 +210,8 @@ export default {
                 data: result,
             });
         } catch (error) {
-            return res.status(500).json({
-                message: "Internal Server Error",
+            return res.status(400).json({
+                message: error.message,
                 data: null,
             });
         }

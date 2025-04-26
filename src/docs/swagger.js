@@ -99,13 +99,11 @@ const doc = {
                 type: "adding",
             },
 
-            //sementara saja
             GetPlanesRequest: {
-                mitraId: "",
+                airlineId: "",
             },
 
             AddSeatAvailabilityRequest: {
-                mitraId: "",
                 planeId: "",
                 seatCategoryId: "",
                 seatNames: ["A1", "B1"],
@@ -120,6 +118,16 @@ const doc = {
                 planeTypeId: "",
                 airlineId: "",
                 name: "",
+            },
+
+            AddSeatCategoryRequest: {
+                planeId: "",
+                name: "",
+                price: 1000000,
+            },
+
+            GetSeatCategoryRequest: {
+                planeId: "",
             },
         },
     },

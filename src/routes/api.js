@@ -64,12 +64,14 @@ router.delete('/roomImage/:id', authMiddleware, deleteFileController.deleteRoomI
 
 //Mitra-Penerbangan
 //perbaiki lagi penamaan path nya
-router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
-router.post('/seats', mitraControllers.addSeatAvailability);
 
-router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
+router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
 router.get('/plane-type', authMiddleware, mitraControllers.getPlaneType);
-router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane); //tinggal testing
+router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
+router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
+router.post('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatCategory);
+router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
+router.post('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatAvailability);
 
 export default router;
