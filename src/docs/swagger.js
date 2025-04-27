@@ -121,6 +121,35 @@ const doc = {
                 airlineId: "",
                 name: "",
             },
+
+            getHotelsRequest:{
+                mitraId: "",
+            },
+
+            getLocationsRequest:{
+                mitraId: "",
+            },
+
+            addHotelRequest: {
+                locationId: "",
+                name: "",
+                description: "",
+                address: "",
+                contact: "",
+            },
+
+            editHotelRequest: {
+                hotelId: "",
+                locationId: "",
+                name: "",
+                description: "",
+                address: "",
+                contact: "",
+            },
+
+            deleteHotelRequest: {
+                hotelId: "",
+            }
         },
     },
 };

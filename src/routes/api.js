@@ -18,6 +18,7 @@ import multer from "multer";
 import deleteFileController from "../controllers/deleteFileControllers.js";
 
 import mitraControllers from "../controllers/mitra.controllers.js";
+import mitraHotelController from "../controllers/mitraHotelController.js";
 import mitraMiddleware from "../middlewares/mitra.middleware.js";
 
 const router = express.Router();
@@ -73,5 +74,12 @@ router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraC
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
 router.get('/plane-type', authMiddleware, mitraControllers.getPlaneType);
 router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane); //tinggal testing
+
+//Mitra-Hotel
+router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
+router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
+router.post('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
+router.patch('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
+router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
 
 export default router;
