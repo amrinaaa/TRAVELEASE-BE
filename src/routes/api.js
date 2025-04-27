@@ -17,11 +17,6 @@ import multer from "multer";
 
 import deleteFileController from "../controllers/deleteFileControllers.js";
 
-import hotelControllers from "../controllers/hotel/hotelControllers.js";
-
-import mitraControllers from "../controllers/mitra.controllers.js";
-import mitraMiddleware from "../middlewares/mitra.middleware.js";
-
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 

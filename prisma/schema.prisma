@@ -188,7 +188,6 @@ model Room {
   id               String            @id @default(cuid())
   roomTypeId       String
   name             String
-  isAvailable      Boolean
   roomType         RoomType          @relation(fields: [roomTypeId], references: [id])
   roomImages       RoomImage[]
   roomReservations RoomReservation[]

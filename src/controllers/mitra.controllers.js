@@ -10,7 +10,7 @@ export default {
         },
         #swagger.security = [{
             "bearerAuth": []
-         }]
+        }]
         */
         const mitraId = res.locals.payload.id;
         const { name, description } = req.body;

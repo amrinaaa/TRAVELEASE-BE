@@ -105,7 +105,8 @@ export default {
                 arrivalAirport: true,
                 plane: {
                     include: {
-                        seatCategories: true
+                        seatCategories: true,
+                        airline: true
                     }
                 }
             }
@@ -139,7 +140,8 @@ export default {
                     arrivalAirport: true,
                     plane: {
                         include: {
-                            seatCategories: true
+                            seatCategories: true,
+                            airline: true
                         }
                     }
                 }
@@ -156,7 +158,7 @@ export default {
                 : "N/A";
     
             return {
-                airline: flight.plane.name,
+                airline: flight.plane.airline.name,
                 departure: {
                     city: flight.departureAirport.city,
                     time: formatTime(flight.departureTime),

@@ -87,47 +87,19 @@ export default {
         try {
             const filters = req.query;
             const flights = await flightsService.filterFlights(filters);
-    
-            // Periksa apakah tidak ada penerbangan keberangkatan dan penerbangan pulang
-            if (
-                !flights ||
-                (flights.departureFlights.length === 0 && flights.returnFlights.length === 0)
-            ) {
-                return res.status(404).json({
-                    message: "Flights not found",
-                    data: null,
-                });
-            }
-    
-            // Periksa jika hanya tidak ada penerbangan keberangkatan
-            if (flights.departureFlights.length === 0) {
-                return res.status(404).json({
-                    message: "No departure flights available",
-                    data: flights.returnFlights,
-                });
-            }
-    
-            // Periksa jika hanya tidak ada penerbangan pulang
-            if (flights.returnFlights.length === 0) {
-                return res.status(404).json({
-                    message: "No return flights available",
-                    data: flights.departureFlights,
-                });
-            }
-    
-            // Jika ada penerbangan, kembalikan hasil
+        
             res.status(200).json({
-                message: "Success",
-                data: flights,
+              success: true,
+              message: "Flights retrieved successfully",
+              data: flights,
             });
-        } catch (error) {
-            console.error("Error:", error);
+          } catch (error) {
             res.status(500).json({
-                message: "Internal Server Error",
-                data: null,
+              success: false,
+              message: error.message,
             });
-        }    
-    }
+          }
+    },
     // async filterByAll (req, res) {
     //     /**
     //     #swagger.tags = ['Flight']
