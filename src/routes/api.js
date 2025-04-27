@@ -17,6 +17,9 @@ import multer from "multer";
 
 import deleteFileController from "../controllers/deleteFileControllers.js";
 
+import mitraControllers from "../controllers/mitra.controllers.js";
+import mitraMiddleware from "../middlewares/mitra.middleware.js";
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -60,5 +63,15 @@ router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, u
 router.delete('/profileImage', authMiddleware, deleteFileController.deleteProfileImage);
 router.delete('/hotelImage/:id', authMiddleware, deleteFileController.deleteHotelImage);
 router.delete('/roomImage/:id', authMiddleware, deleteFileController.deleteRoomImage);
+
+//Mitra-Penerbangan
+//perbaiki lagi penamaan path nya
+router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
+router.post('/seats', mitraControllers.addSeatAvailability);
+
+router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
+router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
+router.get('/plane-type', authMiddleware, mitraControllers.getPlaneType);
+router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane); //tinggal testing
 
 export default router;
