@@ -265,7 +265,7 @@ export default {
             const formatted = customers.map((reservation) => {
                 return {
                 idReservation: reservation.id,
-                userName: reservation.transaction.user.name,
+                name: reservation.transaction.user.name,
                 idRoom: reservation.roomReservations[0]?.room.id || null,
                 roomType: reservation.roomReservations[0]?.room.roomType.typeName || null,
                 startDate: reservation.startDate,
