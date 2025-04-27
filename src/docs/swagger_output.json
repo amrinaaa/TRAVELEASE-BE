@@ -1310,6 +1310,33 @@
           }
         }
       }
+    },
+    "/customers": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1728,6 +1755,18 @@
         },
         "xml": {
           "name": "deleteHotelRequest"
+        }
+      },
+      "getCustomerListRequest": {
+        "type": "object",
+        "properties": {
+          "mitraId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "getCustomerListRequest"
         }
       }
     }

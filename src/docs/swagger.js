@@ -149,7 +149,11 @@ const doc = {
 
             deleteHotelRequest: {
                 hotelId: "",
-            }
+            },
+
+            getCustomerListRequest: {
+                mitraId: "",
+            },
         },
     },
 };

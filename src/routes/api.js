@@ -81,5 +81,6 @@ router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelC
 router.post('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
 router.patch('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
 router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
+router.get('/customers', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getCustomerList);
 
 export default router;
