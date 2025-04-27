@@ -124,10 +124,9 @@ model Ticket {
 }
 
 model Location {
-  id      String  @id @default(cuid())
-  city    String
-  country String
-  hotels  Hotel[]
+  id     String  @id @default(cuid())
+  city   String
+  hotels Hotel[]
 }
 
 model Hotel {
