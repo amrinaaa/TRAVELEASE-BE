@@ -129,6 +129,43 @@ const doc = {
             GetSeatCategoryRequest: {
                 planeId: "",
             },
+
+            GetPlaneSeatsRequest: {
+                planeId: "",
+            },
+
+            DeletePlaneSeatRequest: {
+                seatId: "",
+            },
+
+            getHotelsRequest: {
+                mitraId: "",
+            },
+
+            getLocationsRequest: {
+                mitraId: "",
+            },
+
+            addHotelRequest: {
+                locationId: "",
+                name: "",
+                description: "",
+                address: "",
+                contact: "",
+            },
+
+            editHotelRequest: {
+                hotelId: "",
+                locationId: "",
+                name: "",
+                description: "",
+                address: "",
+                contact: "",
+            },
+
+            deleteHotelRequest: {
+                hotelId: "",
+            }
         },
     },
 };

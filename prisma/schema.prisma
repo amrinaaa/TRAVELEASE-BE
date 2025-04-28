@@ -124,10 +124,9 @@ model Ticket {
 }
 
 model Location {
-  id      String  @id @default(cuid())
-  city    String
-  country String
-  hotels  Hotel[]
+  id     String  @id @default(cuid())
+  city   String
+  hotels Hotel[]
 }
 
 model Hotel {
@@ -188,7 +187,6 @@ model Room {
   id               String            @id @default(cuid())
   roomTypeId       String
   name             String
-  isAvailable      Boolean
   roomType         RoomType          @relation(fields: [roomTypeId], references: [id])
   roomImages       RoomImage[]
   roomReservations RoomReservation[]

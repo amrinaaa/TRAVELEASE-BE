@@ -7,7 +7,7 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
 
 import flightsController from '../controllers/airport/flightsController.js';
-import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
+// import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
 
 import seatsController from "../controllers/airport/seatsController.js";
 
@@ -18,6 +18,7 @@ import multer from "multer";
 import deleteFileController from "../controllers/deleteFileControllers.js";
 
 import mitraControllers from "../controllers/mitra.controllers.js";
+import mitraHotelController from "../controllers/mitraHotelController.js";
 import mitraMiddleware from "../middlewares/mitra.middleware.js";
 
 const router = express.Router();
@@ -47,7 +48,8 @@ router.get('/airport-city', flightsController.getCityFlight);
 router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
 router.get('/flights', flightsController.getFlights);
 // api filter
-router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, flightsController.filterByAll);
+router.get('/flights/filter', flightsController.filterFlights);
+// router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, flightsController.filterByAll);
 
 //route Seat
 router.get('/seats/:flightId', seatsController.getSeat);
@@ -56,6 +58,7 @@ router.get('/seats/:flightId', seatsController.getSeat);
 router.post('/profileImage', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadProfile);
 router.post('/hotelImage/:hotelId', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadHotelImage);
 router.post('/roomImage/:roomId', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadRoomImage);
+router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, uploadMiddleware, uploadController.uploadAirportImage);
 
 // Delete File Image
 router.delete('/profileImage', authMiddleware, deleteFileController.deleteProfileImage);
@@ -72,6 +75,15 @@ router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraCon
 router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
 router.post('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatCategory);
 router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
-router.post('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatAvailability);
+router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
+router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatAvailability);
+router.delete('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlaneSeat);
+
+//Mitra-Hotel
+router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
+router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
+router.post('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
+router.patch('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
+router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
 
 export default router;

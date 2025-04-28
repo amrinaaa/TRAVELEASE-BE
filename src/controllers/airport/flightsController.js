@@ -83,31 +83,48 @@ export default {
         }
     },
 
-    async filterByAll (req, res) {
-        /**
-        #swagger.tags = ['Flight']
-        #swagger.parameters['departureCity', 'arrivalCity', 'departureDate', 'returnDate', 'seatCategory'] = {
-            in: 'query',
-            required: true,
-            schema: {
-                $ref: "#/components/schemas/FilterFLightRequest"
-            }
-        }
-        */
+    async filterFlights(req, res) {
         try {
-            const filters = req.query; 
-            const flights = await flightsService.filterFlightsByAllService(filters);
-    
+            const filters = req.query;
+            const flights = await flightsService.filterFlights(filters);
+        
             res.status(200).json({
-                success: true,
-                message: "Flights fetched successfully",
-                data: flights
+              success: true,
+              message: "Flights retrieved successfully",
+              data: flights,
             });
-        } catch (error) {
+          } catch (error) {
             res.status(500).json({
-                success: false,
-                message: error.message
+              success: false,
+              message: error.message,
             });
-        }
-    }
+          }
+    },
+    // async filterByAll (req, res) {
+    //     /**
+    //     #swagger.tags = ['Flight']
+    //     #swagger.parameters['departureCity', 'arrivalCity', 'departureDate', 'returnDate', 'seatCategory'] = {
+    //         in: 'query',
+    //         required: true,
+    //         schema: {
+    //             $ref: "#/components/schemas/FilterFLightRequest"
+    //         }
+    //     }
+    //     */
+    //     try {
+    //         const filters = req.query; 
+    //         const flights = await flightsService.filterFlightsByAllService(filters);
+    
+    //         res.status(200).json({
+    //             success: true,
+    //             message: "Flights fetched successfully",
+    //             data: flights
+    //         });
+    //     } catch (error) {
+    //         res.status(500).json({
+    //             success: false,
+    //             message: error.message
+    //         });
+    //     }
+    // }
 };    

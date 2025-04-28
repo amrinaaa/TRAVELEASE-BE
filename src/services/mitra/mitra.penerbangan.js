@@ -92,8 +92,6 @@ export default {
                 id: item.airline.id,
                 name: item.airline.name,
                 description: item.airline.description,
-                planes: item.airline.planes,
-                partnershipId: item.id
             }));
 
             return formattedAirlines;
@@ -199,6 +197,38 @@ export default {
         };
     },
 
+    async getPlaneSeatsService(planeId) {
+        try {
+            const seatCategories = await prisma.seatCategory.findMany({
+                where: {
+                    planeId
+                },
+                include: {
+                    seats: true
+                }
+            });
+
+            // Format respons
+            const result = seatCategories.map(category => {
+                return {
+                    categoryId: category.id,
+                    categoryName: category.name,
+                    price: category.price,
+                    seats: category.seats.map(seat => {
+                        return {
+                            id: seat.id,
+                            name: seat.name
+                        };
+                    })
+                };
+            });
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async addSeatAvailabilityService(
         planeId,
         seatCategoryId,
@@ -252,5 +282,65 @@ export default {
         } catch (error) {
             throw new Error(error.message);
         }
+    },
+
+    async deletePlaneSeatService(seatId) {
+        try {
+            const existingSeat = await prisma.seat.findUnique({
+                where: {
+                    id: seatId
+                },
+                include: {
+                    tickets: true,
+                    seatCategory: {
+                        include: {
+                            plane: true
+                        }
+                    }
+                }
+            });
+
+            const result = await prisma.$transaction(async (tx) => {
+                // Jika kursi memiliki tiket, hapus semua tiket terkait terlebih dahulu
+                if (existingSeat.tickets.length > 0) {
+                    await tx.ticket.deleteMany({
+                        where: {
+                            seatId
+                        }
+                    });
+                }
+
+                // Setelah tiket dihapus, hapus kursi
+                const deletedSeat = await tx.seat.delete({
+                    where: {
+                        id: seatId
+                    },
+                    include: {
+                        seatCategory: {
+                            select: {
+                                name: true,
+                                plane: {
+                                    select: {
+                                        name: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    id: deletedSeat.id,
+                    name: deletedSeat.name,
+                    categoryName: deletedSeat.seatCategory.name,
+                    planeName: deletedSeat.seatCategory.plane.name,
+                    ticketsDeleted: existingSeat.tickets.length
+                };
+            });
+
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        };
     },
 }

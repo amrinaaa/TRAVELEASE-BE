@@ -10,7 +10,7 @@ export default {
         },
         #swagger.security = [{
             "bearerAuth": []
-         }]
+        }]
         */
         const mitraId = res.locals.payload.id;
         const { name, description } = req.body;
@@ -181,6 +181,35 @@ export default {
         }
     },
 
+    async getPlaneSeats(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.parameters['planeId'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/GetPlaneSeatsRequest"
+            }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const planeId = req.query.planeId;
+        try {
+            const result = await mitraPenerbangan.getPlaneSeatsService(planeId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async addSeatAvailability(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -215,5 +244,31 @@ export default {
                 data: null,
             });
         }
+    },
+
+    async deletePlaneSeat(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/DeletePlaneSeatRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { seatId } = req.body;
+        try {
+            const result = await mitraPenerbangan.deletePlaneSeatService(seatId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
     },
 };
