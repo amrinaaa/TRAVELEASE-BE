@@ -89,16 +89,16 @@ export default {
             const flights = await flightsService.filterFlights(filters);
         
             res.status(200).json({
-              success: true,
-              message: "Flights retrieved successfully",
-              data: flights,
-            });
-          } catch (error) {
-            res.status(500).json({
-              success: false,
-              message: error.message,
-            });
-          }
+                success: true,
+                message: "Flights retrieved successfully",
+                data: flights,
+                });
+            } catch (error) {
+                res.status(500).json({
+                success: false,
+                message: error.message,
+                });
+            }
     },
     // async filterByAll (req, res) {
     //     /**
