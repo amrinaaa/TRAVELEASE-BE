@@ -1,5 +1,14 @@
 import prisma from "../../../prisma/prisma.client.js";
 
+//klo mau dipake
+// function calculateDuration(departureTime, arrivalTime) {
+//     const milliseconds = arrivalTime - departureTime;
+//     const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+//     const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+//     return `${hours}h ${minutes}m`;
+// };
+
 export default {
     async addAirlineService(mitraId, name, description) {
         try {
@@ -100,6 +109,38 @@ export default {
         }
     },
 
+    async updateAirlineService(
+        airlineId,
+        name,
+        description
+    ) {
+        try {
+            const existingAirline = await prisma.airline.findUnique({
+                where: {
+                    id: airlineId
+                }
+            });
+
+            if (!existingAirline) {
+                throw new Error('Maskapai tidak ditemukan');
+            };
+
+            const updateAirline = await prisma.airline.update({
+                where: {
+                    id: airlineId,
+                },
+                data: {
+                    ...(name && { name }),
+                    ...(description && { description }),
+                },
+            });
+
+            return updateAirline;
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
     async getPlaneTypesService() {
         try {
             const planeTypes = await prisma.planeType.findMany({
@@ -112,6 +153,29 @@ export default {
         } catch (error) {
             throw new Error(error.message);
         }
+    },
+
+    async addPlaneTypeService(name, manufacture) {
+        try {
+            const existingPlaneType = await prisma.planeType.findFirst({
+                where: { name }
+            });
+
+            if (existingPlaneType) {
+                throw new Error('Type is exist')
+            };
+
+            const newPlaneType = await prisma.planeType.create({
+                data: {
+                    name,
+                    manufacture,
+                },
+            });
+
+            return newPlaneType;
+        } catch (error) {
+            throw new Error(error.message);
+        };
     },
 
     async getPlanesService(airlineId) {
@@ -343,4 +407,189 @@ export default {
             throw new Error(error.message);
         };
     },
-}
+
+    async addFlightService(
+        planeId,
+        departureAirportId,
+        arrivalAirportId,
+        flightCode,
+        departureTime,
+        arrivalTime
+    ) {
+        try {
+            const parsedDepartureTime = new Date(departureTime);
+            const parsedArrivalTime = new Date(arrivalTime);
+
+            if (parsedArrivalTime <= parsedDepartureTime) {
+                throw new Error('Arrival time must be after departure time');
+            };
+
+            const overlappingFlights = await prisma.flight.findMany({
+                where: {
+                    planeId: planeId,
+                    OR: [
+                        // Penerbangan baru mulai saat penerbangan lain sedang berlangsung
+                        {
+                            departureTime: {
+                                lte: parsedDepartureTime
+                            },
+                            arrivalTime: {
+                                gte: parsedDepartureTime
+                            }
+                        },
+                        // Penerbangan baru berakhir saat penerbangan lain sedang berlangsung
+                        {
+                            departureTime: {
+                                lte: parsedArrivalTime
+                            },
+                            arrivalTime: {
+                                gte: parsedArrivalTime
+                            }
+                        },
+                        // Penerbangan baru mencakup seluruh penerbangan lain
+                        {
+                            departureTime: {
+                                gte: parsedDepartureTime
+                            },
+                            arrivalTime: {
+                                lte: parsedArrivalTime
+                            }
+                        }
+                    ]
+                }
+            });
+
+            if (overlappingFlights.length > 0) {
+                throw new Error('Pesawat sudah dijadwalkan untuk penerbangan lain pada waktu tersebut');
+            };
+
+            const existingFlightCode = await prisma.flight.findFirst({
+                where: {
+                    flightCode: flightCode,
+                },
+            });
+
+            if (existingFlightCode) {
+                throw new Error(`Kode penerbangan ${flightCode} sudah digunakan`);
+            };
+
+            const newFlight = await prisma.flight.create({
+                data: {
+                    planeId,
+                    departureAirportId,
+                    arrivalAirportId,
+                    flightCode,
+                    departureTime: parsedDepartureTime,
+                    arrivalTime: parsedArrivalTime
+                },
+                include: {
+                    plane: {
+                        include: {
+                            airline: true
+                        }
+                    },
+                    departureAirport: true,
+                    arrivalAirport: true
+                }
+            });
+
+            return {
+                id: newFlight.id,
+                flightCode: newFlight.flightCode,
+                airline: newFlight.plane.airline.name,
+                plane: {
+                    id: newFlight.plane.id,
+                    name: newFlight.plane.name
+                },
+                departure: {
+                    airport: newFlight.departureAirport.name,
+                    code: newFlight.departureAirport.code,
+                    city: newFlight.departureAirport.city,
+                    time: newFlight.departureTime
+                },
+                arrival: {
+                    airport: newFlight.arrivalAirport.name,
+                    code: newFlight.arrivalAirport.code,
+                    city: newFlight.arrivalAirport.city,
+                    time: newFlight.arrivalTime
+                },
+                // duration: calculateDuration(newFlight.departureTime, newFlight.arrivalTime),
+            };
+
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+
+    async getPassengersService(flightId) {
+        try {
+            const tickets = await prisma.ticket.findMany({
+                where: {
+                    flightId: flightId
+                },
+                include: {
+                    seat: {
+                        include: {
+                            seatCategory: true
+                        }
+                    },
+                    transaction: {
+                        select: {
+                            status: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true
+                                }
+                            }
+                        }
+                    }
+                },
+                orderBy: {
+                    seat: {
+                        name: 'asc'
+                    }
+                }
+            });
+
+            const passengers = tickets.map(ticket => {
+                return {
+                    ticketId: ticket.id,
+                    passengerName: ticket.name,
+                    passengerNIK: ticket.nik,
+                    gender: ticket.gender,
+                    type: ticket.type,
+                    seat: {
+                        id: ticket.seat.id,
+                        name: ticket.seat.name,
+                        category: ticket.seat.seatCategory.name,
+                        price: ticket.seat.seatCategory.price
+                    },
+                    bookedBy: {
+                        userId: ticket.transaction.user.id,
+                        name: ticket.transaction.user.name,
+                        email: ticket.transaction.user.email
+                    },
+                    paymentStatus: ticket.transaction.status
+                };
+            });
+
+            // Siapkan ringkasan statistik
+            const stats = {
+                totalPassengers: tickets.length,
+                adultCount: tickets.filter(t => t.type === 'ADULT').length,
+                childrenCount: tickets.filter(t => t.type === 'CHILDREN').length,
+                paidTickets: tickets.filter(t => t.transaction.status === 'PAID').length,
+                unpaidTickets: tickets.filter(t => t.transaction.status !== 'PAID').length
+            };
+
+            return {
+                stats: stats,
+                passengers: passengers
+            };
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
+};

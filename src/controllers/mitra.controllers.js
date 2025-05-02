@@ -50,6 +50,39 @@ export default {
         };
     },
 
+    async updateAirline(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/UpdateAirlineRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { airlineId, name, description } = req.body;
+        try {
+            const result = await mitraPenerbangan.updateAirlineService(
+                airlineId,
+                name,
+                description
+            );
+
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    // async deleteAirline(req, res) {},
+
     async getPlaneType(_req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -69,6 +102,32 @@ export default {
                 data: null,
             });
         };
+    },
+
+    async addPlaneType(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/AddPlaneTypeRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { name, manufacture } = req.body;
+        try {
+            const result = await mitraPenerbangan.addPlaneTypeService(name, manufacture);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
     },
 
     async getPlanes(req, res) {
@@ -125,6 +184,8 @@ export default {
             });
         };
     },
+
+    // async updatePlane(req, res) {},
 
     async addSeatCategory(req, res) {
         /**
@@ -260,6 +321,80 @@ export default {
         const { seatId } = req.body;
         try {
             const result = await mitraPenerbangan.deletePlaneSeatService(seatId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async addFlight(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/AddFlightRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const {
+            planeId,
+            departureAirportId,
+            arrivalAirportId,
+            flightCode,
+            departureTime,
+            arrivalTime,
+        } = req.body;
+        try {
+            const result = await mitraPenerbangan.addFlightService(
+                planeId,
+                departureAirportId,
+                arrivalAirportId,
+                flightCode,
+                departureTime,
+                arrivalTime
+            );
+
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    // async updateFlight(req, res) {},
+
+    // async deleteFlight(req, res) {},
+
+    async getPassengers(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.parameters['flightId'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/GetPassangersRequest"
+            }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const flightId = req.query.flightId;
+        try {
+            const result = await mitraPenerbangan.getPassengersService(flightId);
             res.status(200).json({
                 message: "success",
                 data: result,

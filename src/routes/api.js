@@ -21,6 +21,8 @@ import mitraControllers from "../controllers/mitra.controllers.js";
 import mitraHotelController from "../controllers/mitraHotelController.js";
 import mitraMiddleware from "../middlewares/mitra.middleware.js";
 
+import { getAirports } from "../controllers/airport/airportController.js";
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -65,12 +67,18 @@ router.delete('/profileImage', authMiddleware, deleteFileController.deleteProfil
 router.delete('/hotelImage/:id', authMiddleware, deleteFileController.deleteHotelImage);
 router.delete('/roomImage/:id', authMiddleware, deleteFileController.deleteRoomImage);
 
+
+//route airport
+router.get('/airports', authMiddleware, getAirports);
+
 //Mitra-Penerbangan
 //perbaiki lagi penamaan path nya
 
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
 router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
+router.put('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.updateAirline);
 router.get('/plane-type', authMiddleware, mitraControllers.getPlaneType);
+router.post('/plane-type', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneType);
 router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
 router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
 router.post('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatCategory);
@@ -78,6 +86,8 @@ router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, m
 router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
 router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatAvailability);
 router.delete('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlaneSeat);
+router.post('/flight', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addFlight); //blm di test
+router.get('/passengers', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPassengers);
 
 //Mitra-Hotel
 router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);

@@ -908,6 +908,27 @@
         ]
       }
     },
+    "/airports": {
+      "get": {
+        "tags": [
+          "Airport"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/airlines": {
       "get": {
         "tags": [
@@ -975,6 +996,46 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAirlineRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAirlineRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/plane-type": {
@@ -999,6 +1060,46 @@
             "bearerAuth": []
           }
         ]
+      },
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPlaneTypeRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPlaneTypeRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/planes": {
@@ -1274,6 +1375,85 @@
             }
           }
         }
+      }
+    },
+    "/flight": {
+      "post": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFlightRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/passengers": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "flightId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetPassangersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/hotels": {
@@ -1721,6 +1901,22 @@
           "name": "TopupRequest"
         }
       },
+      "AddPlaneTypeRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": ""
+          },
+          "manufacture": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "AddPlaneTypeRequest"
+        }
+      },
       "GetPlanesRequest": {
         "type": "object",
         "properties": {
@@ -1773,6 +1969,26 @@
         },
         "xml": {
           "name": "AddAirlineRequest"
+        }
+      },
+      "UpdateAirlineRequest": {
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "example": ""
+          },
+          "name": {
+            "type": "string",
+            "example": ""
+          },
+          "description": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "UpdateAirlineRequest"
         }
       },
       "AddPlaneRequest": {
@@ -1849,6 +2065,50 @@
         },
         "xml": {
           "name": "DeletePlaneSeatRequest"
+        }
+      },
+      "AddFlightRequest": {
+        "type": "object",
+        "properties": {
+          "planeId": {
+            "type": "string",
+            "example": ""
+          },
+          "departureAirportId": {
+            "type": "string",
+            "example": ""
+          },
+          "arrivalAirportId": {
+            "type": "string",
+            "example": ""
+          },
+          "flightCode": {
+            "type": "string",
+            "example": ""
+          },
+          "departureTime": {
+            "type": "string",
+            "example": ""
+          },
+          "arrivalTime": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "AddFlightRequest"
+        }
+      },
+      "GetPassangersRequest": {
+        "type": "object",
+        "properties": {
+          "flightId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetPassangersRequest"
         }
       },
       "getHotelsRequest": {

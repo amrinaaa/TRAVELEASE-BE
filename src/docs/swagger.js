@@ -99,6 +99,11 @@ const doc = {
                 type: "adding",
             },
 
+            AddPlaneTypeRequest: {
+                name: "",
+                manufacture: "",
+            },
+
             GetPlanesRequest: {
                 airlineId: "",
             },
@@ -112,6 +117,12 @@ const doc = {
             AddAirlineRequest: {
                 name: "Super Air Jet",
                 description: "Sangat Cepat",
+            },
+
+            UpdateAirlineRequest: {
+                airlineId: "",
+                name: "",
+                description: "",
             },
 
             AddPlaneRequest: {
@@ -136,6 +147,19 @@ const doc = {
 
             DeletePlaneSeatRequest: {
                 seatId: "",
+            },
+
+            AddFlightRequest: {
+                planeId: "",
+                departureAirportId: "",
+                arrivalAirportId: "",
+                flightCode: "",
+                departureTime: "",
+                arrivalTime: "",
+            },
+
+            GetPassangersRequest: {
+                flightId: "",
             },
 
             getHotelsRequest: {
