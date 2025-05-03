@@ -107,13 +107,16 @@ export default {
                 id: flight.id,
                 departureTime: flight.departureTime,
                 arrivalTime: flight.arrivalTime,
+                flightCode: flight.flightCode,
                 departureAirport: {
                     id: flight.departureAirport.id,
                     city: flight.departureAirport.city,
+                    code: flight.departureAirport.code,
                 },
                 arrivalAirport: {
                     id: flight.arrivalAirport.id,
                     city: flight.arrivalAirport.city,
+                    code: flight.arrivalAirport.code,
                 },
                 plane: {
                     id: flight.plane.id,
