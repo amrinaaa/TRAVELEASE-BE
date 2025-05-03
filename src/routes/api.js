@@ -21,6 +21,8 @@ import deleteFileController from "../controllers/deleteFileControllers.js";
 import mitraControllers from "../controllers/mitra.controllers.js";
 import mitraHotelController from "../controllers/mitraHotelController.js";
 
+import userController from "../controllers/user.controller.js";
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -50,15 +52,11 @@ router.get('/airport-city', flightsController.getCityFlight);
 router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
 router.get('/flights', flightsController.getFlights);
 
-// api filter
-router.get('/flights/filter', flightsController.filterAndSearchFlights);
-
 //route Seat
 router.get('/seats/:flightId', seatsController.getSeat);
 
 //Mitra-Penerbangan
 //perbaiki lagi penamaan path nya
-
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
 router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
 router.get('/plane-type', authMiddleware, mitraControllers.getPlaneType);
@@ -92,6 +90,7 @@ router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, dele
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
+router.get('/search/flights', userController.searchFlights);
 
 
 export default router;
