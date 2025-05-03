@@ -1,12 +1,5 @@
 import prisma from "../../../prisma/prisma.client.js";
 
-function formatTime(dateObj) {
-    const date = new Date(dateObj);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}.${minutes}`;
-}
-
 export default {
     async getCityFlightService (city) {
         const airport = await prisma.airport.findMany({
@@ -50,131 +43,200 @@ export default {
 
         return flights;
     },
-    async filterFlights(query) {
-        const { from, to, departureDate, returnDate, seatCategory, passengers } = query;
+
+    async getDepartureAndArrivalAirports(from, to) {
+        const departureAirports = await this.getCityFlightService(from);
+        const arrivalAirports = await this.getCityFlightService(to);
+        return { departureAirports, arrivalAirports };
+    },
+
+    async getFlightsByAirports(departureAirportIds, arrivalAirportIds) {
+        const where = {};
     
-        const seatFilter = seatCategory || passengers ? {
-            plane: {
-                seatCategories: {
-                    some: {
-                        ...(seatCategory && {
-                            name: {
-                                equals: seatCategory,
-                                mode: "insensitive"
-                            }
-                        }),
-                        ...(passengers && {
-                            seats: {
-                                some: {} 
-                            }
-                        })
-                    }
-                }
-            }
-        } : {};
+        if (departureAirportIds.length > 0) {
+            where.departureAirportId = { in: departureAirportIds };
+        }
     
-        const departureFilter = {
-            ...seatFilter,
-            ...(from && {
-                departureAirport: {
-                    city: {
-                        contains: from,
-                        mode: "insensitive"
-                    }
-                }
-            }),
-            ...(to && {
-                arrivalAirport: {
-                    city: {
-                        contains: to,
-                        mode: "insensitive"
-                    }
-                }
-            }),
-            ...(departureDate && {
-                departureTime: {
-                    gte: new Date(departureDate)
-                }
-            })
-        };
+        if (arrivalAirportIds.length > 0) {
+            where.arrivalAirportId = { in: arrivalAirportIds };
+        }
     
-        const departureFlights = await prisma.flight.findMany({
-            where: departureFilter,
+        return await prisma.flight.findMany({
+            where,
             include: {
                 departureAirport: true,
                 arrivalAirport: true,
                 plane: {
                     include: {
+                        airline: true,
                         seatCategories: true,
-                        airline: true
                     }
                 }
             }
         });
-    
-        let returnFlights = [];
-        if (returnDate && from && to) {
-            const returnFilter = {
-                ...seatFilter,
-                departureAirport: {
-                    city: {
-                        contains: to,
-                        mode: "insensitive"
+    },    
+
+    async getAvailableSeatsCountForFlight(flightId) {
+        const flight = await prisma.flight.findUnique({
+            where: { id: flightId },
+            include: {
+                plane: {
+                    include: {
+                        seatCategories: {
+                            include: {
+                                seats: {
+                                    include: {
+                                        tickets: true,
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
+            }
+        });
+
+        const result = {};
+
+        for (const category of flight.plane.seatCategories) {
+            let count = 0;
+            for (const seat of category.seats) {
+                const isTaken = seat.tickets.some(ticket => ticket.flightId === flightId);
+                if (!isTaken) {
+                    count++;
+                }
+            }
+            result[category.name.toLowerCase()] = {
+                id: category.id,
+                name: category.name,
+                price: category.price,
+                availableSeats: count,
+            };
+        }        
+
+        return result;
+    },
+
+    async filterFlightsByPassenger(flights, passenger, seatCategory) {
+        const filteredFlights = [];
+    
+        const seatCategoryKeywords = seatCategory
+            ? seatCategory.toLowerCase().split(',').map(k => k.trim())
+            : [];
+    
+        for (const flight of flights) {
+            const seatAvailability = await this.getAvailableSeatsCountForFlight(flight.id);
+    
+            let matchingCategories = Object.values(seatAvailability);
+
+            if (seatCategoryKeywords.length > 0) {
+                matchingCategories = matchingCategories.filter(category =>
+                    seatCategoryKeywords.some(keyword =>
+                        category.name.toLowerCase().includes(keyword)
+                    )
+                );
+            }
+    
+            if (matchingCategories.length === 0) continue;
+            
+            const filteredCategories = matchingCategories.filter(category =>
+                !passenger || category.availableSeats >= parseInt(passenger)
+            );
+    
+            if (filteredCategories.length === 0) continue;
+    
+            filteredFlights.push({
+                id: flight.id,
+                departureTime: flight.departureTime,
+                arrivalTime: flight.arrivalTime,
+                departureAirport: {
+                    id: flight.departureAirport.id,
+                    city: flight.departureAirport.city,
                 },
                 arrivalAirport: {
-                    city: {
-                        contains: from,
-                        mode: "insensitive"
-                    }
+                    id: flight.arrivalAirport.id,
+                    city: flight.arrivalAirport.city,
                 },
-                departureTime: {
-                    gte: new Date(returnDate)
+                plane: {
+                    id: flight.plane.id,
+                    airline: {
+                        id: flight.plane.airline.id,
+                        name: flight.plane.airline.name,
+                    },
+                    seatCategories: filteredCategories.map(category => ({
+                        id: category.id,
+                        name: category.name,
+                        price: category.price,
+                    }))
                 }
-            };
+            });
+        }
     
-            returnFlights = await prisma.flight.findMany({
-                where: returnFilter,
+        return filteredFlights;
+    },        
+
+    async filterFlightsByDepartureDate(flights, departureDate) {
+        if (!departureDate) return flights;
+    
+        const date = new Date(departureDate);
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+    
+        return flights.filter(flight => {
+            const depTime = new Date(flight.departureTime);
+            return depTime >= startOfDay && depTime <= endOfDay;
+        });
+    },
+    
+    async filterFlights(query) {
+        const { from, to, departureDate, seatCategory, passenger } = query;
+    
+        let departureFlights = [];
+        
+        if (from || to || departureDate) {
+            const depAirports = from ? await this.getCityFlightService(from) : [];
+            const arrAirports = to ? await this.getCityFlightService(to) : [];
+        
+            if ((from && depAirports.length === 0) || (to && arrAirports.length === 0)) {
+                departureFlights = [];
+
+            } else {
+                const flightsOut = await this.getFlightsByAirports(
+                    depAirports.map(a => a.id),
+                    arrAirports.map(a => a.id)
+                );
+        
+                let filteredFlights = flightsOut;
+        
+                if (departureDate) {
+                    const depFiltered = await this.filterFlightsByDepartureDate(filteredFlights, departureDate);
+                    departureFlights = await this.filterFlightsByPassenger(depFiltered, passenger, seatCategory);
+                }
+        
+                if (!departureDate) {
+                    const allFiltered = await this.filterFlightsByPassenger(filteredFlights, passenger, seatCategory);
+                    departureFlights = allFiltered;
+                }
+            }
+        }                              
+    
+        if (!from && !to && !departureDate && (seatCategory || passenger)) {
+            const allFlights = await prisma.flight.findMany({
                 include: {
                     departureAirport: true,
                     arrivalAirport: true,
                     plane: {
                         include: {
+                            airline: true,
                             seatCategories: true,
-                            airline: true
                         }
                     }
                 }
             });
+        
+            departureFlights = await this.filterFlightsByPassenger(allFlights, passenger, seatCategory);
         }
-    
-        const formatFlight = (flight) => {
-            const seat = flight.plane.seatCategories.find(
-                (cat) => cat.name.toLowerCase() === (seatCategory || "").toLowerCase()
-            );
-    
-            const price = seat?.price
-                ? `Rp ${seat.price.toLocaleString("id-ID")}`
-                : "N/A";
-    
-            return {
-                airline: flight.plane.airline.name,
-                departure: {
-                    city: flight.departureAirport.city,
-                    time: formatTime(flight.departureTime),
-                },
-                arrival: {
-                    city: flight.arrivalAirport.city,
-                    time: formatTime(flight.arrivalTime),
-                },
-                class: seat ? seat.name : "Economy",
-                price,
-            };
-        };
-    
-        return {
-            departureFlights: departureFlights.map(formatFlight),
-            returnFlights: returnFlights.map(formatFlight),
-        };
+        
+        return { departureFlights };
     }
 };    

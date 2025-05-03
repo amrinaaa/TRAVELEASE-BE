@@ -7,7 +7,6 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
 
 import flightsController from '../controllers/airport/flightsController.js';
-// import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
 
 import seatsController from "../controllers/airport/seatsController.js";
 
@@ -48,8 +47,7 @@ router.get('/airport-city', flightsController.getCityFlight);
 router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
 router.get('/flights', flightsController.getFlights);
 // api filter
-router.get('/flights/filter', flightsController.filterFlights);
-// router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, flightsController.filterByAll);
+router.get('/flights/filter', flightsController.filterAndSearchFlights);
 
 //route Seat
 router.get('/seats/:flightId', seatsController.getSeat);

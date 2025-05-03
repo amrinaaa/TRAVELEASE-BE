@@ -83,48 +83,26 @@ export default {
         }
     },
 
-    async filterFlights(req, res) {
+    async filterAndSearchFlights(req, res) {
         try {
-            const filters = req.query;
-            const flights = await flightsService.filterFlights(filters);
-        
+            const flights = await flightsService.filterFlights(req.query);
+            if (flights.length === 0) {
+                return res.status(404).json({ 
+                    message: 'No flights found' 
+                });
+            }
+
             res.status(200).json({
-              success: true,
-              message: "Flights retrieved successfully",
-              data: flights,
+                message: "Success", 
+                data: flights,
             });
-          } catch (error) {
-            res.status(500).json({
-              success: false,
-              message: error.message,
-            });
-          }
-    },
-    // async filterByAll (req, res) {
-    //     /**
-    //     #swagger.tags = ['Flight']
-    //     #swagger.parameters['departureCity', 'arrivalCity', 'departureDate', 'returnDate', 'seatCategory'] = {
-    //         in: 'query',
-    //         required: true,
-    //         schema: {
-    //             $ref: "#/components/schemas/FilterFLightRequest"
-    //         }
-    //     }
-    //     */
-    //     try {
-    //         const filters = req.query; 
-    //         const flights = await flightsService.filterFlightsByAllService(filters);
-    
-    //         res.status(200).json({
-    //             success: true,
-    //             message: "Flights fetched successfully",
-    //             data: flights
-    //         });
-    //     } catch (error) {
-    //         res.status(500).json({
-    //             success: false,
-    //             message: error.message
-    //         });
-    //     }
-    // }
+
+            } catch (error) {
+            console.error(error);
+            res.status(500).json({ 
+                message: 'Internal server error',
+                data: null,
+                });
+            }
+        }
 };    
