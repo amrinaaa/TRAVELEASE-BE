@@ -99,13 +99,11 @@ const doc = {
                 type: "adding",
             },
 
-            //sementara saja
             GetPlanesRequest: {
-                mitraId: "",
+                airlineId: "",
             },
 
             AddSeatAvailabilityRequest: {
-                mitraId: "",
                 planeId: "",
                 seatCategoryId: "",
                 seatNames: ["A1", "B1"],
@@ -122,11 +120,29 @@ const doc = {
                 name: "",
             },
 
-            getHotelsRequest:{
+            AddSeatCategoryRequest: {
+                planeId: "",
+                name: "",
+                price: 1000000,
+            },
+
+            GetSeatCategoryRequest: {
+                planeId: "",
+            },
+
+            GetPlaneSeatsRequest: {
+                planeId: "",
+            },
+
+            DeletePlaneSeatRequest: {
+                seatId: "",
+            },
+
+            getHotelsRequest: {
                 mitraId: "",
             },
 
-            getLocationsRequest:{
+            getLocationsRequest: {
                 mitraId: "",
             },
 

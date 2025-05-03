@@ -9,7 +9,6 @@ import mitraMiddleware from "../middlewares/mitra.middleware.js";
 import userMiddleware from "../middlewares/user.middleware.js";
 
 import flightsController from '../controllers/airport/flightsController.js';
-// import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
 
 import seatsController from "../controllers/airport/seatsController.js";
 
@@ -52,21 +51,24 @@ router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
 router.get('/flights', flightsController.getFlights);
 
 // api filter
-router.get('/flights/filter', flightsController.filterFlights);
-// router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, flightsController.filterByAll);
+router.get('/flights/filter', flightsController.filterAndSearchFlights);
 
 //route Seat
 router.get('/seats/:flightId', seatsController.getSeat);
 
 //Mitra-Penerbangan
 //perbaiki lagi penamaan path nya
-router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
-router.post('/seats', mitraControllers.addSeatAvailability);
 
-router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
+router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
 router.get('/plane-type', authMiddleware, mitraControllers.getPlaneType);
-router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane); //tinggal testing
+router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
+router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
+router.post('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatCategory);
+router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
+router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
+router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatAvailability);
+router.delete('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlaneSeat);
 router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadMiddleware, uploadController.uploadProfile);
 router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
 router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadMiddleware, uploadController.uploadAirportImage);
