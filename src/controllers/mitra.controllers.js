@@ -170,9 +170,9 @@ export default {
             "bearerAuth": []
         }]
         */
-        const { planeTypeId, airlineId, name } = req.body;
+        const { planeTypeId, airlineId, name, seatCategories } = req.body;
         try {
-            const result = await mitraPenerbangan.addPlaneService(planeTypeId, airlineId, name);
+            const result = await mitraPenerbangan.addPlaneService(planeTypeId, airlineId, name, seatCategories);
             res.status(200).json({
                 message: "success",
                 data: result,
@@ -187,31 +187,32 @@ export default {
 
     // async updatePlane(req, res) {},
 
-    async addSeatCategory(req, res) {
-        /**
-        #swagger.tags = ['Mitra Penerbangan']
-        #swagger.requestBody = {
-            required: true,
-            schema: {$ref: "#/components/schemas/AddSeatCategoryRequest"}
-        },
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
-        const { planeId, name, price } = req.body;
-        try {
-            const result = await mitraPenerbangan.addSeatCategoryService(planeId, name, price);
-            res.status(200).json({
-                message: "success",
-                data: result,
-            });
-        } catch (error) {
-            return res.status(400).json({
-                message: error.message,
-                data: null,
-            });
-        };
-    },
+    //bakal ke hapus nnti
+    // async addSeatCategory(req, res) {
+    //     /**
+    //     #swagger.tags = ['Mitra Penerbangan']
+    //     #swagger.requestBody = {
+    //         required: true,
+    //         schema: {$ref: "#/components/schemas/AddSeatCategoryRequest"}
+    //     },
+    //     #swagger.security = [{
+    //         "bearerAuth": []
+    //     }]
+    //     */
+    //     const { planeId, name, price } = req.body;
+    //     try {
+    //         const result = await mitraPenerbangan.addSeatCategoryService(planeId, name, price);
+    //         res.status(200).json({
+    //             message: "success",
+    //             data: result,
+    //         });
+    //     } catch (error) {
+    //         return res.status(400).json({
+    //             message: error.message,
+    //             data: null,
+    //         });
+    //     };
+    // },
 
     async getSeatCategory(req, res) {
         /**
@@ -271,12 +272,13 @@ export default {
         }
     },
 
-    async addSeatAvailability(req, res) {
+    //bakal dirubah
+    async addPlaneSeat(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
         #swagger.requestBody = {
             required: true,
-            schema: {$ref: "#/components/schemas/AddSeatAvailabilityRequest"}
+            schema: {$ref: "#/components/schemas/AddPlaneSeatRequest"}
         },
         #swagger.security = [{
             "bearerAuth": []
@@ -285,14 +287,14 @@ export default {
         const {
             planeId,
             seatCategoryId,
-            seatNames //sebuah list / array
+            seatArrangement
         } = req.body;
 
         try {
-            const result = await mitraPenerbangan.addSeatAvailabilityService(
+            const result = await mitraPenerbangan.addPlaneSeatService(
                 planeId,
                 seatCategoryId,
-                seatNames,
+                seatArrangement,
             );
 
             res.status(200).json({

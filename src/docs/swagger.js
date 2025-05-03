@@ -108,10 +108,12 @@ const doc = {
                 airlineId: "",
             },
 
-            AddSeatAvailabilityRequest: {
+            AddPlaneSeatRequest: {
                 planeId: "",
                 seatCategoryId: "",
-                seatNames: ["A1", "B1"],
+                seatArrangement: [
+                    { line: "A", start: "1", end: "6" },
+                ],
             },
 
             AddAirlineRequest: {
@@ -129,6 +131,12 @@ const doc = {
                 planeTypeId: "",
                 airlineId: "",
                 name: "",
+                seatCategories: [
+                    {
+                        "name": "Economy",
+                        "price": 100000,
+                    },
+                ],
             },
 
             AddSeatCategoryRequest: {

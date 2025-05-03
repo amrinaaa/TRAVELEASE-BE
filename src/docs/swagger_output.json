@@ -1182,46 +1182,6 @@
       }
     },
     "/seat-category": {
-      "post": {
-        "tags": [
-          "Mitra Penerbangan"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSeatCategoryRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSeatCategoryRequest"
-              }
-            }
-          }
-        }
-      },
       "get": {
         "tags": [
           "Mitra Penerbangan"
@@ -1325,12 +1285,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+                "$ref": "#/components/schemas/AddPlaneSeatRequest"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/AddSeatAvailabilityRequest"
+                "$ref": "#/components/schemas/AddPlaneSeatRequest"
               }
             }
           }
@@ -1929,7 +1889,7 @@
           "name": "GetPlanesRequest"
         }
       },
-      "AddSeatAvailabilityRequest": {
+      "AddPlaneSeatRequest": {
         "type": "object",
         "properties": {
           "planeId": {
@@ -1940,19 +1900,29 @@
             "type": "string",
             "example": ""
           },
-          "seatNames": {
+          "seatArrangement": {
             "type": "array",
-            "example": [
-              "A1",
-              "B1"
-            ],
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "line": {
+                  "type": "string",
+                  "example": "A"
+                },
+                "start": {
+                  "type": "string",
+                  "example": "1"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "6"
+                }
+              }
             }
           }
         },
         "xml": {
-          "name": "AddSeatAvailabilityRequest"
+          "name": "AddPlaneSeatRequest"
         }
       },
       "AddAirlineRequest": {
@@ -2005,6 +1975,22 @@
           "name": {
             "type": "string",
             "example": ""
+          },
+          "seatCategories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Economy"
+                },
+                "price": {
+                  "type": "number",
+                  "example": 100000
+                }
+              }
+            }
           }
         },
         "xml": {

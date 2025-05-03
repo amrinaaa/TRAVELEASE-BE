@@ -202,46 +202,70 @@ export default {
         };
     },
 
-    async addPlaneService(planeTypeId, airlineId, name) {
+    async addPlaneService(planeTypeId, airlineId, name, seatCategories) {
         try {
-            const result = await prisma.plane.create({
-                data: {
-                    planeTypeId,
-                    airlineId,
-                    name,
-                },
-            });
-            return result;
-        } catch (error) {
-            throw new Error(error.message);
-        };
-    },
+            const result = await prisma.$transaction(async (tx) => {
+                // Create the plane
+                const plane = await tx.plane.create({
+                    data: {
+                        name,
+                        planeTypeId,
+                        airlineId,
+                    }
+                });
 
-    async addSeatCategoryService(planeId, name, price) {
-        try {
-            const existingCategory = await prisma.seatCategory.findFirst({
-                where: {
-                    name,
+                // If seat categories are provided, create them
+                if (seatCategories && seatCategories.length > 0) {
+                    for (const category of seatCategories) {
+                        await tx.seatCategory.create({
+                            data: {
+                                name: category.name,
+                                price: category.price,
+                                planeId: plane.id,
+                            }
+                        });
+                    }
                 }
+
+                return plane;
             });
 
-            if (existingCategory) {
-                throw new Error("Category is exist");
+            return {
+                id: result.id,
+                name: result.name,
+                planeTypeId: result.planeTypeId,
+                airlineId: result.airlineId
             };
-
-            const seatCategory = await prisma.seatCategory.create({
-                data: {
-                    planeId,
-                    name,
-                    price,
-                },
-            });
-
-            return seatCategory;
         } catch (error) {
             throw new Error(error.message);
         };
     },
+
+    // async addSeatCategoryService(planeId, name, price) {
+    //     try {
+    //         const existingCategory = await prisma.seatCategory.findFirst({
+    //             where: {
+    //                 name,
+    //             }
+    //         });
+
+    //         if (existingCategory) {
+    //             throw new Error("Category is exist");
+    //         };
+
+    //         const seatCategory = await prisma.seatCategory.create({
+    //             data: {
+    //                 planeId,
+    //                 name,
+    //                 price,
+    //             },
+    //         });
+
+    //         return seatCategory;
+    //     } catch (error) {
+    //         throw new Error(error.message);
+    //     };
+    // },
 
     async getSeatCategoryService(planeId) {
         try {
@@ -293,10 +317,10 @@ export default {
         }
     },
 
-    async addSeatAvailabilityService(
+    async addPlaneSeatService(
         planeId,
         seatCategoryId,
-        seatNames,
+        seatArrangement,
     ) {
         try {
             const seatCategory = await prisma.seatCategory.findFirst({
@@ -310,39 +334,57 @@ export default {
                 throw new Error('Kategori kursi tidak ditemukan untuk pesawat ini')
             };
 
-            const createdSeats = [];
+            const result = await prisma.$transaction(async (tx) => {
+                // Buat kursi untuk setiap baris dan kolom yang didefinisikan
+                const createdSeats = [];
+                const seatsToCreate = [];
 
-            for (const seatName of seatNames) {
-                const existingSeat = await prisma.seat.findFirst({
-                    where: {
-                        seatCategoryId: seatCategoryId,
-                        name: seatName
+                for (const row of seatArrangement) {
+                    const { line, start, end } = row;
+
+                    for (let seatNum = parseInt(start); seatNum <= parseInt(end); seatNum++) {
+                        const seatName = `${line}${seatNum}`;
+                        seatsToCreate.push({
+                            seatCategoryId: seatCategoryId,
+                            name: seatName
+                        });
                     }
-                });
-
-                if (existingSeat) {
-                    createdSeats.push({
-                        name: seatName,
-                        status: 'already_exists'
-                    });
-                    continue;
                 }
 
-                const newSeat = await prisma.seat.create({
-                    data: {
-                        seatCategoryId: seatCategoryId,
-                        name: seatName
+                // Buat kursi secara massal untuk kinerja yang lebih baik
+                if (seatsToCreate.length > 0) {
+                    await tx.seat.createMany({
+                        data: seatsToCreate
+                    });
+                }
+
+                // Ambil semua kursi yang baru saja dibuat
+                const seats = await tx.seat.findMany({
+                    where: {
+                        seatCategoryId: seatCategoryId
+                    },
+                    orderBy: {
+                        name: 'asc'
                     }
                 });
 
-                createdSeats.push({
-                    id: newSeat.id,
-                    name: newSeat.name,
-                    status: 'created'
-                });
-            };
+                return {
+                    seats: seats,
+                    seatCount: seats.length
+                };
+            });
 
-            return createdSeats;
+            return {
+                // id: result.category.id,
+                // planeId: result.category.planeId,
+                // name: result.category.name,
+                // price: result.category.price,
+                seatCount: result.seatCount,
+                seats: result.seats.map(seat => ({
+                    id: seat.id,
+                    name: seat.name
+                }))
+            };
         } catch (error) {
             throw new Error(error.message);
         }
