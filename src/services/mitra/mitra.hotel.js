@@ -1,4 +1,5 @@
 import prisma from "../../../prisma/prisma.client.js";
+import fotoHotel from "../upload/uploadsService.js";
 
 export default {
     async getListHotelService(mitraId) {
@@ -52,7 +53,7 @@ export default {
         }
     },
 
-    async addHotelService(mitraId, locationId, name, description, address, contact) {
+    async addHotelService(mitraId, locationId, name, description, address, contact, files) {
         try {
             const newHotel = await prisma.hotel.create({
                 data: {
@@ -68,6 +69,12 @@ export default {
                     }
                 }
             });
+            
+            if (files && files.length > 0) {
+                for (const file of files) {
+                    await fotoHotel.uploadHotelImage(file, newHotel.id);
+                }
+            }
 
             return newHotel;
 
@@ -77,7 +84,7 @@ export default {
             }
         },
 
-    async editHotelService(hotelId, mitraId, updateData) {
+    async editHotelService(hotelId, mitraId, updateData, files) {
         try {
             const hotel = await prisma.hotel.findUnique({
                 where: { id: hotelId },
@@ -100,6 +107,12 @@ export default {
                 where: { id: hotelId },
                 data: updateData,
             });
+
+            if (files && files.length > 0) {
+                for (const file of files) {
+                    await fotoHotel.uploadHotelImage(file, hotelId);
+                }
+            }
 
             return updatedHotel;
 
@@ -275,5 +288,95 @@ export default {
             });
             
             return formatted;
+        },
+
+    async getListRoomService(hotelId) {
+        try {
+            const now = new Date();
+
+            const rooms = await prisma.room.findMany({
+            where: {
+                roomType: {
+                hotelId: hotelId
+                }
+            },
+            include: {
+                roomType: {
+                select: {
+                    typeName: true,
+                    price: true,
+                    roomTypeFacilities: {
+                    select: {
+                        facility: {
+                        select: {
+                            facilityName: true
+                        }
+                        }
+                    }
+                    }
+                }
+                },
+                roomReservations: {
+                include: {
+                    reservation: {
+                    include: {
+                        transaction: true
+                    }
+                    }
+                }
+                },
+            }
+            });
+
+            const formattedRooms = rooms.map(room => {
+            const isReserved = room.roomReservations.some(rr => {
+                const res = rr.reservation;
+                return (
+                res.transaction.status === "PAID" &&
+                new Date(res.startDate) <= now &&
+                new Date(res.endDate) >= now
+                );
+            });
+
+            return {
+                id: room.id,
+                name: room.name,
+                roomType: room.roomType.typeName,
+                price: room.roomType.price,
+                facilities: room.roomType.roomTypeFacilities.map(f => f.facility.facilityName),
+                status: isReserved ? "Not Available" : "Available"
+            };
+            });
+
+            return formattedRooms;
+        } catch (error) {
+            throw new Error(error.message);
         }
+    },
+
+    async addRoomService(hotelId, roomTypeId, name, files) {
+        try {
+            const newRoom = await prisma.room.create({
+                data: {
+                    hotelId,
+                    roomTypeId,
+                    name,
+                }
+            });
+
+            if (files && files.length > 0) {
+                for (const file of files) {
+                    await fotoHotel.uploadRoomImage(file, newRoom.id);
+                }
+            }
+
+            return newRoom;
+
+        } catch (error) {
+            console.error("Error adding room:", error);
+            throw new Error("Failed to add room");
+        }
+    }
+
+
 };

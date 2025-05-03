@@ -55,9 +55,10 @@ export default {
          */
         const mitraId = res.locals.payload.id;
         const { locationId,name, description, address, contact } = req.body;
+        const files = req.files;
 
         try {
-            const result = await mitraHotelService.addHotelService(mitraId, locationId, name, description, address, contact);
+            const result = await mitraHotelService.addHotelService(mitraId, locationId, name, description, address, contact, files);
             res.status(200).json({
                 message: "Success",
                 data: result,
@@ -80,6 +81,7 @@ export default {
         */
         const mitraId = res.locals.payload.id;
         const { hotelId, locationId, name, description, address, contact } = req.body;
+        const files = req.files;
 
         const updateData = {
             ...(locationId && { locationId }),
@@ -90,7 +92,7 @@ export default {
         };
 
         try {
-            const result = await mitraHotelService.editHotelService(hotelId, mitraId, updateData);
+            const result = await mitraHotelService.editHotelService(hotelId, mitraId, updateData, files);
             res.status(200).json({
                 message: "Hotel updated successfully",
                 data: result,
@@ -158,30 +160,56 @@ export default {
     },
 
     async getCustomerList(req, res) {
+    /**
+    #swagger.tags = ['Mitra Hotel']
+    #swagger.security = [{
+        "bearerAuth": []
+    }]
+    */
+    try {
+        const mitraId = res.locals.payload.id;
+        
+        const customers = await mitraHotelService.getCustomerListService(mitraId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'List customers fetched successfully',
+            data: customers,
+            });
+
+        } catch (error) {
+            console.error('Error fetching customer list:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Something went wrong while fetching customers',
+                error: error.message,
+            });
+        }
+    },
+
+    async getRoomList(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
             "bearerAuth": []
         }]
         */
-            try {
-                const mitraId = res.locals.payload.id;
-                
-                const customers = await mitraHotelService.getCustomerListService(mitraId);
+        const mitraId = res.locals.payload.id;
+        const { hotelId } = req.params;
+    
+        try {
+            const result = await mitraHotelService.getListRoomService(hotelId, mitraId);
+            
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
 
-                return res.status(200).json({
-                    success: true,
-                    message: 'List customers fetched successfully',
-                    data: customers,
-                    });
-
-                } catch (error) {
-                    console.error('Error fetching customer list:', error);
-                    return res.status(500).json({
-                    success: false,
-                    message: 'Something went wrong while fetching customers',
-                    error: error.message,
-                    });
-                }
-            }
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    }
 };

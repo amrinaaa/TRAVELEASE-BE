@@ -76,16 +76,17 @@ router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerban
 //Mitra-Hotel
 router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
 router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
-router.post('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
-router.patch('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
+router.post('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, uploadMiddleware, mitraHotelController.addHotel);
+router.patch('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, uploadMiddleware, mitraHotelController.editHotel);
 router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
+router.delete('/hotelImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteHotelImage);
 router.get('/customers', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getCustomerList);
+//blum fiks mau disatuin ke endpoint
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware,  mitraMiddleware.mitraHotel, uploadMiddleware, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware,  mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
-router.post('/hotelImage/:hotelId', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadMiddleware, uploadController.uploadHotelImage);
-router.delete('/hotelImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteHotelImage);
 router.post('/roomImage/:roomId', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel,uploadMiddleware, uploadController.uploadRoomImage);
 router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
+router.get('/rooms', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomList);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadMiddleware, uploadController.uploadProfile);
