@@ -1,5 +1,7 @@
-import prisma from "../../../prisma/prisma.client.js";
-import fotoHotel from "../upload/uploadsService.js";
+import prisma from "../../../../prisma/prisma.client.js";
+import fotoHotel from "../../upload/uploadsService.js";
+import deleteFile from "../../deleteFileService.js";
+import { extractFilePath } from "../../deleteFileService.js"
 
 export default {
     async getListHotelService(mitraId) {
@@ -205,10 +207,23 @@ export default {
             await prisma.hotelPartner.deleteMany({
                 where: { partnerId: mitraId, hotelId: hotel.id },
             });
-        
-            await prisma.hotelImage.deleteMany({
+
+            const images = await prisma.hotelImage.findMany({
                 where: { hotelId: hotel.id },
-            });
+                });
+                
+                if (images.length === 0) {
+                    throw new Error("No hotel images found");
+                }
+
+                for (const image of images) {
+                    const filePath = extractFilePath(image.imageUrl);
+                    await deleteFile.deleteFile(filePath);
+                }
+
+                await prisma.hotelImage.deleteMany({
+                    where: { hotelId: hotel.id },
+                });
     
             for (const reservationId of reservationIds) {
                 await prisma.reservation.delete({
@@ -232,151 +247,5 @@ export default {
             console.error("Error deleting hotel:", error);
             throw new Error("Failed to delete hotel");
         }
-    },
-    
-    async getCustomerListService(){
-        const customers = await prisma.reservation.findMany({
-            select: {
-                id: true,
-                startDate: true,
-                endDate: true,
-                transaction: {
-                    select: {
-                    price: true,
-                    user: {
-                        select: {
-                        name: true,
-                        role: true,
-                        }
-                    }
-                    }
-                },
-                roomReservations: {
-                    select: {
-                    room: {
-                        select: {
-                        id: true,
-                        roomType: {
-                            select: {
-                            typeName: true,
-                            }
-                        }
-                        }
-                    }
-                    }
-                }
-                },
-                where: {
-                transaction: {
-                    user: {
-                    role: 'USER',
-                    }
-                }
-                }
-            });
-            
-            const formatted = customers.map((reservation) => {
-                return {
-                idReservation: reservation.id,
-                name: reservation.transaction.user.name,
-                idRoom: reservation.roomReservations[0]?.room.id || null,
-                roomType: reservation.roomReservations[0]?.room.roomType.typeName || null,
-                startDate: reservation.startDate,
-                endDate: reservation.endDate,
-                price: reservation.transaction.price,
-                };
-            });
-            
-            return formatted;
-        },
-
-    async getListRoomService(hotelId) {
-        try {
-            const now = new Date();
-
-            const rooms = await prisma.room.findMany({
-            where: {
-                roomType: {
-                hotelId: hotelId
-                }
-            },
-            include: {
-                roomType: {
-                select: {
-                    typeName: true,
-                    price: true,
-                    roomTypeFacilities: {
-                    select: {
-                        facility: {
-                        select: {
-                            facilityName: true
-                        }
-                        }
-                    }
-                    }
-                }
-                },
-                roomReservations: {
-                include: {
-                    reservation: {
-                    include: {
-                        transaction: true
-                    }
-                    }
-                }
-                },
-            }
-            });
-
-            const formattedRooms = rooms.map(room => {
-            const isReserved = room.roomReservations.some(rr => {
-                const res = rr.reservation;
-                return (
-                res.transaction.status === "PAID" &&
-                new Date(res.startDate) <= now &&
-                new Date(res.endDate) >= now
-                );
-            });
-
-            return {
-                id: room.id,
-                name: room.name,
-                roomType: room.roomType.typeName,
-                price: room.roomType.price,
-                facilities: room.roomType.roomTypeFacilities.map(f => f.facility.facilityName),
-                status: isReserved ? "Not Available" : "Available"
-            };
-            });
-
-            return formattedRooms;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
-
-    async addRoomService(hotelId, roomTypeId, name, files) {
-        try {
-            const newRoom = await prisma.room.create({
-                data: {
-                    hotelId,
-                    roomTypeId,
-                    name,
-                }
-            });
-
-            if (files && files.length > 0) {
-                for (const file of files) {
-                    await fotoHotel.uploadRoomImage(file, newRoom.id);
-                }
-            }
-
-            return newRoom;
-
-        } catch (error) {
-            console.error("Error adding room:", error);
-            throw new Error("Failed to add room");
-        }
     }
-
-
 };

@@ -13,6 +13,7 @@ function extractFilePath(imageUrl) {
     return null;
   }
 }
+export { extractFilePath };
 
 export default {
   async deleteFile(filename) {
