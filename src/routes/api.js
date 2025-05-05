@@ -5,9 +5,10 @@ import adminControllers from "../controllers/admin.controllers.js";
 
 import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
+import mitraMiddleware from "../middlewares/mitra.middleware.js";
+import userMiddleware from "../middlewares/user.middleware.js";
 
 import flightsController from '../controllers/airport/flightsController.js';
-// import { validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate } from '../utils/validation/filterLanding.js';
 
 import seatsController from "../controllers/airport/seatsController.js";
 
@@ -19,7 +20,8 @@ import deleteFileController from "../controllers/deleteFileControllers.js";
 
 import mitraControllers from "../controllers/mitra.penerbangan.controllers.js";
 import mitraHotelController from "../controllers/mitraHotelController.js";
-import mitraMiddleware from "../middlewares/mitra.middleware.js";
+
+import userController from "../controllers/user.controller.js";
 
 import { getAirports } from "../controllers/airport/airportController.js";
 
@@ -43,15 +45,14 @@ router.get("/user", authMiddleware, adminMiddleware, adminControllers.searchUser
 router.patch("/user", authMiddleware, adminMiddleware, adminControllers.editUser);
 router.delete("/user", authMiddleware, adminMiddleware, adminControllers.deleteUser);
 router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
+router.post('/admin/profile/:id', upload.single('file'), authMiddleware, adminMiddleware, uploadMiddleware, uploadController.uploadProfilebyAdmin);
+router.delete('/admin/profile/:id', authMiddleware, adminMiddleware, deleteFileController.deleteProfilebyAdmin);
 
 //route flights
 // api get
 router.get('/airport-city', flightsController.getCityFlight);
 router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
 router.get('/flights', flightsController.getFlights);
-// api filter
-router.get('/flights/filter', flightsController.filterFlights);
-// router.get('/filter-by-all?', validateFilterFlightCity, validateFilterFlightSeat, validateFilterFlightDate, flightsController.filterByAll);
 
 //route Seat
 router.get('/seats/:flightId', seatsController.getSeat);
@@ -88,12 +89,17 @@ router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraCont
 router.delete('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlaneSeat);
 router.post('/flight', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addFlight);
 router.get('/passengers', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPassengers);
+router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadMiddleware, uploadController.uploadProfile);
+router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
+router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadMiddleware, uploadController.uploadAirportImage);
+router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
+
 
 //Mitra-Hotel
 router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
 router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
-router.post('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
-router.patch('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
+router.post('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, uploadMiddleware, mitraHotelController.addHotel);
+router.patch('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, uploadMiddleware, mitraHotelController.editHotel);
 router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
 
 export default router;

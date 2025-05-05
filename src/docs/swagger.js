@@ -178,34 +178,30 @@ const doc = {
                 flightId: "",
             },
 
-            getHotelsRequest: {
-                mitraId: "",
-            },
+            // addHotelRequest: {
+            //     locationId: "",
+            //     name: "",
+            //     description: "",
+            //     address: "",
+            //     contact: "",
+            // },
 
-            getLocationsRequest: {
-                mitraId: "",
-            },
-
-            addHotelRequest: {
-                locationId: "",
-                name: "",
-                description: "",
-                address: "",
-                contact: "",
-            },
-
-            editHotelRequest: {
-                hotelId: "",
-                locationId: "",
-                name: "",
-                description: "",
-                address: "",
-                contact: "",
-            },
+            // editHotelRequest: {
+            //     hotelId: "",
+            //     locationId: "",
+            //     name: "",
+            //     description: "",
+            //     address: "",
+            //     contact: "",
+            // },
 
             deleteHotelRequest: {
                 hotelId: "",
-            }
+            },
+
+            getCustomerListRequest: {
+                mitraId: "",
+            },
         },
     },
 };

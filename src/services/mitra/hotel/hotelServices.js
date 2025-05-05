@@ -1,4 +1,7 @@
-import prisma from "../../../prisma/prisma.client.js";
+import prisma from "../../../../prisma/prisma.client.js";
+import fotoHotel from "../../upload/uploadsService.js";
+import deleteFile from "../../deleteFileService.js";
+import { extractFilePath } from "../../deleteFileService.js"
 
 export default {
     async getListHotelService(mitraId) {
@@ -52,7 +55,7 @@ export default {
         }
     },
 
-    async addHotelService(mitraId, locationId, name, description, address, contact) {
+    async addHotelService(mitraId, locationId, name, description, address, contact, files) {
         try {
             const newHotel = await prisma.hotel.create({
                 data: {
@@ -68,6 +71,12 @@ export default {
                     }
                 }
             });
+            
+            if (files && files.length > 0) {
+                for (const file of files) {
+                    await fotoHotel.uploadHotelImage(file, newHotel.id);
+                }
+            }
 
             return newHotel;
 
@@ -77,7 +86,7 @@ export default {
             }
         },
 
-    async editHotelService(hotelId, mitraId, updateData) {
+    async editHotelService(hotelId, mitraId, updateData, files) {
         try {
             const hotel = await prisma.hotel.findUnique({
                 where: { id: hotelId },
@@ -100,6 +109,12 @@ export default {
                 where: { id: hotelId },
                 data: updateData,
             });
+
+            if (files && files.length > 0) {
+                for (const file of files) {
+                    await fotoHotel.uploadHotelImage(file, hotelId);
+                }
+            }
 
             return updatedHotel;
 
@@ -192,10 +207,23 @@ export default {
             await prisma.hotelPartner.deleteMany({
                 where: { partnerId: mitraId, hotelId: hotel.id },
             });
-        
-            await prisma.hotelImage.deleteMany({
+
+            const images = await prisma.hotelImage.findMany({
                 where: { hotelId: hotel.id },
-            });
+                });
+                
+                if (images.length === 0) {
+                    throw new Error("No hotel images found");
+                }
+
+                for (const image of images) {
+                    const filePath = extractFilePath(image.imageUrl);
+                    await deleteFile.deleteFile(filePath);
+                }
+
+                await prisma.hotelImage.deleteMany({
+                    where: { hotelId: hotel.id },
+                });
     
             for (const reservationId of reservationIds) {
                 await prisma.reservation.delete({
@@ -214,10 +242,10 @@ export default {
             });
     
             return { message: 'Hotel and related data deleted successfully' };
-            
+
         } catch (error) {
             console.error("Error deleting hotel:", error);
             throw new Error("Failed to delete hotel");
         }
-    }   
+    }
 };
