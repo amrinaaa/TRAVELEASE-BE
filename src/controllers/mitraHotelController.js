@@ -1,6 +1,7 @@
 import hotelServices from "../services/mitra/hotel/hotelServices.js";
 import customerServices from "../services/mitra/hotel/customerServices.js";
 import roomServices from "../services/mitra/hotel/roomServices.js";
+import roomTypeServices from "../services/mitra/hotel/roomTypeServices.js";
 
 export default {
     async getListHotel(req, res) {
@@ -188,7 +189,7 @@ export default {
     }
     },
 
-    async getTypeRoom(req, res) {
+    async getRoomType(req, res) {
     /**
     #swagger.tags = ['Mitra Hotel']
     #swagger.security = [{
@@ -199,7 +200,7 @@ export default {
     const { hotelId } = req.params;
     
     try {
-        const result = await roomServices.getTypeRoom(hotelId, mitraId);
+        const result = await roomTypeServices.getRoomType(hotelId, mitraId);
             
         res.status(200).json({
             message: "Success",
@@ -269,19 +270,16 @@ export default {
     },
 
     async deleteRoom (req, res) {
-        const { roomId } = req.params; // Get roomId from params
+        const { roomId } = req.params;
 
         try {
-            // Call the deleteRoomService function
             const result = await roomServices.deleteRoomService({ roomId });
-    
-            // Return success response
             return res.status(200).json({
                 message: "Room and associated images deleted successfully",
                 data: result,
             });
+
         } catch (error) {
-            // Return error response
             return res.status(500).json({
                 message: error.message || "Failed to delete room",
                 data: null,

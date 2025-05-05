@@ -73,24 +73,6 @@ export default {
         }
     },
 
-    async getTypeRoom (hotelId) {
-        if (!hotelId) {
-            throw new Error("Hotel ID is required");
-        }
-
-        try {
-            const typeRoom = await prisma.roomType.findMany({
-                where: {
-                    hotelId: hotelId
-                }
-            });
-
-            return typeRoom;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
-
     async addRoomService({ hotelId, roomTypeId, name, files }) {
 
         try {
