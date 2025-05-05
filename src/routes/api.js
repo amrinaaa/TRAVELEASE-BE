@@ -17,7 +17,7 @@ import multer from "multer";
 
 import deleteFileController from "../controllers/deleteFileControllers.js";
 
-import mitraControllers from "../controllers/mitra.controllers.js";
+import mitraControllers from "../controllers/mitra.penerbangan.controllers.js";
 import mitraHotelController from "../controllers/mitraHotelController.js";
 import mitraMiddleware from "../middlewares/mitra.middleware.js";
 
