@@ -141,6 +141,76 @@ export default {
         };
     },
 
+    async deleteAirlineService(airlineId) {
+        try {
+            return await prisma.$transaction(async (tx) => {
+                // Delete airline partners
+                await tx.airlinePartner.deleteMany({
+                    where: { airlineId }
+                });
+
+                // Get all planes of the airline
+                const planes = await tx.plane.findMany({
+                    where: { airlineId },
+                    include: {
+                        seatCategories: { include: { seats: true } },
+                        flights: true
+                    }
+                });
+
+                for (const plane of planes) {
+                    // Delete all tickets from seats
+                    for (const seatCategory of plane.seatCategories) {
+                        for (const seat of seatCategory.seats) {
+                            await tx.ticket.deleteMany({
+                                where: { seatId: seat.id }
+                            });
+                        }
+
+                        // Delete seats
+                        await tx.seat.deleteMany({
+                            where: { seatCategoryId: seatCategory.id }
+                        });
+                    }
+
+                    // Delete seat categories
+                    await tx.seatCategory.deleteMany({
+                        where: { planeId: plane.id }
+                    });
+
+                    // Delete tickets from flights
+                    for (const flight of plane.flights) {
+                        await tx.ticket.deleteMany({
+                            where: { flightId: flight.id }
+                        });
+                    }
+
+                    // Delete flights
+                    await tx.flight.deleteMany({
+                        where: { planeId: plane.id }
+                    });
+                }
+
+                // Delete planes
+                await tx.plane.deleteMany({
+                    where: { airlineId }
+                });
+
+                // Finally, delete airline
+                const deletedAirline = await tx.airline.delete({
+                    where: { id: airlineId }
+                });
+
+                return {
+                    id: deletedAirline.id,
+                    name: deletedAirline.name
+                };
+            });
+        } catch (error) {
+            throw new Error(`Failed to delete airline: ${error.message}`);
+        }
+    },
+
     async getPlaneTypesService() {
         try {
             const planeTypes = await prisma.planeType.findMany({
@@ -241,6 +311,60 @@ export default {
         };
     },
 
+    async deletePlaneService(planeId) {
+        try {
+            return await prisma.$transaction(async (tx) => {
+
+                const seatCategories = await tx.seatCategory.findMany({
+                    where: { planeId },
+                    include: { seats: true }
+                });
+
+                for (const category of seatCategories) {
+                    for (const seat of category.seats) {
+                        await tx.ticket.deleteMany({
+                            where: { seatId: seat.id }
+                        });
+                    }
+
+                    await tx.seat.deleteMany({
+                        where: { seatCategoryId: category.id }
+                    });
+                }
+
+                await tx.seatCategory.deleteMany({
+                    where: { planeId }
+                });
+
+                const flights = await tx.flight.findMany({
+                    where: { planeId }
+                });
+
+                for (const flight of flights) {
+                    await tx.ticket.deleteMany({
+                        where: { flightId: flight.id }
+                    });
+                }
+
+                await tx.flight.deleteMany({
+                    where: { planeId }
+                });
+
+                const deletedPlane = await tx.plane.delete({
+                    where: { id: planeId }
+                });
+
+                return {
+                    id: deletedPlane.id,
+                    name: deletedPlane.name
+                };
+            });
+        } catch (error) {
+            throw new Error(`Failed to delete plane: ${error.message}`);
+        }
+    },
+
+    //gk kepake
     // async addSeatCategoryService(planeId, name, price) {
     //     try {
     //         const existingCategory = await prisma.seatCategory.findFirst({

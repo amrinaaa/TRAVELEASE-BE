@@ -81,7 +81,30 @@ export default {
         };
     },
 
-    // async deleteAirline(req, res) {},
+    async deleteAirline(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/DeleteAirlineRequest"}
+        },
+        #swagger.security = [{ "bearerAuth": [] }]
+        */
+        const { airlineId } = req.body;
+
+        try {
+            const result = await mitraPenerbangan.deleteAirlineService(airlineId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
 
     async getPlaneType(_req, res) {
         /**
@@ -185,7 +208,30 @@ export default {
         };
     },
 
-    // async updatePlane(req, res) {},
+    async deletePlane(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/DeletePlaneRequest"}
+        },
+        #swagger.security = [{ "bearerAuth": [] }]
+        */
+        const { planeId } = req.body;
+
+        try {
+            const result = await mitraPenerbangan.deletePlaneService(planeId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
 
     //bakal ke hapus nnti
     // async addSeatCategory(req, res) {
@@ -272,7 +318,6 @@ export default {
         }
     },
 
-    //bakal dirubah
     async addPlaneSeat(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']

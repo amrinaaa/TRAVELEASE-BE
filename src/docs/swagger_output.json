@@ -1036,6 +1036,46 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAirlineRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAirlineRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/plane-type": {
@@ -1175,6 +1215,46 @@
             "application/xml": {
               "schema": {
                 "$ref": "#/components/schemas/AddPlaneRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletePlaneRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletePlaneRequest"
               }
             }
           }
@@ -1961,6 +2041,18 @@
           "name": "UpdateAirlineRequest"
         }
       },
+      "DeleteAirlineRequest": {
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "DeleteAirlineRequest"
+        }
+      },
       "AddPlaneRequest": {
         "type": "object",
         "properties": {
@@ -1995,6 +2087,18 @@
         },
         "xml": {
           "name": "AddPlaneRequest"
+        }
+      },
+      "DeletePlaneRequest": {
+        "type": "object",
+        "properties": {
+          "planeId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "DeletePlaneRequest"
         }
       },
       "AddSeatCategoryRequest": {

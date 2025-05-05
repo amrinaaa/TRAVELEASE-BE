@@ -127,6 +127,10 @@ const doc = {
                 description: "",
             },
 
+            DeleteAirlineRequest: {
+                airlineId: "",
+            },
+
             AddPlaneRequest: {
                 planeTypeId: "",
                 airlineId: "",
@@ -137,6 +141,10 @@ const doc = {
                         "price": 100000,
                     },
                 ],
+            },
+
+            DeletePlaneRequest: {
+                planeId: "",
             },
 
             AddSeatCategoryRequest: {
