@@ -1,11 +1,7 @@
 import prisma from "../../../../prisma/prisma.client.js";
 
 export default {
-    async getRoomType (hotelId) {
-            if (!hotelId) {
-                throw new Error("Hotel ID is required");
-            }
-    
+    async getRoomType(hotelId) {
             try {
                 const typeRoom = await prisma.roomType.findMany({
                     where: {
@@ -19,5 +15,20 @@ export default {
             }
         },
 
-    
-    }
+        async addRoomType(hotelId, typeName, capacity, price) {
+            try {
+                const newRoomType = await prisma.roomType.create({
+                    data: {
+                        hotelId,
+                        typeName,
+                        capacity,
+                        price
+                    }
+                });
+        
+                return newRoomType;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        },        
+}

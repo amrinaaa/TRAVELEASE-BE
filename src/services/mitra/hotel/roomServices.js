@@ -5,14 +5,8 @@ import { extractFilePath } from "../../deleteFileService.js";
 
 export default {
     async getListRoomService(hotelId) {
-        
-        if (!hotelId) {
-            throw new Error("Hotel ID is required");
-        }
-
         try {
             const now = new Date();
-
             const rooms = await prisma.room.findMany({
             where: {
                 roomType: {
@@ -73,20 +67,9 @@ export default {
         }
     },
 
-    async addRoomService({ hotelId, roomTypeId, name, files }) {
+    async addRoomService({ roomTypeId, name, files }) {
 
         try {
-            const roomType = await prisma.roomType.findFirst({
-                where: {
-                    id: roomTypeId,
-                    hotelId: hotelId,
-                },
-            });
-    
-            if (!roomType) {
-                throw new Error("Room Type does not belong to the specified Hotel");
-            }
-    
             const newRoom = await prisma.room.create({
                 data: {
                     name,
@@ -94,11 +77,9 @@ export default {
                 },
             });
     
-            if (files && files.length > 0) {
-                for (const file of files) {
-                    await fotoRoom.uploadRoomImage(file, newRoom.id);
-                }
-            }
+            await Promise.all(
+                files.map(file => fotoRoom.uploadRoomImage(file, newRoom.id))
+            );
     
             return newRoom;
         } catch (error) {
@@ -125,12 +106,10 @@ export default {
                     roomTypeId,
                 },
             });
-    
-            if (files && files.length > 0) {
-                for (const file of files) {
-                    await fotoRoom.uploadRoomImage(file, updatedRoom.id);
-                }
-            }
+
+            await Promise.all(
+                files.map(file => fotoRoom.uploadRoomImage(file, updatedRoom.id))
+            );
     
             return updatedRoom;
         } catch (error) {

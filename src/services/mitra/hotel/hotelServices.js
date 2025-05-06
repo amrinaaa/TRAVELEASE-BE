@@ -71,12 +71,10 @@ export default {
                     }
                 }
             });
-            
-            if (files && files.length > 0) {
-                for (const file of files) {
-                    await fotoHotel.uploadHotelImage(file, newHotel.id);
-                }
-            }
+
+            await Promise.all(
+                files.map(file => fotoHotel.uploadHotelImage(file, newHotel.id))
+            );
 
             return newHotel;
 
@@ -88,33 +86,27 @@ export default {
 
     async editHotelService(hotelId, mitraId, updateData, files) {
         try {
-            const hotel = await prisma.hotel.findUnique({
-                where: { id: hotelId },
-                include: { hotelPartners: true },
-            });
-
-            if (!hotel) {
-                throw new Error('Hotel not found');
-            }
-
-            const isMitraPartner = hotel.hotelPartners.some(
-                (partner) => partner.partnerId === mitraId
-            );
-
-            if (!isMitraPartner) {
-                throw new Error('You are not authorized to edit this hotel');
-            }
+            const hotel = await prisma.hotel.findFirst({
+                where: {
+                    id: hotelId,
+                    hotelPartners: {
+                        some: { partnerId: mitraId }
+                    }
+                    }
+                });
+                
+                if (!hotel) {
+                    return res.status(403).json({ message: "Unauthorized" });
+                }
 
             const updatedHotel = await prisma.hotel.update({
                 where: { id: hotelId },
                 data: updateData,
             });
 
-            if (files && files.length > 0) {
-                for (const file of files) {
-                    await fotoHotel.uploadHotelImage(file, hotelId);
-                }
-            }
+            await Promise.all(
+                files.map(file => fotoHotel.uploadHotelImage(file, updatedHotel.id))
+            );
 
             return updatedHotel;
 
