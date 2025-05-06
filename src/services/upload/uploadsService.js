@@ -25,9 +25,8 @@ export default {
         }
 
         if (user?.profilePicture) {
-        const filePath = deleteService.extractFilePath(user.profilePicture);
+            await deleteService.deleteProfileImage(userId);
 
-        await deleteService.deleteFile(filePath);
         }
 
         const filename = generateFileNamee(userId, file.originalname);
@@ -110,9 +109,8 @@ export default {
             }
 
             if (airport?.imageUrl) {
-            const filePath = deleteService.extractFilePath(airport.imageUrl);
     
-            await deleteService.deleteFile(filePath);
+            await deleteService.deleteAirportImage(airportId);
             }
     
             const filename = generateFileNamee(airportId, file.originalname);

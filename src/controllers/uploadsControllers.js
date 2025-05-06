@@ -3,7 +3,7 @@ import uploadsController from "../services/upload/uploadsService.js";
 export default {
     async uploadProfile(req, res) {
         /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['Profile Mitra dan User']
         #swagger.consumes = ['multipart/form-data']
         #swagger.requestBody = {
             required: true,
@@ -46,9 +46,9 @@ export default {
         }
     },
 
-    async uploadHotelImage(req, res) {
+    async uploadProfilebyAdmin(req, res) {
         /**
-        #swagger.tags = ['Hotel']
+        #swagger.tags = ['Admin']
         #swagger.consumes = ['multipart/form-data']
         #swagger.requestBody = {
             required: true,
@@ -60,7 +60,7 @@ export default {
                     file: {
                     type: "string",
                     format: "binary",
-                    description: "File gambar yang akan diupload sebagai foto hotel"
+                    description: "File gambar yang akan diupload sebagai foto profil"
                     },
                 },
                 required: ["file"]
@@ -73,25 +73,27 @@ export default {
          }]
         */
         const file = req.file;
-        const { hotelId } = req.params;
+        const id = req.params.id;
 
         try {
-            await uploadsController.uploadHotelImage(file, hotelId);
+            const imageUrl = await uploadsController.uploadProfile(file, id);
+
             return res.status(201).json({
-                message: "Upload successful"
+                message: "Upload successful",
+                imageUrl
             });
 
         } catch (error) {
             console.error('Upload error:', error);
             return res.status(500).json({
-                message: error.message
+                message: "Internal Server Error"
             });
         }
     },
 
     async uploadRoomImage(req, res) {
         /**
-        #swagger.tags = ['Hotel']
+        #swagger.tags = ['Mitra Hotel']
         #swagger.consumes = ['multipart/form-data']
         #swagger.requestBody = {
             required: true,
@@ -113,7 +115,7 @@ export default {
         },
         #swagger.security = [{
             "bearerAuth": []
-         }]
+        }]
         */
         const file = req.file;
         const { roomId } = req.params;
@@ -134,6 +136,31 @@ export default {
     },
 
     async uploadAirportImage(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.consumes = ['multipart/form-data']
+        #swagger.requestBody = {
+            required: true,
+            content: {
+            "multipart/form-data": {
+                schema: {
+                type: "object",
+                properties: {
+                    file: {
+                    type: "string",
+                    format: "binary",
+                    description: "File gambar yang akan diupload sebagai foto airport"
+                    },
+                },
+                required: ["file"]
+                }
+            }
+            }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const file = req.file;
         const { airportId } = req.params;
 

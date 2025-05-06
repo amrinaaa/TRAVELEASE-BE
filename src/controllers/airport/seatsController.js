@@ -1,7 +1,7 @@
 import seatService from "../../services/airport/seat.js";
 
 export default {
-    async getSeat (req, res) {
+    async getSeat(req, res) {
         /**
         #swagger.tags = ['Seat']
         #swagger.parameters['flightId'] = {
@@ -10,7 +10,7 @@ export default {
             type: 'string'
         }
         */
-        const {flightId} = req.params;
+        const { flightId } = req.params;
         try {
             const result = await seatService.getSeatService(flightId);
             res.status(200).json({

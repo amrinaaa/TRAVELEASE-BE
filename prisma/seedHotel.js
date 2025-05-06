@@ -11,7 +11,9 @@ async function rollback() {
     await prisma.roomTypeFacility.deleteMany();
     await prisma.room.deleteMany();
     await prisma.roomImage.deleteMany();
+    // await prisma.transaction.deleteMany();
     await prisma.reservation.deleteMany();
+    await prisma.roomReservation.deleteMany();
     // await prisma.user.deleteMany();
 }
 
