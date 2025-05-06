@@ -18,19 +18,8 @@ function generateFileNamee(airportId, originalFileName) {
 export default {
     async uploadProfile(file, userId) {
     try {
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-
-        if (!user) {
-            throw new Error("User Id not found in database");
-        }
-
-        if (user?.profilePicture) {
-            await deleteService.deleteProfileImage(userId);
-
-        }
 
         const filename = generateFileNamee(userId, file.originalname);
-
         const url = await uploadService.uploadFile(
             file, "profile", 
             filename);
@@ -50,13 +39,6 @@ export default {
 
     async uploadHotelImage(file, hotelId) {
         try {
-            const hotel = await prisma.hotel.findUnique({
-                where: { id: hotelId }
-            });
-    
-            if (!hotel) {
-                throw new Error("Hotel ID not found in database");
-            }
         
             const filename = generateFileName(file.originalname, hotelId);
             const url = await uploadService.uploadFile(file, "hotel", filename);
@@ -76,13 +58,6 @@ export default {
 
     async uploadRoomImage(file, roomId) {
         try {
-            const room = await prisma.room.findUnique({
-                where: { id: roomId }
-            });
-    
-            if (!room) {
-                throw new Error("Room ID not found in database");
-            }
         
             const filename = generateFileName(file.originalname, roomId);
             const url = await uploadService.uploadFile(file, "room", filename);
@@ -102,19 +77,8 @@ export default {
 
     async uploadAirportImage(file, airportId) {
         try {
-            const airport = await prisma.airport.findUnique({ where: { id: airportId } });
-    
-            if (!airport) {
-                throw new Error("Airport Id not found in database");
-            }
 
-            if (airport?.imageUrl) {
-    
-            await deleteService.deleteAirportImage(airportId);
-            }
-    
             const filename = generateFileNamee(airportId, file.originalname);
-
             const url = await uploadService.uploadFile(
                 file, "airport", 
                 filename);

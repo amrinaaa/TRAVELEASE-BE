@@ -2,14 +2,17 @@ import hotelServices from "../services/mitra/hotel/hotelServices.js";
 import customerServices from "../services/mitra/hotel/customerServices.js";
 import roomServices from "../services/mitra/hotel/roomServices.js";
 import roomTypeServices from "../services/mitra/hotel/roomTypeServices.js";
+import facilityServices from "../services/mitra/hotel/facilityServices.js";
+import validation from "../utils/validation/hotel.js"
+import { validateImage } from "../utils/validation/fileImage.js"
 
 export default {
     async getListHotel(_req, res) {
         /**
-         #swagger.tags = ['Mitra Hotel']
-         #swagger.security = [{
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
             "bearerAuth": []
-         }]
+        }]
          */
         const id = res.locals.payload.id;
         try {
@@ -29,10 +32,10 @@ export default {
 
     async getLocation(_req, res) {
         /**
-         #swagger.tags = ['Mitra Hotel']
-         #swagger.security = [{
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
             "bearerAuth": []
-         }]
+        }]
          */
         try {
             const result = await hotelServices.getLocationService();
@@ -61,6 +64,17 @@ export default {
         const files = req.files;
 
         try {
+            await validation.validateAddHotel(req.body);
+
+            for (const file of files) {
+                const result = validateImage(file);
+                if (!result.valid) {
+                    const error = new Error(result.message);
+                    error.statusCode = 400;
+                    throw error;
+                }
+            }
+
             const result = await hotelServices.addHotelService(mitraId, locationId, name, description, address, contact, files);
             res.status(200).json({
                 message: "Success",
@@ -68,7 +82,7 @@ export default {
             });
 
         } catch (error) {
-            return res.status(500).json({
+            return res.status(error.statusCode || 500).json({
                 message: error.message,
                 data: null,
             });
@@ -95,6 +109,16 @@ export default {
         };
 
         try {
+
+            for (const file of files) {
+                const result = validateImage(file);
+                if (!result.valid) {
+                    const error = new Error(result.message);
+                    error.statusCode = 400;
+                    throw error;
+                }
+            }
+
             const result = await hotelServices.editHotelService(hotelId, mitraId, updateData, files);
             res.status(200).json({
                 message: "Hotel updated successfully",
@@ -102,7 +126,7 @@ export default {
             });
 
         } catch (error) {
-            return res.status(500).json({
+            return res.status(error.statusCode || 500).json({
                 message: error.message,
                 data: null,
             });
@@ -225,6 +249,17 @@ export default {
         const files = req.files;
 
         try {
+            await validation.validateAddRoom(req.body);
+
+            for (const file of files) {
+                const result = validateImage(file);
+                if (!result.valid) {
+                    const error = new Error(result.message);
+                    error.statusCode = 400;
+                    throw error;
+                }
+            }
+
             const result = await roomServices.addRoomService({
                 mitraId,
                 hotelId,
@@ -239,11 +274,12 @@ export default {
             });
 
         } catch (error) {
-            return res.status(500).json({
+            return res.status(error.statusCode || 500).json({
                 message: error.message,
                 data: null,
             });
         }
+
     },
 
     async editRoom(req, res) {
@@ -252,6 +288,15 @@ export default {
         const files = req.files;
 
         try {
+            for (const file of files) {
+                const result = validateImage(file);
+                if (!result.valid) {
+                    const error = new Error(result.message);
+                    error.statusCode = 400;
+                    throw error;
+                }
+            }
+
             const result = await roomServices.editRoomService({
                 mitraId,
                 roomId,
@@ -266,7 +311,7 @@ export default {
             });
 
         } catch (error) {
-            return res.status(500).json({
+            return res.status(error.statusCode || 500).json({
                 message: error.message,
                 data: null,
             });
@@ -285,7 +330,7 @@ export default {
         try {
             const result = await roomServices.deleteRoomService({ roomId });
             return res.status(200).json({
-                message: "Room and associated images deleted successfully",
+                message: "Deleted successfully",
                 data: result,
             });
 
@@ -297,4 +342,108 @@ export default {
         }
     },
 
+    async getRoomTypeFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel]
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        const { roomTypeId } = req.params;
+        if (!roomTypeId) {
+            return res.status(400).json({
+                message: "Room Type ID is required",
+                data: null,
+            });
+        }
+        try {
+            const result = await facilityServices.getRoomTypeFacilityServices(roomTypeId);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            })
+        }
+    },
+
+    async addRoomType(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+            }]
+        */
+        const { hotelId, typeName, capacity, price } = req.body;
+
+        try {
+            await validation.validateAddRoomType(req.body);
+
+            const result = await roomTypeServices.addRoomType(hotelId, typeName, capacity, price);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async addRoomTypeFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomTypeId, facilityId, amount } = req.body;
+
+        try {
+            await validation.validateAddRoomTypeFacility(req.body);
+
+            const result = await facilityServices.addRoomTypeFacilityServices(roomTypeId, facilityId, amount);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async addFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { name } = req.body;
+
+        try {
+            await validation.validateAddFacility(req.body);
+
+            const result = await facilityServices.addFacilityServices(name);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    }
 };
