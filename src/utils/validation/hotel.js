@@ -111,6 +111,16 @@ export default {
         }
     },
 
+    async validateEditRoom(data) {
+        const { roomId } = data;
+
+        if (!roomId) {
+            const error = new Error("Room ID is required");
+            error.statusCode = 400;
+            throw error;
+        }
+    },
+
     async validateAddRoomType(data) {
         const { hotelId, typeName, capacity, price } = data;
 

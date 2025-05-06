@@ -311,6 +311,8 @@ export default {
         const files = req.files;
 
         try {
+            await validation.validateEditRoom(req.body);
+
             for (const file of files) {
                 const result = validateImage(file);
                 if (!result.valid) {
