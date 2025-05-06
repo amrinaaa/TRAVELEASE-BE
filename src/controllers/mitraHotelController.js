@@ -4,7 +4,7 @@ import roomServices from "../services/mitra/hotel/roomServices.js";
 import roomTypeServices from "../services/mitra/hotel/roomTypeServices.js";
 import facilityServices from "../services/mitra/hotel/facilityServices.js";
 import validation from "../utils/validation/hotel.js"
-import {validateImage} from "../utils/validation/fileImage.js"
+import { validateImage } from "../utils/validation/fileImage.js"
 
 export default {
     async getListHotel(_req, res) {
@@ -111,7 +111,7 @@ export default {
                 message: error.message,
                 data: null,
             });
-        }        
+        }
     },
 
     async editHotel(req, res) {
@@ -160,7 +160,7 @@ export default {
                 message: error.message,
                 data: null,
             });
-        }        
+        }
     },
 
     async deleteHotel(req, res) {
@@ -303,7 +303,7 @@ export default {
                 data: null,
             });
         }
-        
+
     },
 
     async editRoom(req, res) {
@@ -319,7 +319,7 @@ export default {
                     throw error;
                 }
             }
-            
+
             const result = await roomServices.editRoomService({
                 roomId,
                 name,
@@ -377,13 +377,15 @@ export default {
                 data: null,
             });
         }
+
         try {
             const result = await facilityServices.getRoomTypeFacilityServices(roomTypeId);
             res.status(200).json({
                 message: "Success",
                 data: result,
             });
-        }catch (error) {
+
+        } catch (error) {
             return res.status(500).json({
                 message: error.message,
                 data: null,
@@ -392,12 +394,12 @@ export default {
     },
 
     async addRoomType(req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-        }]
-    */
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+            }]
+        */
         const { hotelId, typeName, capacity, price } = req.body;
 
         try {
@@ -408,21 +410,22 @@ export default {
                 message: "Success",
                 data: result,
             });
+
         } catch (error) {
             return res.status(error.statusCode || 500).json({
                 message: error.message,
                 data: null,
             });
-        }        
+        }
     },
 
     async addRoomTypeFacility(req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-    }]
-    */
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomTypeId, facilityId, amount } = req.body;
 
         try {
@@ -439,16 +442,16 @@ export default {
                 message: error.message,
                 data: null,
             });
-        }        
+        }
     },
 
     async addFacility(req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-    }]
-    */
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { name } = req.body;
 
         try {
@@ -481,6 +484,7 @@ export default {
                 message: "Success",
                 data: result,
             });
+            
         }catch (error) {
             return res.status(500).json({
                 message: error.message,
