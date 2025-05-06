@@ -7,7 +7,7 @@ import validation from "../utils/validation/hotel.js"
 import {validateImage} from "../utils/validation/fileImage.js"
 
 export default {
-    async getListHotel(req, res) {
+    async getListHotel(_req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
@@ -30,7 +30,7 @@ export default {
         }
     },
 
-    async getLocation(req, res) {
+    async getLocation(_req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
@@ -52,6 +52,31 @@ export default {
         }
     },
 
+    async addLocation(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        const { city } = req.body;
+        try {
+            await validation.validateAddLocation(req.body);
+
+            const result = await hotelServices.addLocationService(city);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async addHotel(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
@@ -60,7 +85,7 @@ export default {
         }]
          */
         const mitraId = res.locals.payload.id;
-        const { locationId,name, description, address, contact } = req.body;
+        const { locationId, name, description, address, contact } = req.body;
         const files = req.files;
 
         try {
@@ -96,19 +121,20 @@ export default {
             "bearerAuth": []
         }]
         */
-        const mitraId = res.locals.payload.id;
-        const { hotelId, locationId, name, description, address, contact } = req.body;
+        const { hotelId } = req.body;
         const files = req.files;
 
-        const updateData = {
-            ...(locationId && { locationId }),
-            ...(name && { name }),
-            ...(description && { description }),
-            ...(address && { address }),
-            ...(contact && { contact }),
-        };
-
         try {
+            await validation.validateEditHotel(req.body);
+
+            const updateData = {};
+            const fields = ['locationId', 'name', 'description', 'address', 'contact'];
+
+            for (const field of fields) {
+                if (field in req.body) {
+                    updateData[field] = req.body[field];
+                }
+            }
 
             for (const file of files) {
                 const result = validateImage(file);
@@ -119,7 +145,11 @@ export default {
                 }
             }
 
-            const result = await hotelServices.editHotelService(hotelId, mitraId, updateData, files);
+            const result = await hotelServices.editHotelService({
+                hotelId, 
+                updateData, 
+                files});
+
             res.status(200).json({
                 message: "Hotel updated successfully",
                 data: result,
@@ -136,16 +166,20 @@ export default {
     async deleteHotel(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/deleteHotelRequest"}
+        },
         #swagger.security = [{
             "bearerAuth": []
         }]
         */
         const mitraId = res.locals.payload.id;
         const { hotelId } = req.body;
-    
+
         try {
             const result = await hotelServices.deleteHotelService(hotelId, mitraId);
-            
+
             res.status(200).json({
                 message: result.message,
                 data: null,
@@ -160,21 +194,20 @@ export default {
     },
 
     async getCustomerList(req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-    }]
-    */
-    try {
-        const mitraId = res.locals.payload.id;
-        
-        const customers = await customerServices.getCustomerListService(mitraId);
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        try {
+            const mitraId = res.locals.payload.id;
+            const customers = await customerServices.getCustomerListService(mitraId);
 
-        return res.status(200).json({
-            success: true,
-            message: 'List customers fetched successfully',
-            data: customers,
+            return res.status(200).json({
+                success: true,
+                message: 'List customers fetched successfully',
+                data: customers,
             });
 
         } catch (error) {
@@ -188,49 +221,47 @@ export default {
     },
 
     async getRoomList(req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-    }]
-    */
-    const mitraId = res.locals.payload.id;
-    const { hotelId } = req.params;
-    
-    try {
-        const result = await roomServices.getListRoomService(hotelId, mitraId);
-            
-        res.status(200).json({
-            message: "Success",
-            data: result,
-        });
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { hotelId } = req.params;
 
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message,
-            data: null,
-        });
-    }
+        try {
+            const result = await roomServices.getListRoomService(hotelId);
+
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            });
+        }
     },
 
     async getRoomType(req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-    }]
-    */
-    const mitraId = res.locals.payload.id;
-    const { hotelId } = req.params;
-    
-    try {
-        const result = await roomTypeServices.getRoomType(hotelId, mitraId);
-            
-        res.status(200).json({
-            message: "Success",
-            data: result,
-        });
-            
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { hotelId } = req.params;
+
+        try {
+            const result = await roomTypeServices.getRoomType(hotelId);
+
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
@@ -240,10 +271,9 @@ export default {
     },
 
     async addRoom(req, res) {
-        const mitraId = res.locals.payload.id;
-        const { hotelId, name, roomTypeId } = req.body;
+        const { roomTypeId, name } = req.body;
         const files = req.files;
-        
+
         try {
             await validation.validateAddRoom(req.body);
 
@@ -257,18 +287,16 @@ export default {
             }
 
             const result = await roomServices.addRoomService({
-                mitraId,
-                hotelId,
                 roomTypeId,
                 name,
                 files
             });
-        
+
             return res.status(200).json({
                 message: "Room successfully added",
                 data: result,
             });
-        
+
         } catch (error) {
             return res.status(error.statusCode || 500).json({
                 message: error.message,
@@ -277,12 +305,11 @@ export default {
         }
         
     },
-    
-    async editRoom (req, res) {
-        const mitraId = res.locals.payload.id;
-        const { roomId, name, roomTypeId } = req.body;
+
+    async editRoom(req, res) {
+        const { roomId, name } = req.body;
         const files = req.files;
-        
+
         try {
             for (const file of files) {
                 const result = validateImage(file);
@@ -294,18 +321,16 @@ export default {
             }
             
             const result = await roomServices.editRoomService({
-                mitraId,
                 roomId,
                 name,
-                roomTypeId,
                 files
             });
-        
+
             return res.status(200).json({
                 message: "Room successfully updated",
                 data: result,
             });
-        
+
         } catch (error) {
             return res.status(error.statusCode || 500).json({
                 message: error.message,
@@ -314,7 +339,13 @@ export default {
         }        
     },
 
-    async deleteRoom (req, res) {
+    async deleteRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomId } = req.params;
 
         try {
@@ -435,5 +466,26 @@ export default {
                 data: null,
             });
         }        
+    },
+
+    async getFacilities (req, res) {
+    /**
+    #swagger.tags = ['Mitra Hotel']
+    #swagger.security = [{
+        "bearerAuth": []
+    }]
+    */
+        try {
+            const result = await facilityServices.getFacilityService();
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        }catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            })
+        }
     }
 };

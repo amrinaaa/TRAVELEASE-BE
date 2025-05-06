@@ -99,14 +99,21 @@ const doc = {
                 type: "adding",
             },
 
+            AddPlaneTypeRequest: {
+                name: "",
+                manufacture: "",
+            },
+
             GetPlanesRequest: {
                 airlineId: "",
             },
 
-            AddSeatAvailabilityRequest: {
+            AddPlaneSeatRequest: {
                 planeId: "",
                 seatCategoryId: "",
-                seatNames: ["A1", "B1"],
+                seatArrangement: [
+                    { line: "A", start: "1", end: "6" },
+                ],
             },
 
             AddAirlineRequest: {
@@ -114,10 +121,30 @@ const doc = {
                 description: "Sangat Cepat",
             },
 
+            UpdateAirlineRequest: {
+                airlineId: "",
+                name: "",
+                description: "",
+            },
+
+            DeleteAirlineRequest: {
+                airlineId: "",
+            },
+
             AddPlaneRequest: {
                 planeTypeId: "",
                 airlineId: "",
                 name: "",
+                seatCategories: [
+                    {
+                        "name": "Economy",
+                        "price": 100000,
+                    },
+                ],
+            },
+
+            DeletePlaneRequest: {
+                planeId: "",
             },
 
             AddSeatCategoryRequest: {
@@ -138,30 +165,35 @@ const doc = {
                 seatId: "",
             },
 
-            getHotelsRequest: {
-                mitraId: "",
+            AddFlightRequest: {
+                planeId: "",
+                departureAirportId: "",
+                arrivalAirportId: "",
+                flightCode: "",
+                departureTime: "",
+                arrivalTime: "",
             },
 
-            getLocationsRequest: {
-                mitraId: "",
+            GetPassangersRequest: {
+                flightId: "",
             },
 
-            addHotelRequest: {
-                locationId: "",
-                name: "",
-                description: "",
-                address: "",
-                contact: "",
-            },
+            // addHotelRequest: {
+            //     locationId: "",
+            //     name: "",
+            //     description: "",
+            //     address: "",
+            //     contact: "",
+            // },
 
-            editHotelRequest: {
-                hotelId: "",
-                locationId: "",
-                name: "",
-                description: "",
-                address: "",
-                contact: "",
-            },
+            // editHotelRequest: {
+            //     hotelId: "",
+            //     locationId: "",
+            //     name: "",
+            //     description: "",
+            //     address: "",
+            //     contact: "",
+            // },
 
             deleteHotelRequest: {
                 hotelId: "",

@@ -88,7 +88,7 @@ export default {
         }
     },
 
-    async editRoomService({ roomId, name, roomTypeId, files }) {
+    async editRoomService({ roomId, name, files }) {
         try {
             const room = await prisma.room.findUnique({
                 where: { id: roomId },
@@ -103,7 +103,6 @@ export default {
                 where: { id: roomId },
                 data: {
                     name,
-                    roomTypeId,
                 },
             });
 

@@ -1,4 +1,20 @@
 export default {
+    async validateAddLocation(data) {
+        const { city } = data;
+
+        if (!city) {
+            const error = new Error("Location city is required");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (typeof city !== 'string') {
+            const error = new Error("Location city must be a string");
+            error.statusCode = 400;
+            throw error;
+        }
+    },
+
     async validateAddHotel(data) {
         const { locationId, name, description, address, contact } = data;
 
@@ -57,11 +73,27 @@ export default {
         }
     },
 
-    async validateAddRoom(data) {
-        const { hotelId, name, roomTypeId} = data;
+    async validateEditHotel(data) {
+        const { hotelId, locationId, name, description, address, contact } = data;
 
         if (!hotelId) {
             const error = new Error("Hotel ID is required");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (!locationId) {
+            const error = new Error("Location ID is required");
+            error.statusCode = 400;
+            throw error;
+        }
+    },
+
+    async validateAddRoom(data) {
+        const { roomTypeId, name } = data;
+
+        if (!roomTypeId) {
+            const error = new Error("Room Type ID is required");
             error.statusCode = 400;
             throw error;
         }
@@ -74,12 +106,6 @@ export default {
 
         if (typeof name !== 'string') {
             const error = new Error("Room name must be a string");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (!roomTypeId) {
-            const error = new Error("Room Type ID is required");
             error.statusCode = 400;
             throw error;
         }

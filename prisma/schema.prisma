@@ -90,6 +90,7 @@ model Flight {
   departureAirportId String
   arrivalAirportId   String
   flightCode         String
+  price              Int @default(0)
   departureTime      DateTime
   arrivalTime        DateTime
   arrivalAirport     Airport  @relation("ArrivalRelation", fields: [arrivalAirportId], references: [id])
