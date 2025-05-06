@@ -1530,6 +1530,47 @@
         ]
       }
     },
+    "/location": {
+      "post": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "city": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hotel": {
       "post": {
         "tags": [
@@ -1613,21 +1654,6 @@
                 "type": "object",
                 "properties": {
                   "hotelId": {
-                    "example": "any"
-                  },
-                  "locationId": {
-                    "example": "any"
-                  },
-                  "name": {
-                    "example": "any"
-                  },
-                  "description": {
-                    "example": "any"
-                  },
-                  "address": {
-                    "example": "any"
-                  },
-                  "contact": {
                     "example": "any"
                   }
                 }
@@ -1818,6 +1844,56 @@
         ]
       }
     },
+    "/roomType": {
+      "post": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hotelId": {
+                    "example": "any"
+                  },
+                  "typeName": {
+                    "example": "any"
+                  },
+                  "capacity": {
+                    "example": "any"
+                  },
+                  "price": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/room": {
       "post": {
         "description": "",
@@ -1841,13 +1917,10 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "hotelId": {
+                  "roomTypeId": {
                     "example": "any"
                   },
                   "name": {
-                    "example": "any"
-                  },
-                  "roomTypeId": {
                     "example": "any"
                   }
                 }
@@ -1883,9 +1956,6 @@
                   },
                   "name": {
                     "example": "any"
-                  },
-                  "roomTypeId": {
-                    "example": "any"
                   }
                 }
               }
@@ -1910,6 +1980,190 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/roomImage/{id}": {
+      "delete": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/roomType-facilities/{roomTypeId}": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "roomTypeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/roomType-facilities": {
+      "post": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roomTypeId": {
+                    "example": "any"
+                  },
+                  "facilityId": {
+                    "example": "any"
+                  },
+                  "amount": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/facility": {
+      "post": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/facilities": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
         "responses": {
           "200": {
             "description": "OK"
@@ -2061,46 +2315,6 @@
             }
           }
         }
-      }
-    },
-    "/roomImage/{id}": {
-      "delete": {
-        "tags": [
-          "Mitra Hotel"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
       }
     },
     "/profile": {

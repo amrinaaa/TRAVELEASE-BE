@@ -96,16 +96,15 @@ router.get('/roomType/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mit
 router.post('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomType);
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
-router.delete('/room/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoom);//sementara belum ngedelete sampe keika room di pesan
+router.delete('/room/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoom);//sementara belum ngedelete sampe ketika room di pesan
 router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
 router.get('/roomType-facilities/:roomTypeId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomTypeFacility);
 router.post('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomTypeFacility);
 router.post('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addFacility);
 router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
-//blum fiks mau disatuin ke endpoint
+//blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware,  mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware,  mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
-router.post('/roomImage/:roomId', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadRoomImage);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
