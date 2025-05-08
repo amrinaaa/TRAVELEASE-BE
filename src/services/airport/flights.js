@@ -1,14 +1,16 @@
 import prisma from "../../../prisma/prisma.client.js";
 
 export default {
-    async getCityFlightService (city) {
+    async getCityFlightService(city) {
         const airport = await prisma.airport.findMany({
-            where: { 
-                city: { equals: city, mode: "insensitive", }, }, }); 
-            return airport; 
-        },
+            where: {
+                city: { equals: city, mode: "insensitive", },
+            },
+        });
+        return airport;
+    },
 
-    async getFlightsService() {    
+    async getFlightsService() {
         const flights = await prisma.flight.findMany({
             select: {
                 id: true,
@@ -16,19 +18,23 @@ export default {
                 departureTime: true,
                 arrivalTime: true,
                 departureAirport: {
-                    select: { 
-                        name: true, 
-                        city: true, 
-                        code: true },
+                    select: {
+                        name: true,
+                        city: true,
+                        code: true,
+                        imageUrl: true,
+                    },
                 },
                 arrivalAirport: {
-                    select: { 
-                        name: true, 
-                        city: true, 
-                        code: true },
+                    select: {
+                        name: true,
+                        city: true,
+                        code: true,
+                        imageUrl: true,
+                    },
                 },
                 plane: {
-                    select: { 
+                    select: {
                         name: true,
                         planeType: {
                             select: {
@@ -36,9 +42,9 @@ export default {
                                 manufacture: true,
                             },
                         },
-                    }, 
-                }, 
-            }, 
+                    },
+                },
+            },
         });
 
         return flights;

@@ -1,32 +1,32 @@
 import flightsService from '../../services/airport/flights.js';
 
 export default {
-    async getCityFlight (req, res) {
-    /**
-    #swagger.tags = ['Flight']
-    */
-    try {
-        const daerah = await flightsService.getCityFlightService();
-        if (!daerah || daerah.length === 0) {
-            return res.status(404).json({
-                message: "City not found",
+    async getCityFlight(req, res) {
+        /**
+        #swagger.tags = ['Flight']
+        */
+        try {
+            const daerah = await flightsService.getCityFlightService();
+            if (!daerah || daerah.length === 0) {
+                return res.status(404).json({
+                    message: "City not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: daerah,
+            });
+        }
+        catch (error) {
+            res.status(500).json({
+                message: "Internal Server Error",
                 data: null,
             });
         }
-        res.status(200).json({
-            message: "Success",
-            data: daerah,
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            message: "Internal Server Error",
-            data: null,
-        });
-    }
-},
+    },
 
-    async getCityFlightSpesific (req, res) {
+    async getCityFlightSpesific(req, res) {
         /**
         #swagger.tags = ['Flight']
         #swagger.parameters['city'] = {
@@ -48,7 +48,7 @@ export default {
                 message: "Success",
                 data: daerah,
             });
-            
+
         } catch (error) {
             console.error("Error:", error);
             res.status(500).json({
@@ -58,7 +58,7 @@ export default {
         }
     },
 
-    async getFlights (req, res) {
+    async getFlights(req, res) {
         /**
         #swagger.tags = ['Flight']
         */
