@@ -1265,6 +1265,46 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteFlightRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/passengers": {
@@ -2260,63 +2300,6 @@
         ]
       }
     },
-    "/roomImage/{roomId}": {
-      "post": {
-        "tags": [
-          "Mitra Hotel"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "roomId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "File gambar yang akan diupload sebagai foto ruangan hotel"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
     "/profile": {
       "post": {
         "tags": [
@@ -2895,10 +2878,23 @@
           "arrivalTime": {
             "type": "string",
             "example": ""
-          }
+          },
+          "price": {}
         },
         "xml": {
           "name": "AddFlightRequest"
+        }
+      },
+      "DeleteFlightRequest": {
+        "type": "object",
+        "properties": {
+          "flightId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "DeleteFlightRequest"
         }
       },
       "GetPassangersRequest": {
