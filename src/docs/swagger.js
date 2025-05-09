@@ -172,6 +172,11 @@ const doc = {
                 flightCode: "",
                 departureTime: "",
                 arrivalTime: "",
+                price: null,
+            },
+
+            DeleteFlightRequest: {
+                flightId: "",
             },
 
             GetPassangersRequest: {

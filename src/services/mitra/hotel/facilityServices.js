@@ -55,6 +55,22 @@ export default {
             console.error("Error adding facility:", error);
             throw new Error("Failed to add facility");
         }
+    },
+
+    async getFacilityService () {
+        try {
+            const result = await prisma.facility.findMany({
+                select: {
+                    id: true,
+                    facilityName: true
+                }
+            });
+    
+            return result;
+        } catch (error) {
+            console.error("Error fetching facilities:", error);
+            throw new Error("Failed to fetch facilities");
+        }
     }
 
     
