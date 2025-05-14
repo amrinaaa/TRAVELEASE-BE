@@ -1,21 +1,26 @@
 import flightsService from '../../services/airport/flights.js';
 
 export default {
-    async getCityFlight(req, res) {
+    async getFlightsByCity(req, res) {
         /**
-        #swagger.tags = ['Flight']
-        */
-        try {
-            const daerah = await flightsService.getCityFlightService();
-            if (!daerah || daerah.length === 0) {
-                return res.status(404).json({
-                    message: "City not found",
-                    data: null,
-                });
+        #swagger.tags = ['Airport']
+        #swagger.parameters['city'] = {
+            in: 'query',
+            required: true,
+            schema: {
+                $ref: "#/components/schemas/GetFlightsByCityRequest"
             }
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const city = req.query.city;
+        try {
+            const result = await flightsService.getFlightsByCityService(city);
             res.status(200).json({
                 message: "Success",
-                data: daerah,
+                data: result,
             });
         }
         catch (error) {
@@ -26,41 +31,9 @@ export default {
         }
     },
 
-    async getCityFlightSpesific(req, res) {
-        /**
-        #swagger.tags = ['Flight']
-        #swagger.parameters['city'] = {
-            in: 'path',
-            required: true,
-            type: 'string',
-        }
-        */
-        try {
-            const { city } = req.params;
-            const daerah = await flightsService.getCityFlightService(city);
-            if (!daerah || daerah.length === 0) {
-                return res.status(404).json({
-                    message: "City not found",
-                    data: null,
-                });
-            }
-            res.status(200).json({
-                message: "Success",
-                data: daerah,
-            });
-
-        } catch (error) {
-            console.error("Error:", error);
-            res.status(500).json({
-                message: "Internal Server Error",
-                data: null,
-            });
-        }
-    },
-
     async getFlights(req, res) {
         /**
-        #swagger.tags = ['Flight']
+        #swagger.tags = ['Airport']
         */
         try {
             const flights = await flightsService.getFlightsService();

@@ -24,6 +24,9 @@ import userController from "../controllers/user.controller.js";
 
 import { getAirports } from "../controllers/airport/airportController.js";
 
+import hotelControllers from "../controllers/hotel/hotel.controllers.js";
+
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -47,17 +50,16 @@ router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
 router.post('/admin/profile/:id', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfilebyAdmin);
 router.delete('/admin/profile/:id', authMiddleware, adminMiddleware, deleteFileController.deleteProfilebyAdmin);
 
-//route flights
-// api get
-router.get('/airport-city', flightsController.getCityFlight);
-router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
+//route Airport
+router.get('/airports', authMiddleware, getAirports);
+router.get('/flights-by-city', authMiddleware, flightsController.getFlightsByCity);
 router.get('/flights', flightsController.getFlights);
-
-//route Seat
 router.get('/seats/:flightId', seatsController.getSeat);
 
-//route airport
-router.get('/airports', authMiddleware, getAirports);
+//route Hotel
+router.get('/guest/hotels', authMiddleware, hotelControllers.getHotels);
+router.get('/hotels-by-city', authMiddleware, hotelControllers.getHotelsByCity);
+router.get('/search-rooms', authMiddleware, hotelControllers.searchRooms);
 
 //Mitra-Penerbangan
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);

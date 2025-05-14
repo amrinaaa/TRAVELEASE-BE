@@ -620,38 +620,40 @@
         ]
       }
     },
-    "/airport-city": {
+    "/airports": {
       "get": {
         "tags": [
-          "Flight"
+          "Airport"
         ],
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
           },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/airport-city/{city}": {
+    "/flights-by-city": {
       "get": {
         "tags": [
-          "Flight"
+          "Airport"
         ],
         "description": "",
         "parameters": [
           {
             "name": "city",
-            "in": "path",
+            "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/GetFlightsByCityRequest"
             }
           }
         ],
@@ -659,19 +661,24 @@
           "200": {
             "description": "OK"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/flights": {
       "get": {
         "tags": [
-          "Flight"
+          "Airport"
         ],
         "description": "",
         "responses": {
@@ -690,7 +697,7 @@
     "/seats/{flightId}": {
       "get": {
         "tags": [
-          "Seat"
+          "Airport"
         ],
         "description": "",
         "parameters": [
@@ -713,10 +720,10 @@
         }
       }
     },
-    "/airports": {
+    "/guest/hotels": {
       "get": {
         "tags": [
-          "Airport"
+          "Hotel"
         ],
         "description": "",
         "responses": {
@@ -725,6 +732,104 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hotels-by-city": {
+      "get": {
+        "tags": [
+          "Hotel"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetHotelsByCityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/search-rooms": {
+      "get": {
+        "tags": [
+          "Hotel"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "cityOrHotel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkIn",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkOut",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guests",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roomType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -2405,11 +2510,11 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "citilink@gmail.com"
           },
           "password": {
             "type": "string",
-            "example": "Password123"
+            "example": "Citilink123"
           }
         },
         "xml": {
@@ -2586,6 +2691,18 @@
         },
         "xml": {
           "name": "SearchMitraRequest"
+        }
+      },
+      "GetFlightsByCityRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetFlightsByCityRequest"
         }
       },
       "FilterFLightRequest": {
@@ -2907,6 +3024,50 @@
         },
         "xml": {
           "name": "GetPassangersRequest"
+        }
+      },
+      "GetHotelsByCityRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetHotelsByCityRequest"
+        }
+      },
+      "SearchRoomsRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": ""
+          },
+          "hotel": {
+            "type": "string",
+            "example": ""
+          },
+          "checkIn": {
+            "type": "string",
+            "example": ""
+          },
+          "checkOut": {
+            "type": "string",
+            "example": ""
+          },
+          "guests": {
+            "type": "string",
+            "example": ""
+          },
+          "roomType": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "SearchRoomsRequest"
         }
       },
       "deleteHotelRequest": {

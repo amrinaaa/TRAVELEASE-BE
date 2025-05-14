@@ -1,52 +1,206 @@
 import prisma from "../../../prisma/prisma.client.js";
 
 export default {
-    async getCityFlightService(city) {
-        const airport = await prisma.airport.findMany({
-            where: {
-                city: { equals: city, mode: "insensitive", },
-            },
-        });
-        return airport;
-    },
-
-    async getFlightsService() {
-        const flights = await prisma.flight.findMany({
-            select: {
-                id: true,
-                flightCode: true,
-                departureTime: true,
-                arrivalTime: true,
-                departureAirport: {
-                    select: {
-                        name: true,
-                        city: true,
-                        code: true,
-                        imageUrl: true,
-                    },
+    async getFlightsByCityService(city) {
+        try {
+            const flights = await prisma.flight.findMany({
+                where: {
+                    arrivalAirport: {
+                        city: {
+                            equals: city,
+                            mode: "insensitive",
+                        }
+                    }
                 },
-                arrivalAirport: {
-                    select: {
-                        name: true,
-                        city: true,
-                        code: true,
-                        imageUrl: true,
+                select: {
+                    id: true,
+                    flightCode: true,
+                    departureTime: true,
+                    arrivalTime: true,
+                    price: true,
+                    departureAirport: {
+                        select: {
+                            name: true,
+                            city: true,
+                            code: true,
+                            imageUrl: true,
+                        },
                     },
-                },
-                plane: {
-                    select: {
-                        name: true,
-                        planeType: {
-                            select: {
-                                name: true,
-                                manufacture: true,
+                    arrivalAirport: {
+                        select: {
+                            name: true,
+                            city: true,
+                            code: true,
+                            imageUrl: true,
+                        },
+                    },
+                    plane: {
+                        select: {
+                            name: true,
+                            airline: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                            planeType: {
+                                select: {
+                                    name: true,
+                                    manufacture: true,
+                                },
+                            },
+                            seatCategories: {
+                                select: {
+                                    name: true,
+                                    price: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
+            });
 
-        return flights;
-    }
+            const formattedFlights = flights.map(flight => {
+                const { price: basePrice, ...restFlight } = flight;
+
+                let minTotalPrice = Number.MAX_SAFE_INTEGER;
+                let maxTotalPrice = 0;
+
+                const formattedCategories = flight.plane.seatCategories.map(category => {
+                    const totalPrice = basePrice + category.price;
+
+                    if (totalPrice < minTotalPrice) minTotalPrice = totalPrice;
+                    if (totalPrice > maxTotalPrice) maxTotalPrice = totalPrice;
+
+                    return {
+                        name: category.name,
+                        categoryPrice: category.price,
+                        totalPrice
+                    };
+                });
+
+                if (formattedCategories.length === 0) {
+                    minTotalPrice = basePrice;
+                    maxTotalPrice = basePrice;
+                }
+
+                const priceRange = minTotalPrice === maxTotalPrice
+                    ? `${minTotalPrice}`
+                    : `${minTotalPrice} - ${maxTotalPrice}`;
+
+                const formattedPlane = {
+                    ...flight.plane,
+                    seatCategories: formattedCategories
+                };
+
+                return {
+                    ...restFlight,
+                    basePrice,
+                    priceRange,
+                    plane: formattedPlane
+                };
+            });
+
+            return formattedFlights;
+        } catch (error) {
+            throw new Error(`Gagal mengambil data flight: ${error.message}`);
+        }
+    },
+
+    async getFlightsService() {
+        try {
+            const flights = await prisma.flight.findMany({
+                select: {
+                    id: true,
+                    flightCode: true,
+                    departureTime: true,
+                    arrivalTime: true,
+                    price: true,
+                    departureAirport: {
+                        select: {
+                            name: true,
+                            city: true,
+                            code: true,
+                            imageUrl: true,
+                        },
+                    },
+                    arrivalAirport: {
+                        select: {
+                            name: true,
+                            city: true,
+                            code: true,
+                            imageUrl: true,
+                        },
+                    },
+                    plane: {
+                        select: {
+                            name: true,
+                            airline: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                            planeType: {
+                                select: {
+                                    name: true,
+                                    manufacture: true,
+                                },
+                            },
+                            seatCategories: {
+                                select: {
+                                    name: true,
+                                    price: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            //ngeformat data yang ingin dikembalikan
+            const formattedFlights = flights.map(flight => {
+                const { price: basePrice, ...restFlight } = flight;
+
+                let minTotalPrice = Number.MAX_SAFE_INTEGER;
+                let maxTotalPrice = 0;
+
+                const formattedCategories = flight.plane.seatCategories.map(category => {
+                    const totalPrice = basePrice + category.price;
+
+                    if (totalPrice < minTotalPrice) minTotalPrice = totalPrice;
+                    if (totalPrice > maxTotalPrice) maxTotalPrice = totalPrice;
+
+                    return {
+                        name: category.name,
+                        categoryPrice: category.price,
+                        totalPrice
+                    };
+                });
+
+                if (formattedCategories.length === 0) {
+                    minTotalPrice = basePrice;
+                    maxTotalPrice = basePrice;
+                }
+
+                const priceRange = minTotalPrice === maxTotalPrice
+                    ? `${minTotalPrice}`
+                    : `${minTotalPrice} - ${maxTotalPrice}`;
+
+                const formattedPlane = {
+                    ...flight.plane,
+                    seatCategories: formattedCategories
+                };
+
+                return {
+                    ...restFlight,
+                    basePrice,
+                    priceRange,
+                    plane: formattedPlane
+                };
+            });
+
+            return formattedFlights;
+        } catch (error) {
+            throw new Error(`Gagal mengambil data flight: ${error.message}`);
+        }
+    },
 };
