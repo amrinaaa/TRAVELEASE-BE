@@ -196,15 +196,15 @@ export default {
     },
 
     async validateAddFacility(data) {
-        const { name } = data;
+        const { facilityName } = data;
 
-        if (!name) {
+        if (!facilityName) {
             const error = new Error("Facility name is required");
             error.statusCode = 400;
             throw error;
         }
 
-        if (typeof name !== 'string') {
+        if (typeof facilityName !== 'string') {
             const error = new Error("Facility name must be a string");
             error.statusCode = 400;
             throw error;

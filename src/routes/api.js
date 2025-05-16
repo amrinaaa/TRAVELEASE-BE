@@ -95,14 +95,19 @@ router.get('/customers', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelC
 router.get('/rooms/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomList);
 router.get('/roomType/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomType);
 router.post('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomType);
+router.patch('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomType);
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
-router.delete('/room/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoom);//sementara belum ngedelete sampe ketika room di pesan
+//sementara belum ngedelete sampe ketika room di pesan
 router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
 router.get('/roomType-facilities/:roomTypeId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomTypeFacility);
 router.post('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomTypeFacility);
+router.patch('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomTypeFacility);
+router.delete('/roomType-facilities/:roomTypeFacilityId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoomTypeFacility);
+router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
 router.post('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addFacility);
 router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
+router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editFacility);
 //blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware,  mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware,  mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);

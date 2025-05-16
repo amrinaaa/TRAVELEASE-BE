@@ -40,6 +40,7 @@ export default {
 
       stream.on('error', (err) => reject(err));
       stream.on('finish', async () => {
+        await blob.makePublic();
         const publicUrl = `${FIREBASE_PUBLIC_URL}/${bucketName}/${blob.name}`;
         resolve(publicUrl);
       });
