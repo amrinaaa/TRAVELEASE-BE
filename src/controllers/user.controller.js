@@ -22,5 +22,9 @@ export default {
                 data: null,
             });
         }
-    }
+    },
+
+    async bookingFlight(req, res) {
+
+    },
 };
