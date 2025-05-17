@@ -118,4 +118,7 @@ router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, u
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.get('/search/flights', userController.searchFlights);
 
+//booking
+router.post('/booking-room', authMiddleware, userController.bookingRoom);
+
 export default router;
