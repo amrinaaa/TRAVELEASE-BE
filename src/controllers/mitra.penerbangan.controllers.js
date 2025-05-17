@@ -233,33 +233,6 @@ export default {
         }
     },
 
-    //bakal ke hapus nnti
-    // async addSeatCategory(req, res) {
-    //     /**
-    //     #swagger.tags = ['Mitra Penerbangan']
-    //     #swagger.requestBody = {
-    //         required: true,
-    //         schema: {$ref: "#/components/schemas/AddSeatCategoryRequest"}
-    //     },
-    //     #swagger.security = [{
-    //         "bearerAuth": []
-    //     }]
-    //     */
-    //     const { planeId, name, price } = req.body;
-    //     try {
-    //         const result = await mitraPenerbangan.addSeatCategoryService(planeId, name, price);
-    //         res.status(200).json({
-    //             message: "success",
-    //             data: result,
-    //         });
-    //     } catch (error) {
-    //         return res.status(400).json({
-    //             message: error.message,
-    //             data: null,
-    //         });
-    //     };
-    // },
-
     async getSeatCategory(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -398,6 +371,7 @@ export default {
             flightCode,
             departureTime,
             arrivalTime,
+            price,
         } = req.body;
         try {
             const result = await mitraPenerbangan.addFlightService(
@@ -406,7 +380,8 @@ export default {
                 arrivalAirportId,
                 flightCode,
                 departureTime,
-                arrivalTime
+                arrivalTime,
+                price,
             );
 
             res.status(200).json({
@@ -423,7 +398,31 @@ export default {
 
     // async updateFlight(req, res) {},
 
-    // async deleteFlight(req, res) {},
+    async deleteFlight(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/DeleteFlightRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { flightId } = req.body;
+        try {
+            const result = await mitraPenerbangan.deleteFlightService(flightId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
 
     async getPassengers(req, res) {
         /**

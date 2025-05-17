@@ -55,6 +55,21 @@ export default {
         }
     },
 
+    async addLocationService(city) {
+        try {
+            const newLocation = await prisma.location.create({
+                data: {
+                    city
+                }
+            });
+
+            return newLocation;
+        } catch (error) {
+            console.error("Error adding location:", error);
+            throw new Error("Failed to add location");
+        }
+    },
+
     async addHotelService(mitraId, locationId, name, description, address, contact, files) {
         try {
             const newHotel = await prisma.hotel.create({
@@ -84,21 +99,9 @@ export default {
             }
         },
 
-    async editHotelService(hotelId, mitraId, updateData, files) {
+    async editHotelService({hotelId, updateData, files}) {
         try {
-            const hotel = await prisma.hotel.findFirst({
-                where: {
-                    id: hotelId,
-                    hotelPartners: {
-                        some: { partnerId: mitraId }
-                    }
-                    }
-                });
-                
-                if (!hotel) {
-                    return res.status(403).json({ message: "Unauthorized" });
-                }
-
+            
             const updatedHotel = await prisma.hotel.update({
                 where: { id: hotelId },
                 data: updateData,
