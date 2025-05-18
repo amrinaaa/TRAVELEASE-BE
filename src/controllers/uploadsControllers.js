@@ -1,4 +1,4 @@
-import uploadsController from "../services/upload/uploadsService.js";
+import uploadsServices from "../services/upload/uploadsService.js";
 
 export default {
     async uploadProfile(req, res) {
@@ -31,7 +31,7 @@ export default {
         const id = res.locals.payload.id;
 
         try {
-            const imageUrl = await uploadsController.uploadProfile(file, id);
+            const imageUrl = await uploadsServices.uploadProfile(file, id);
 
             return res.status(201).json({
                 message: "Upload successful",
@@ -76,7 +76,7 @@ export default {
         const id = req.params.id;
 
         try {
-            const imageUrl = await uploadsController.uploadProfile(file, id);
+            const imageUrl = await uploadsServices.uploadProfile(file, id);
 
             return res.status(201).json({
                 message: "Upload successful",
@@ -121,7 +121,7 @@ export default {
         const { airportId } = req.params;
 
         try {
-            await uploadsController.uploadAirportImage(file, airportId);
+            await uploadsServices.uploadAirportImage(file, airportId);
             return res.status(201).json({
                 message: "Upload successful"
             });

@@ -1,3 +1,4 @@
+import bookingServices from '../services/user/bookingServices.js';
 import searchService from '../services/user/searchService.js';
 import bookingFlight from '../services/user/booking.flight.js';
 

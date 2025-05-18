@@ -188,6 +188,7 @@ model Room {
   id               String            @id @default(cuid())
   roomTypeId       String
   name             String
+  description      String?
   roomType         RoomType          @relation(fields: [roomTypeId], references: [id])
   roomImages       RoomImage[]
   roomReservations RoomReservation[]

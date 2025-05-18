@@ -30,5 +30,24 @@ export default {
             } catch (error) {
                 throw new Error(error.message);
             }
-        },        
+        },      
+        
+        async editRoomType(roomTypeId, typeName, capacity, price) {
+            try {
+                const updatedRoomType = await prisma.roomType.update({
+                    where: {
+                        id: roomTypeId
+                    },
+                    data: {
+                        typeName,
+                        capacity,
+                        price
+                    }
+                });
+        
+                return updatedRoomType;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
 }

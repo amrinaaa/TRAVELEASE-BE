@@ -341,30 +341,6 @@ export default {
         }        
     },
 
-    async deleteRoom(req, res) {
-        /**
-        #swagger.tags = ['Mitra Hotel']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
-        const { roomId } = req.params;
-
-        try {
-            const result = await roomServices.deleteRoomService({ roomId });
-            return res.status(200).json({
-                message: "Deleted successfully",
-                data: result,
-            });
-
-        } catch (error) {
-            return res.status(500).json({
-                message: error.message || "Failed to delete room",
-                data: null,
-            });
-        }
-    },
-
     async getRoomTypeFacility(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel]
@@ -421,6 +397,30 @@ export default {
         }
     },
 
+    async editRoomType(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomTypeId, typeName, capacity, price } = req.body;
+
+        try {
+            const result = await roomTypeServices.editRoomType(roomTypeId, typeName, capacity, price);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async addRoomTypeFacility(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
@@ -447,6 +447,54 @@ export default {
         }
     },
 
+    async editRoomTypeFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomTypeFacilityId, roomTypeId, facilityId, amount } = req.body;
+
+        try {
+
+            const result = await facilityServices.editRoomTypeFacilityServices(roomTypeFacilityId,facilityId, roomTypeId, amount);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async deleteRoomTypeFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomTypeFacilityId } = req.params;
+
+        try {
+            await facilityServices.deleteRoomTypeFacilitiesServices(roomTypeFacilityId);
+
+            return res.status(200).json({
+                message: `Successfully deleted`,
+            });
+
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message || "Failed to delete Room Type Facility",
+            });
+        }
+    },
+
     async addFacility(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
@@ -454,12 +502,37 @@ export default {
             "bearerAuth": []
         }]
         */
-        const { name } = req.body;
+        const { facilityName } = req.body;
 
         try {
             await validation.validateAddFacility(req.body);
 
-            const result = await facilityServices.addFacilityServices(name);
+            const result = await facilityServices.addFacilityServices(facilityName);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }        
+    },
+
+    async editFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { facilityId, facilityName } = req.body;
+
+        try {
+
+            const result = await facilityServices.editFacilityServices(facilityId, facilityName);
             res.status(200).json({
                 message: "Success",
                 data: result,
