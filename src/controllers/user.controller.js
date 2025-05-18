@@ -53,4 +53,23 @@ export default {
             });
         }
     },
+
+    async bookingRoom(req, res) {
+        try {
+            const { roomId, startDate, endDate } = req.body;
+            const userId = req.user.id;
+
+            const result = await bookingServices.bookingRoomServices({
+            userId,
+            roomId,
+            startDate,
+            endDate,
+            });
+
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        
+        }
+    }
 };
