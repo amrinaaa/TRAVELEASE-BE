@@ -92,4 +92,28 @@ export default {
         transactionId: transaction.id,
         };
     },
+
+    async hotelListServices(){
+        try {
+            const hotels = await prisma.hotel.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    address: true,
+                    location: {
+                        select: {
+                            city: true
+                        }
+                    }
+                }
+            });
+
+            return hotels;
+        }
+        catch (error) {
+            console.error("Error fetching hotels:", error);
+            throw new Error("Failed to fetch hotels");
+        }
+    },
 };
