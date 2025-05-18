@@ -25,6 +25,6 @@ export default {
     },
 
     async bookingFlight(req, res) {
-
+        
     },
 };
