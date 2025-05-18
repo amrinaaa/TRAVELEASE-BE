@@ -55,6 +55,7 @@ router.get('/airports', authMiddleware, getAirports);
 router.get('/flights-by-city', authMiddleware, flightsController.getFlightsByCity);
 router.get('/flights', flightsController.getFlights);
 router.get('/seats/:flightId', seatsController.getSeat);
+router.post('/booking-flight', authMiddleware, userController.bookingFlight); //endpoint user (sementara taro disini biar gk conflick)
 
 //route Hotel
 router.get('/guest/hotels', authMiddleware, hotelControllers.getHotels);

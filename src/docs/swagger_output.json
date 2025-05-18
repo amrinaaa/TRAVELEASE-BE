@@ -720,6 +720,45 @@
         }
       }
     },
+    "/booking-flight": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingFlightRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/guest/hotels": {
       "get": {
         "tags": [
@@ -824,6 +863,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -3024,6 +3066,46 @@
         },
         "xml": {
           "name": "GetPassangersRequest"
+        }
+      },
+      "BookingFlightRequest": {
+        "type": "object",
+        "properties": {
+          "flightId": {
+            "type": "string",
+            "example": ""
+          },
+          "passengers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "nik": {
+                  "type": "string",
+                  "example": "3201234567890001"
+                },
+                "gender": {
+                  "type": "string",
+                  "example": "MALE"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "ADULT"
+                },
+                "seatId": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        },
+        "xml": {
+          "name": "BookingFlightRequest"
         }
       },
       "GetHotelsByCityRequest": {

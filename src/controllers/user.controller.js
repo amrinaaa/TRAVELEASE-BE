@@ -1,4 +1,5 @@
 import searchService from '../services/user/searchService.js';
+import bookingFlight from '../services/user/booking.flight.js';
 
 export default {
     async searchFlights(req, res) {
@@ -25,6 +26,30 @@ export default {
     },
 
     async bookingFlight(req, res) {
-        
+        /**
+        #swagger.tags = ['User']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/BookingFlightRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const userId = res.locals.payload.id;
+        const {flightId, passengers} = req.body;
+        try {
+            const bookingResult = await bookingFlight.bookingFlightService(userId, flightId, passengers);
+            
+            return res.status(201).json({
+                message: "success",
+                data: bookingResult
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
     },
 };

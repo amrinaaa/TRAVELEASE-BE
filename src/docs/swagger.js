@@ -187,6 +187,19 @@ const doc = {
                 flightId: "",
             },
 
+            BookingFlightRequest: {
+                flightId: "",
+                passengers: [
+                    {
+                        "name": "John Doe",
+                        "nik": "3201234567890001",
+                        "gender": "MALE",
+                        "type": "ADULT",
+                        "seatId": "",
+                    },
+                ],
+            },
+
             // addHotelRequest: {
             //     locationId: "",
             //     name: "",
