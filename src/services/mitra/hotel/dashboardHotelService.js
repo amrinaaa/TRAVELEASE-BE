@@ -1,5 +1,5 @@
 import prisma from "../../../../prisma/prisma.client.js";
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, subWeeks } from 'date-fns';
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, subWeeks, startOfMonth, endOfMonth } from 'date-fns';
 
 
 export default {
@@ -224,5 +224,69 @@ export default {
             revenueLastWeek,
             percentageChange: percentageStatus,
         };
+    },
+
+    async grafikRevenueServices() {
+        const currentYear = new Date().getFullYear();
+        const monthlyRevenue = [];
+
+        for (let month = 0; month < 12; month++) {
+            const start = startOfMonth(new Date(currentYear, month));
+            const end = endOfMonth(new Date(currentYear, month));
+
+            const reservations = await prisma.reservation.findMany({
+                where: {
+                    createdAt: {
+                        gte: start,
+                        lte: end,
+                    },
+                },
+                include: { transaction: true },
+            });
+
+            const total = reservations.reduce(
+                (sum, res) => sum + (res.transaction?.price ?? 0),
+                0
+            );
+
+            monthlyRevenue.push({
+                month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
+                totalRevenue: total,
+            });
+        }
+
+        return monthlyRevenue;
+    },
+
+    async grafikBookingServices() {
+        const currentYear = new Date().getFullYear();
+        const monthlyBooking = [];
+
+        for (let month = 0; month < 12; month++) {
+            const start = startOfMonth(new Date(currentYear, month));
+            const end = endOfMonth(new Date(currentYear, month));
+
+            const reservations = await prisma.reservation.findMany({
+            where: {
+                createdAt: {
+                gte: start,
+                lte: end,
+                },
+                transactionId: {
+                not: "",
+                },
+            },
+            include: {
+                transaction: true,
+            },
+            });
+
+            monthlyBooking.push({
+            month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
+            totalBooking: reservations.length,
+            });
+        }
+
+        return monthlyBooking;
     }
 }

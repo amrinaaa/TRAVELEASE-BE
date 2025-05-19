@@ -120,6 +120,9 @@ router.get('/dashboard/report/new-booking', authMiddleware, userMiddleware, mitr
 router.get('/dashboard/report/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
 router.get('/dashboard/report/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
 router.get('/dashboard/report/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
+router.get('/dashboard/report/grafik-revenue', authMiddleware, userMiddleware, mitraHotelController.grafikRevenue);
+router.get('/dashboard/report/grafik-booking', authMiddleware, userMiddleware, mitraHotelController.grafikBooking);
+
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);

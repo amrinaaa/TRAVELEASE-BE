@@ -669,4 +669,54 @@ export default {
             });
         }
     },
+
+    async grafikRevenue(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        try {
+            const result = await bookingTodayService.grafikRevenueServices();
+
+            return res.status(200).json({
+            success: true,
+            message: "Revenue graph data retrieved successfully",
+            data: result,
+            });
+            
+        } catch (error) {
+            console.error("Error in getGrafikRevenue:", error);
+            return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve revenue graph data",
+            });
+        }
+    },
+
+    async grafikBooking(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        try {
+            const result = await bookingTodayService.grafikBookingServices();
+
+            return res.status(200).json({
+            success: true,
+            message: "Booking graph data retrieved successfully",
+            data: result,
+            });
+            
+        } catch (error) {
+            console.error("Error in getGrafikBooking:", error);
+            return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve booking graph data",
+            });
+        }
+    }
 };
