@@ -1,4 +1,4 @@
-import prisma from "../../../prisma/prisma.client.js";
+import prisma from "../../../../prisma/prisma.client.js";
 
 //klo mau dipake
 // function calculateDuration(departureTime, arrivalTime) {

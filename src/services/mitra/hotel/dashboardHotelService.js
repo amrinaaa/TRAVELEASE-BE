@@ -1,15 +1,10 @@
 import prisma from "../../../../prisma/prisma.client.js";
-<<<<<<< HEAD
 import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth } from 'date-fns';
-=======
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, subWeeks, startOfMonth, endOfMonth } from 'date-fns';
->>>>>>> dashboard-mitra-hotel
 
 
 export default {
     async newBookingTodayService() {
         const today = new Date();
-<<<<<<< HEAD
         today.setHours(0, 0, 0, 0); // Awal hari ini
 
         const tomorrow = new Date(today);
@@ -20,46 +15,23 @@ export default {
 
         const nextDayLastWeek = new Date(lastWeek);
         nextDayLastWeek.setDate(lastWeek.getDate() + 1); // Besok dari hari minggu lalu
-=======
-        const startToday = startOfDay(today);
-        const endToday = endOfDay(today);
-
-        // Ambil minggu penuh minggu lalu (Senin–Minggu)
-        const lastWeek = subWeeks(today, 1);
-        const startLastWeek = startOfWeek(lastWeek, { weekStartsOn: 1 });
-        const endLastWeek = endOfWeek(lastWeek, { weekStartsOn: 1 });
->>>>>>> dashboard-mitra-hotel
 
         // Jumlah booking yang dibuat hari ini
         const bookingToday = await prisma.reservation.count({
             where: {
                 createdAt: {
-<<<<<<< HEAD
                     gte: today,
                     lt: tomorrow,
-=======
-                    gte: startToday,
-                    lte: endToday,
->>>>>>> dashboard-mitra-hotel
                 },
             },
         });
 
-<<<<<<< HEAD
         // Jumlah booking yang dibuat pada hari yang sama minggu lalu
         const bookingLastWeek = await prisma.reservation.count({
             where: {
                 createdAt: {
                     gte: lastWeek,
                     lt: nextDayLastWeek,
-=======
-        // Jumlah booking yang dibuat selama minggu lalu penuh
-        const bookingLastWeek = await prisma.reservation.count({
-            where: {
-                createdAt: {
-                    gte: startLastWeek,
-                    lte: endLastWeek,
->>>>>>> dashboard-mitra-hotel
                 },
             },
         });
@@ -85,7 +57,6 @@ export default {
         const startToday = startOfDay(today);
         const endToday = endOfDay(today);
 
-<<<<<<< HEAD
         const lastWeek = subDays(today, 7);
         const startLastWeek = startOfDay(lastWeek);
         const endLastWeek = endOfDay(lastWeek);
@@ -101,24 +72,6 @@ export default {
                 { endDate: { gte: startToday } }
                 ]
             }
-=======
-        // Minggu lalu (Senin–Minggu penuh)
-        const lastWeek = subWeeks(today, 1);
-        const startLastWeek = startOfWeek(lastWeek, { weekStartsOn: 1 }); // Senin minggu lalu
-        const endLastWeek = endOfWeek(lastWeek, { weekStartsOn: 1 });     // Minggu minggu lalu
-
-        const totalRooms = await prisma.room.count();
-
-        // Room dibooking hari ini (overlap tanggal hari ini)
-        const bookedToday = await prisma.roomReservation.findMany({
-            where: {
-                reservation: {
-                    AND: [
-                        { startDate: { lte: endToday } },
-                        { endDate: { gte: startToday } }
-                    ]
-                }
->>>>>>> dashboard-mitra-hotel
             },
             select: { roomId: true },
         });
@@ -126,7 +79,6 @@ export default {
         const bookedTodayIds = [...new Set(bookedToday.map(r => r.roomId))];
         const availableToday = totalRooms - bookedTodayIds.length;
 
-<<<<<<< HEAD
         // Cari room yang dibooking hari yang sama minggu lalu
         const bookedLastWeek = await prisma.roomReservation.findMany({
             where: {
@@ -136,17 +88,6 @@ export default {
                 { endDate: { gte: startLastWeek } }
                 ]
             }
-=======
-        // Room dibooking selama minggu penuh minggu lalu
-        const bookedLastWeek = await prisma.roomReservation.findMany({
-            where: {
-                reservation: {
-                    AND: [
-                        { startDate: { lte: endLastWeek } },
-                        { endDate: { gte: startLastWeek } }
-                    ]
-                }
->>>>>>> dashboard-mitra-hotel
             },
             select: { roomId: true },
         });
@@ -171,29 +112,16 @@ export default {
 
     async activeBookingRoomService() {
         const today = new Date();
-<<<<<<< HEAD
         const startToday = startOfDay(today);
         const endToday = endOfDay(today);
 
         const lastWeek = subDays(today, 7);
         const startLastWeek = startOfDay(lastWeek);
         const endLastWeek = endOfDay(lastWeek);
-=======
-
-        // Hari ini
-        const startToday = startOfDay(today);
-        const endToday = endOfDay(today);
-
-        // Minggu lalu (Senin–Minggu penuh minggu lalu)
-        const lastWeekDate = subWeeks(today, 1); // ambil 1 minggu sebelumnya dari hari ini
-        const startLastWeek = startOfWeek(lastWeekDate, { weekStartsOn: 1 }); // Senin
-        const endLastWeek = endOfWeek(lastWeekDate, { weekStartsOn: 1 });     // Minggu
->>>>>>> dashboard-mitra-hotel
 
         // Booking aktif hari ini
         const activeToday = await prisma.reservation.count({
             where: {
-<<<<<<< HEAD
             startDate: { lte: endToday },
             endDate: { gte: startToday },
             },
@@ -204,27 +132,11 @@ export default {
             where: {
             startDate: { lte: endLastWeek },
             endDate: { gte: startLastWeek },
-=======
-                startDate: { lte: endToday },
-                endDate: { gte: startToday },
-            },
-        });
-
-        // Booking aktif minggu lalu (minggu penuh)
-        const activeLastWeek = await prisma.reservation.count({
-            where: {
-                startDate: { lte: endLastWeek },
-                endDate: { gte: startLastWeek },
->>>>>>> dashboard-mitra-hotel
             },
         });
 
         // Hitung persentase perubahan
         let percentageChange = 0;
-<<<<<<< HEAD
-
-=======
->>>>>>> dashboard-mitra-hotel
         if (activeLastWeek === 0 && activeToday > 0) {
             percentageChange = 100;
         } else if (activeLastWeek === 0 && activeToday === 0) {
@@ -235,13 +147,8 @@ export default {
 
         const status =
             percentageChange >= 0
-<<<<<<< HEAD
             ? `+ ${percentageChange.toFixed(2)}%`
             : `- ${Math.abs(percentageChange).toFixed(2)}%`;
-=======
-                ? `+ ${percentageChange.toFixed(2)}%`
-                : `- ${Math.abs(percentageChange).toFixed(2)}%`;
->>>>>>> dashboard-mitra-hotel
 
         return {
             activeToday,
@@ -253,7 +160,6 @@ export default {
     async revenueReportService() {
         const today = new Date();
 
-<<<<<<< HEAD
         // Awal dan akhir hari ini
         const startToday = startOfDay(today);
         const endToday = endOfDay(today);
@@ -263,18 +169,6 @@ export default {
         const endLastWeek = endOfDay(subDays(today, 7));
 
         // Ambil reservation yang DIBUAT hari ini
-=======
-        // Hari ini
-        const startToday = startOfDay(today);
-        const endToday = endOfDay(today);
-
-        // Minggu lalu (Senin - Minggu)
-        const lastWeek = subWeeks(today, 1);
-        const startLastWeek = startOfWeek(lastWeek, { weekStartsOn: 1 }); // Senin minggu lalu
-        const endLastWeek = endOfWeek(lastWeek, { weekStartsOn: 1 });     // Minggu minggu lalu
-
-        // Ambil reservation yang dibuat hari ini
->>>>>>> dashboard-mitra-hotel
         const reservationsToday = await prisma.reservation.findMany({
             where: {
                 createdAt: {
@@ -285,11 +179,7 @@ export default {
             include: { transaction: true },
         });
 
-<<<<<<< HEAD
         // Ambil reservation yang DIBUAT pada hari yang sama minggu lalu
-=======
-        // Ambil reservation yang dibuat selama minggu lalu penuh
->>>>>>> dashboard-mitra-hotel
         const reservationsLastWeek = await prisma.reservation.findMany({
             where: {
                 createdAt: {
@@ -300,11 +190,7 @@ export default {
             include: { transaction: true },
         });
 
-<<<<<<< HEAD
         // Total revenue hari ini dan minggu lalu
-=======
-        // Hitung total revenue
->>>>>>> dashboard-mitra-hotel
         const revenueToday = reservationsToday.reduce(
             (sum, res) => sum + (res.transaction?.price ?? 0),
             0
@@ -314,11 +200,7 @@ export default {
             0
         );
 
-<<<<<<< HEAD
         // Hitung perubahan persentase
-=======
-        // Hitung persentase perubahan
->>>>>>> dashboard-mitra-hotel
         let percentageChange = 0;
         if (revenueLastWeek === 0 && revenueToday > 0) {
             percentageChange = 100;
