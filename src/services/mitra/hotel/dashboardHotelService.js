@@ -17,7 +17,7 @@ export default {
         nextDayLastWeek.setDate(lastWeek.getDate() + 1); // Besok dari hari minggu lalu
 
         // Jumlah booking yang dibuat hari ini
-        const totalToday = await prisma.reservation.count({
+        const bookingToday = await prisma.reservation.count({
             where: {
                 createdAt: {
                     gte: today,
@@ -27,7 +27,7 @@ export default {
         });
 
         // Jumlah booking yang dibuat pada hari yang sama minggu lalu
-        const totalLastWeek = await prisma.reservation.count({
+        const bookingLastWeek = await prisma.reservation.count({
             where: {
                 createdAt: {
                     gte: lastWeek,
@@ -39,14 +39,15 @@ export default {
         // Hitung perubahan persentase
         let percentageChange = 0;
 
-        if (totalLastWeek > 0) {
-            percentageChange = ((totalToday - totalLastWeek) / totalLastWeek) * 100;
-        } else if (totalToday > 0) {
+        if (bookingLastWeek > 0) {
+            percentageChange = ((bookingToday - bookingLastWeek) / bookingLastWeek) * 100;
+        } else if (bookingToday > 0) {
             percentageChange = 100;
         }
 
         return {
-            totalToday,
+            bookingToday,
+            bookingLastWeek,
             percentage: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
         };
     },
@@ -160,19 +161,18 @@ export default {
     async revenueReportService() {
         const today = new Date();
 
-        // Hari ini: mulai dan akhir hari
+        // Awal dan akhir hari ini
         const startToday = startOfDay(today);
         const endToday = endOfDay(today);
 
-        // Hari yang sama minggu lalu
-        const dayLastWeek = subDays(today, 1);
-        const startLastWeek = startOfDay(dayLastWeek);
-        const endLastWeek = endOfDay(dayLastWeek);
+        // Awal dan akhir hari yang sama minggu lalu
+        const startLastWeek = startOfDay(subDays(today, 7));
+        const endLastWeek = endOfDay(subDays(today, 7));
 
-        // Ambil reservation + transaction hari ini
+        // Ambil reservation yang DIBUAT hari ini
         const reservationsToday = await prisma.reservation.findMany({
             where: {
-                startDate: {
+                createdAt: {
                     gte: startToday,
                     lte: endToday,
                 },
@@ -180,10 +180,10 @@ export default {
             include: { transaction: true },
         });
 
-        // Ambil reservation + transaction hari yang sama minggu lalu
+        // Ambil reservation yang DIBUAT pada hari yang sama minggu lalu
         const reservationsLastWeek = await prisma.reservation.findMany({
             where: {
-                startDate: {
+                createdAt: {
                     gte: startLastWeek,
                     lte: endLastWeek,
                 },
@@ -191,24 +191,24 @@ export default {
             include: { transaction: true },
         });
 
-        // Hitung total
-        const totalToday = reservationsToday.reduce(
+        // Total revenue hari ini dan minggu lalu
+        const revenueToday = reservationsToday.reduce(
             (sum, res) => sum + (res.transaction?.price ?? 0),
             0
         );
-        const totalLastWeek = reservationsLastWeek.reduce(
+        const revenueLastWeek = reservationsLastWeek.reduce(
             (sum, res) => sum + (res.transaction?.price ?? 0),
             0
         );
 
-        // Hitung persentase perubahan
+        // Hitung perubahan persentase
         let percentageChange = 0;
-        if (totalLastWeek === 0 && totalToday > 0) {
+        if (revenueLastWeek === 0 && revenueToday > 0) {
             percentageChange = 100;
-        } else if (totalLastWeek === 0 && totalToday === 0) {
+        } else if (revenueLastWeek === 0 && revenueToday === 0) {
             percentageChange = 0;
         } else {
-            percentageChange = ((totalToday - totalLastWeek) / totalLastWeek) * 100;
+            percentageChange = ((revenueToday - revenueLastWeek) / revenueLastWeek) * 100;
         }
 
         const percentageStatus =
@@ -216,11 +216,11 @@ export default {
                 ? `+ ${percentageChange.toFixed(2)}%`
                 : percentageChange < 0
                 ? `- ${Math.abs(percentageChange).toFixed(2)}%`
-                : '';
+                : '0%';
 
         return {
-            revenueToday: totalToday,
-            revenueLastWeek: totalLastWeek,
+            revenueToday,
+            revenueLastWeek,
             percentage: percentageStatus,
         };
     }
