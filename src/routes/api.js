@@ -115,6 +115,13 @@ router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotel
 //blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
+//dashboard
+router.get('/dashboard/report/new-booking', authMiddleware, userMiddleware, mitraHotelController.newBookingToday);
+router.get('/dashboard/report/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
+router.get('/dashboard/report/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
+router.get('/dashboard/report/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
+router.get('/dashboard/report/grafik-revenue', authMiddleware, userMiddleware, mitraHotelController.grafikRevenue);
+router.get('/dashboard/report/grafik-booking', authMiddleware, userMiddleware, mitraHotelController.grafikBooking);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
@@ -122,6 +129,7 @@ router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.d
 router.get('/search/flights', userController.searchFlights);
 
 //booking
-router.post('/booking-room', authMiddleware, userController.bookingRoom);
+router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
+
 
 export default router;

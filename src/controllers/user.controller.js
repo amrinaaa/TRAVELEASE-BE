@@ -1,4 +1,4 @@
-import bookingServices from '../services/user/bookingServices.js';
+import bookingServices from '../services/user/booking.room.js';
 import searchService from '../services/user/searchService.js';
 import bookingFlight from '../services/user/booking.flight.js';
 
@@ -57,7 +57,7 @@ export default {
     async bookingRoom(req, res) {
         try {
             const { roomId, startDate, endDate } = req.body;
-            const userId = req.user.id;
+            const userId = res.locals.payload.id;
 
             const result = await bookingServices.bookingRoomServices({
             userId,

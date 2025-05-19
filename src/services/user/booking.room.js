@@ -88,7 +88,7 @@ export default {
 
         // Step 8: Return success
         return {
-        message: "Pemesanan berhasil",
+        message: "Booking room berhasil dilakukan",
         transactionId: transaction.id,
         };
     },
