@@ -1,5 +1,5 @@
 import prisma from "../../../../prisma/prisma.client.js";
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, subWeeks, subDays } from 'date-fns';
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, subWeeks } from 'date-fns';
 
 
 export default {
@@ -14,7 +14,7 @@ export default {
         const endLastWeek = endOfWeek(lastWeek, { weekStartsOn: 1 });
 
         // Jumlah booking yang dibuat hari ini
-        const totalToday = await prisma.reservation.count({
+        const bookingToday = await prisma.reservation.count({
             where: {
                 createdAt: {
                     gte: startToday,
@@ -24,7 +24,7 @@ export default {
         });
 
         // Jumlah booking yang dibuat selama minggu lalu penuh
-        const totalLastWeek = await prisma.reservation.count({
+        const bookingLastWeek = await prisma.reservation.count({
             where: {
                 createdAt: {
                     gte: startLastWeek,
@@ -36,15 +36,15 @@ export default {
         // Hitung perubahan persentase
         let percentageChange = 0;
 
-        if (totalLastWeek > 0) {
-            percentageChange = ((totalToday - totalLastWeek) / totalLastWeek) * 100;
-        } else if (totalToday > 0) {
+        if (bookingLastWeek > 0) {
+            percentageChange = ((bookingToday - bookingLastWeek) / bookingLastWeek) * 100;
+        } else if (bookingToday > 0) {
             percentageChange = 100;
         }
 
         return {
-            totalToday,
-            totalLastWeek,
+            bookingToday,
+            bookingLastWeek,
             percentageChange: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
         };
     },
