@@ -117,6 +117,7 @@ model Ticket {
   transactionId String
   name          String
   nik           String
+  createdAt     DateTime?    @default(now())
   type          Type        @default(ADULT)
   gender        Gender      @default(MALE)
   flight        Flight      @relation(fields: [flightId], references: [id])
@@ -206,6 +207,7 @@ model Reservation {
   transactionId    String
   startDate        DateTime
   endDate          DateTime
+  createdAt        DateTime?          @default(now())
   transaction      Transaction       @relation(fields: [transactionId], references: [id])
   roomReservations RoomReservation[]
 }

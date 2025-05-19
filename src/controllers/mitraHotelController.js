@@ -5,6 +5,7 @@ import roomTypeServices from "../services/mitra/hotel/roomTypeServices.js";
 import facilityServices from "../services/mitra/hotel/facilityServices.js";
 import validation from "../utils/validation/hotel.js"
 import { validateImage } from "../utils/validation/fileImage.js"
+import bookingTodayService from "../services/mitra/hotel/dashboardHotelService.js";
 
 export default {
     async getListHotel(_req, res) {
@@ -566,5 +567,106 @@ export default {
                 data: null,
             })
         }
-    }
+    },
+
+    //dashboard
+    async newBookingToday(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        try {
+            const result = await bookingTodayService.newBookingTodayService();
+
+            return res.status(200).json({
+            success: true,
+            message: "New room bookings today retrieved successfully",
+            data: result,
+            });
+            
+        } catch (error) {
+            console.error("Error in getNewBookingsToday:", error);
+            return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve new room bookings today",
+            });
+        }
+    },
+
+    async availableRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        try {
+            const result = await bookingTodayService.availableRoomService();
+
+            return res.status(200).json({
+            success: true,
+            message: "Available rooms today retrieved successfully",
+            data: result,
+            });
+            
+        } catch (error) {
+            console.error("Error in getAvailableRoomsToday:", error);
+            return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve available rooms today",
+            });
+        }
+    },
+
+    async activeBooking(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        try {
+            const result = await bookingTodayService.activeBookingRoomService();
+
+            return res.status(200).json({
+            success: true,
+            message: "Active bookings retrieved successfully",
+            data: result,
+            });
+            
+        } catch (error) {
+            console.error("Error in getActiveBookings:", error);
+            return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve active bookings",
+            });
+        }
+    },
+
+    async revenueReport(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+         */
+        try {
+            const result = await bookingTodayService.revenueReportService();
+
+            return res.status(200).json({
+            success: true,
+            message: "Revenue report retrieved successfully",
+            data: result,
+            });
+            
+        } catch (error) {
+            console.error("Error in getRevenueReport:", error);
+            return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve revenue report",
+            });
+        }
+    },
 };
