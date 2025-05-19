@@ -116,12 +116,12 @@ router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotel
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
 //dashboard
-router.get('/dashboard/report/new-booking', authMiddleware, userMiddleware, mitraHotelController.newBookingToday);
-router.get('/dashboard/report/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
-router.get('/dashboard/report/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
-router.get('/dashboard/report/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
-router.get('/dashboard/report/grafik-revenue', authMiddleware, userMiddleware, mitraHotelController.grafikRevenue);
-router.get('/dashboard/report/grafik-booking', authMiddleware, userMiddleware, mitraHotelController.grafikBooking);
+router.get('/dashboard-hotel/new-booking', authMiddleware, userMiddleware, mitraHotelController.newBookingToday);
+router.get('/dashboard-hotel/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
+router.get('/dashboard-hotel/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
+router.get('/dashboard-hotel/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
+router.get('/dashboard-hotel/grafik-revenue', authMiddleware, userMiddleware, mitraHotelController.grafikRevenue);
+router.get('/dashboard-hotel/grafik-booking', authMiddleware, userMiddleware, mitraHotelController.grafikBooking);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);

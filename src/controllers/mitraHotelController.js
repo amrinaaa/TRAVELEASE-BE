@@ -5,7 +5,7 @@ import roomTypeServices from "../services/mitra/hotel/roomTypeServices.js";
 import facilityServices from "../services/mitra/hotel/facilityServices.js";
 import validation from "../utils/validation/hotel.js"
 import { validateImage } from "../utils/validation/fileImage.js"
-import bookingTodayService from "../services/mitra/hotel/dashboardHotelService.js";
+import bookingTodayService from "../services/mitra/hotel/dashboardService.js"
 
 export default {
     async getListHotel(_req, res) {
