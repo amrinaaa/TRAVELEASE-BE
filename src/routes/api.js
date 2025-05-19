@@ -131,4 +131,5 @@ router.get('/search/flights', userController.searchFlights);
 //booking
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 
+
 export default router;
