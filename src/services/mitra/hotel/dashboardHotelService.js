@@ -45,7 +45,7 @@ export default {
         return {
             totalToday,
             totalLastWeek,
-            percentage: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
+            percentageChange: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
         };
     },
 
@@ -104,7 +104,7 @@ export default {
         return {
             availableRoomToday: availableToday,
             availableRoomLastWeek: availableLastWeek,
-            percentage: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
+            percentageChange: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
         };
     },
 
@@ -165,64 +165,64 @@ export default {
         const startToday = startOfDay(today);
         const endToday = endOfDay(today);
 
-        // Minggu lalu (Senin sampai Minggu)
-        const lastWeek = subWeeks(today, 1); // Ambil tanggal minggu lalu dari hari ini
+        // Minggu lalu (Senin - Minggu)
+        const lastWeek = subWeeks(today, 1);
         const startLastWeek = startOfWeek(lastWeek, { weekStartsOn: 1 }); // Senin minggu lalu
         const endLastWeek = endOfWeek(lastWeek, { weekStartsOn: 1 });     // Minggu minggu lalu
 
-        // Ambil reservation + transaction hari ini
+        // Ambil reservation yang dibuat hari ini
         const reservationsToday = await prisma.reservation.findMany({
             where: {
-            startDate: {
-                gte: startToday,
-                lte: endToday,
-            },
+                createdAt: {
+                    gte: startToday,
+                    lte: endToday,
+                },
             },
             include: { transaction: true },
         });
 
-        // Ambil reservation + transaction untuk minggu lalu (Senin–Minggu)
+        // Ambil reservation yang dibuat selama minggu lalu penuh
         const reservationsLastWeek = await prisma.reservation.findMany({
             where: {
-            startDate: {
-                gte: startLastWeek,
-                lte: endLastWeek,
-            },
+                createdAt: {
+                    gte: startLastWeek,
+                    lte: endLastWeek,
+                },
             },
             include: { transaction: true },
         });
 
-        // Hitung total
-        const totalToday = reservationsToday.reduce(
+        // Hitung total revenue
+        const revenueToday = reservationsToday.reduce(
             (sum, res) => sum + (res.transaction?.price ?? 0),
             0
         );
-        const totalLastWeek = reservationsLastWeek.reduce(
+        const revenueLastWeek = reservationsLastWeek.reduce(
             (sum, res) => sum + (res.transaction?.price ?? 0),
             0
         );
 
-        // Hitung persentase
+        // Hitung persentase perubahan
         let percentageChange = 0;
-        if (totalLastWeek === 0 && totalToday > 0) {
+        if (revenueLastWeek === 0 && revenueToday > 0) {
             percentageChange = 100;
-        } else if (totalLastWeek === 0 && totalToday === 0) {
+        } else if (revenueLastWeek === 0 && revenueToday === 0) {
             percentageChange = 0;
         } else {
-            percentageChange = ((totalToday - totalLastWeek) / totalLastWeek) * 100;
+            percentageChange = ((revenueToday - revenueLastWeek) / revenueLastWeek) * 100;
         }
 
         const percentageStatus =
             percentageChange > 0
-            ? `+ ${percentageChange.toFixed(2)}%`
-            : percentageChange < 0
-            ? `- ${Math.abs(percentageChange).toFixed(2)}%`
-            : '';
+                ? `+ ${percentageChange.toFixed(2)}%`
+                : percentageChange < 0
+                ? `- ${Math.abs(percentageChange).toFixed(2)}%`
+                : '0%';
 
         return {
-            revenueToday: totalToday,
-            revenueLastWeek: totalLastWeek,
-            percentage: percentageStatus,
+            revenueToday,
+            revenueLastWeek,
+            percentageChange: percentageStatus,
         };
     }
 }
