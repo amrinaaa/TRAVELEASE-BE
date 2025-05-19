@@ -48,7 +48,7 @@ export default {
         return {
             bookingToday,
             bookingLastWeek,
-            percentage: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
+            percentageChange: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
         };
     },
 
@@ -106,7 +106,7 @@ export default {
         return {
             availableRoomToday: availableToday,
             availableRoomLastWeek: availableLastWeek,
-            percentage: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
+            percentageChange: (percentageChange >= 0 ? '+ ' : '- ') + Math.abs(percentageChange).toFixed(2) + '%',
         };
     },
 
@@ -221,7 +221,7 @@ export default {
         return {
             revenueToday,
             revenueLastWeek,
-            percentage: percentageStatus,
+            percentageChange: percentageStatus,
         };
     }
 }
