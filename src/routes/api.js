@@ -115,6 +115,11 @@ router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotel
 //blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
+//dashboard
+router.get('/dashboard/report/new-booking', authMiddleware, userMiddleware, mitraHotelController.newBookingToday);
+router.get('/dashboard/report/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
+router.get('/dashboard/report/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
+router.get('/dashboard/report/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
