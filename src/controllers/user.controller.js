@@ -54,6 +54,33 @@ export default {
         }
     },
 
+    async paymentFlight(req, res) {
+        /**
+        #swagger.tags = ['User']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/PaymentFlightRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const userId = res.locals.payload.id;
+        const {transactionId} = req.body;
+        try {
+            const result = await bookingFlight.paymentFlightService(userId, transactionId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async bookingRoom(req, res) {
         try {
             const { roomId, startDate, endDate } = req.body;

@@ -2984,6 +2984,48 @@
           }
         }
       }
+    },
+    "/payment-flight": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentFlightRequest"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3553,6 +3595,18 @@
         },
         "xml": {
           "name": "BookingFlightRequest"
+        }
+      },
+      "PaymentFlightRequest": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "PaymentFlightRequest"
         }
       },
       "GetHotelsByCityRequest": {

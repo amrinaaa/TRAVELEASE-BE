@@ -132,9 +132,10 @@ router.get('/dashboard/report/grafik-booking', authMiddleware, userMiddleware, m
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.get('/search/flights', userController.searchFlights);
-
 //booking
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
+//payment-flight
+router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 
 
 export default router;
