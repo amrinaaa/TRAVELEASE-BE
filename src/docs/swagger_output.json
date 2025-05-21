@@ -1690,6 +1690,33 @@
         ]
       }
     },
+    "/dashboard-flight/avalaible-airplane": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/dashboard-flight/revenue-today": {
       "get": {
         "tags": [

@@ -195,7 +195,7 @@ export default {
             });
 
             if (user.currentAmount < transaction.price) {
-                throw new Error('Insufficient balance. Please add funds to your account');
+                throw new Error('Saldo Anda Tidak Mencukupi');
             }
 
             return await prisma.$transaction(async (tx) => {

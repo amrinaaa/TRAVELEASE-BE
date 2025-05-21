@@ -475,6 +475,28 @@ export default {
         };
     },
 
+    async avalaibleAirplane(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const partnerId = res.locals.payload.id;
+        try {
+            const result = await dashboardFlight.avalaibleAirplaneService(partnerId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            })
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async revenueToday(_req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']

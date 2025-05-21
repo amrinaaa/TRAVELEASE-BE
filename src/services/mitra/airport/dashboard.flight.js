@@ -55,6 +55,38 @@ export default {
         }
     },
 
+    async avalaibleAirplaneService(partnerId) {
+        try {
+            // Validasi partner
+            const partner = await prisma.user.findUnique({
+                where: { id: partnerId },
+                select: { id: true, name: true, role: true }
+            });
+
+            if (!partner) throw new Error('Partner not found');
+
+            // Hitung total pesawat dari semua airline partner
+            const partnerAirlines = await prisma.airlinePartner.findMany({
+                where: { partnerId },
+                select: { airline: { select: { _count: { select: { planes: true } } } } }
+            });
+
+            // Jumlahkan total pesawat
+            const totalPlanes = partnerAirlines.reduce(
+                (sum, airline) => sum + airline.airline._count.planes,
+                0
+            );
+
+            return {
+                partnerId: partner.id,
+                partnerName: partner.name,
+                totalPlanes
+            };
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async revenueTodayService() {
         try {
             const today = new Date();

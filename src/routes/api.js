@@ -86,6 +86,7 @@ router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, m
 router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
 //dashboard
 router.get('/dashboard-flight/booking-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.bookingFlightToday);
+router.get('/dashboard-flight/avalaible-airplane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.avalaibleAirplane);
 router.get('/dashboard-flight/revenue-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.revenueToday);
 router.get('/dashboard-flight/monthly-revenue', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpRevenueMonthly);
 router.get('/dashboard-flight/monthly-booking', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpBookingMonthly);
