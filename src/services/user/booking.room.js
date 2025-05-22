@@ -1,57 +1,66 @@
-import { isBefore, addDays, differenceInDays } from "date-fns";
+import { isBefore, isAfter, addDays, differenceInDays } from "date-fns";
 import prisma from "../../../prisma/prisma.client.js";
 
 export default {
     async bookingRoomServices({ userId, roomId, startDate, endDate }) {
+    try {
         const start = new Date(startDate);
         const end = new Date(endDate);
+        const today = new Date();
 
-        // Step 1: Validasi tanggal maksimal 7 hari ke depan
-        const maxDate = addDays(new Date(), 7);
-        if (isBefore(maxDate, start)) {
-        throw new Error("You can only booking up to 7 days in advance");
+        // Step 1: Validasi tanggal booking (H+1 s.d. H+7)
+        const minDate = addDays(today, 1);
+        const maxDate = addDays(today, 7);
+
+        if (isBefore(start, minDate)) {
+        throw new Error("Booking hanya bisa dilakukan mulai dari H+1 (besok)");
         }
 
-        // Step 2: Ambil data kamar dan harga
-        const room = await prisma.room.findUnique({
-        where: { id: roomId },
+        if (isAfter(start, maxDate)) {
+        throw new Error("Booking maksimal hanya bisa sampai H+7 dari hari ini");
+        }
+
+        const days = differenceInDays(end, start);
+        if (days <= 0) {
+        throw new Error("Minimum booking adalah 1 hari");
+        }
+
+        // Step 2: Ambil semua data room dan validasi
+        const rooms = await prisma.room.findMany({
+        where: { id: { in: roomId } },
         include: { roomType: true },
         });
 
-        if (!room) {
-        throw new Error("Room not found");
+        if (rooms.length !== roomId.length) {
+        throw new Error("Beberapa kamar tidak ditemukan");
         }
 
-        // Step 3: Hitung jumlah hari dan total harga
-        const days = differenceInDays(end, start);
-        if (days <= 0) {
-        throw new Error("Minimum booking 1 day");
-        }
-
-        const totalPrice = room.roomType.price * days;
-
-        // Step 4: Cek saldo user
-        const user = await prisma.user.findUnique({
-        where: { id: userId },
-        });
-
-        if (!user || user.currentAmount < totalPrice) {
-        throw new Error("Saldo tidak mencukupi untuk booking");
-        }
-
-        // Step 5: Cek ketersediaan kamar
-        const overlappingReservation = await prisma.roomReservation.findFirst({
-        where: {
-            roomId,
+        // Step 3: Cek apakah semua kamar tersedia di rentang tanggal
+        for (const room of rooms) {
+        const isBooked = await prisma.roomReservation.findFirst({
+            where: {
+            roomId: room.id,
             reservation: {
-            startDate: { lte: end },
-            endDate: { gte: start },
+                startDate: { lte: end },
+                endDate: { gte: start },
             },
-        },
+            },
         });
 
-        if (overlappingReservation) {
-        throw new Error("Kamar tidak tersedia di tanggal tersebut");
+        if (isBooked) {
+            throw new Error(`Kamar '${room.name}' tidak tersedia di tanggal tersebut`);
+        }
+        }
+
+        // Step 4: Hitung total harga
+        const totalPrice = rooms.reduce((total, room) => {
+        return total + room.roomType.price * days;
+        }, 0);
+
+        // Step 5: Cek saldo user
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user || user.currentAmount < totalPrice) {
+        throw new Error("Saldo tidak mencukupi untuk booking semua kamar");
         }
 
         // Step 6: Buat transaksi dan reservasi
@@ -59,16 +68,27 @@ export default {
         data: {
             userId,
             price: totalPrice,
-            status: "PAID",
+            status: "ORDERED",
             transactionType: "PURCHASE",
             reservations: {
             create: {
                 startDate: start,
                 endDate: end,
                 roomReservations: {
-                create: {
-                    roomId,
+                create: rooms.map((room) => ({
+                    roomId: room.id,
                     amount: 1,
+                })),
+                },
+            },
+            },
+        },
+        include: {
+            reservations: {
+            include: {
+                roomReservations: {
+                include: {
+                    room: { include: { roomType: true } },
                 },
                 },
             },
@@ -76,21 +96,148 @@ export default {
         },
         });
 
-        // Step 7: Kurangi saldo user
-        await prisma.user.update({
-        where: { id: userId },
-        data: {
-            currentAmount: {
-            decrement: totalPrice,
-            },
-        },
-        });
-
-        // Step 8: Return success
+        // Step 7: Return data transaksi
         return {
-        message: "Booking room berhasil dilakukan",
-        transactionId: transaction.id,
+        message: "Booking kamar berhasil",
+        transaction: {
+            id: transaction.id,
+            userId: transaction.userId,
+            price: transaction.price,
+            status: transaction.status,
+            startDate:
+            transaction.reservations[0]?.startDate.toISOString().split("T")[0] || null,
+            endDate:
+            transaction.reservations[0]?.endDate.toISOString().split("T")[0] || null,
+            rooms:
+            transaction.reservations[0]?.roomReservations.map((rr) => ({
+                id: rr.room.id,
+                name: rr.room.name,
+                typeName: rr.room.roomType.typeName,
+            })) || [],
+        },
         };
+    } catch (error) {
+        console.error("Error booking room:", error.message);
+        throw new Error("Gagal melakukan booking kamar");
+    }
+    },
+
+    async paymentBookingRoomServices({ userId, transactionId }) {
+        try {
+            // 1. Ambil data transaksi
+            const transaction = await prisma.transaction.findUnique({
+            where: { id: transactionId },
+            include: {
+                reservations: {
+                include: {
+                    roomReservations: {
+                    include: {
+                        room: {
+                        include: {
+                            roomType: {
+                            include: {
+                                hotel: {
+                                include: {
+                                    hotelPartners: {
+                                    include: {
+                                        partner: true,
+                                    },
+                                    },
+                                },
+                                },
+                            },
+                            },
+                        },
+                        },
+                    },
+                    },
+                },
+                },
+                user: true,
+            },
+            });
+
+            if (!transaction) {
+            throw new Error("Transaksi tidak ditemukan");
+            }
+
+            if (transaction.status === "PAID") {
+            throw new Error("Transaksi sudah dibayar");
+            }
+
+            if (transaction.userId !== userId) {
+            throw new Error("Kamu tidak memiliki akses ke transaksi ini");
+            }
+
+            const user = transaction.user;
+
+            if (user.currentAmount < transaction.price) {
+            throw new Error("Saldo kamu tidak mencukupi untuk membayar transaksi ini");
+            }
+
+            // 2. Hitung jumlah uang yang harus diberikan ke setiap mitra hotel
+            const mitraMap = new Map();
+
+            for (const roomReservation of transaction.reservations[0]?.roomReservations || []) {
+            const hotelPartners = roomReservation.room.roomType.hotel.hotelPartners;
+
+            if (hotelPartners.length === 0) continue;
+
+            const mitra = hotelPartners[0].partner;
+
+            const pricePerRoom = roomReservation.room.roomType.price;
+            const duration = (new Date(transaction.reservations[0].endDate) - new Date(transaction.reservations[0].startDate)) / (1000 * 60 * 60 * 24);
+
+            const total = pricePerRoom * duration;
+
+            if (mitraMap.has(mitra.id)) {
+                mitraMap.set(mitra.id, mitraMap.get(mitra.id) + total);
+            } else {
+                mitraMap.set(mitra.id, total);
+            }
+            }
+
+            // 3. Jalankan transaksi database
+            const result = await prisma.$transaction(async (tx) => {
+            for (const [mitraId, amount] of mitraMap) {
+                await tx.user.update({
+                where: { id: mitraId },
+                data: {
+                    currentAmount: {
+                    increment: amount,
+                    },
+                },
+                });
+            }
+
+            await tx.user.update({
+                where: { id: user.id },
+                data: {
+                currentAmount: {
+                    decrement: transaction.price,
+                },
+                },
+            });
+
+            const updatedTransaction = await tx.transaction.update({
+                where: { id: transaction.id },
+                data: {
+                status: "PAID",
+                },
+            });
+
+            return updatedTransaction;
+            });
+
+            return {
+            message: "Pembayaran berhasil",
+            transaction: result,
+            };
+
+        } catch (error) {
+            console.error("Error saat memproses pembayaran:", error);
+            throw new Error("Gagal memproses pembayaran");
+        }
     },
 
     async hotelListServices(){

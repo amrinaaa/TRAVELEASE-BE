@@ -96,7 +96,33 @@ export default {
             res.status(200).json(result);
         } catch (error) {
             res.status(400).json({ message: error.message });
-        
         }
-    }
+    },
+
+    async paymentBookingRoom(req, res) {
+        /**
+        #swagger.tags = ['User']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/PaymentBookingRoomRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const userId = res.locals.payload.id;
+        const { transactionId } = req.params;
+
+        try {
+            const result = await bookingServices.paymentBookingRoomServices({
+                userId,
+                transactionId,
+            });
+
+            res.status(200).json(result);
+        } catch (error) {
+            console.error("Error saat memproses pembayaran:", error.message);
+            return res.status(400).json({message: error.message});
+        }
+    },
 };
