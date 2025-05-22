@@ -3,7 +3,7 @@ import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth } from 'date-fn
 
 
 export default {
-    async newBookingTodayService() {
+    async newBookingTodayService(mitraId) {
         try{
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -23,6 +23,22 @@ export default {
                         gte: today,
                         lt: tomorrow,
                     },
+
+                    roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId:mitraId,
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
             });
 
@@ -31,6 +47,21 @@ export default {
                     createdAt: {
                         gte: lastWeek,
                         lt: nextDayLastWeek,
+                    },
+                    roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId: mitraId,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             });
@@ -54,7 +85,7 @@ export default {
         }
     },
 
-    async availableRoomService() {
+    async availableRoomService(mitraId) {
         try {
             const today = new Date();
             const startToday = startOfDay(today);
@@ -64,7 +95,24 @@ export default {
             const startLastWeek = startOfDay(lastWeek);
             const endLastWeek = endOfDay(lastWeek);
 
-            const totalRooms = await prisma.room.count();
+            // Dapatkan semua roomId milik mitra
+            const mitraRooms = await prisma.room.findMany({
+                where: {
+                    roomType: {
+                        hotel: {
+                            hotelPartners: {
+                                some: {
+                                    partnerId: mitraId
+                                }
+                            }
+                        }
+                    }
+                },
+                select: { id: true }
+            });
+            const mitraRoomIds = mitraRooms.map(r => r.id);
+
+            const totalRooms = mitraRoomIds.length;
 
             const bookedToday = await prisma.roomReservation.findMany({
                 where: {
@@ -115,7 +163,7 @@ export default {
         }
     },
 
-    async activeBookingRoomService() {
+    async activeBookingRoomService(mitraId) {
         try{
             const today = new Date();
             const startToday = startOfDay(today);
@@ -129,15 +177,45 @@ export default {
                 where: {
                 startDate: { lte: endToday },
                 endDate: { gte: startToday },
-                },
-            });
+                roomReservations: {
+                    some: {
+                        room: {
+                            roomType: {
+                                hotel: {
+                                    hotelPartners: {
+                                        some: {
+                                            partnerId: mitraId
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        });
 
             const activeLastWeek = await prisma.reservation.count({
                 where: {
                 startDate: { lte: endLastWeek },
                 endDate: { gte: startLastWeek },
-                },
-            });
+                roomReservations: {
+                    some: {
+                        room: {
+                            roomType: {
+                                hotel: {
+                                    hotelPartners: {
+                                        some: {
+                                            partnerId: mitraId
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        });
 
             let percentageChange = 0;
 
@@ -165,7 +243,7 @@ export default {
         }
     },
 
-    async revenueReportService() {
+    async revenueReportService(mitraId) {
         try {
             const today = new Date();
             const startToday = startOfDay(today);
@@ -180,6 +258,21 @@ export default {
                         gte: startToday,
                         lte: endToday,
                     },
+                    roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId: mitraId,
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 include: { transaction: true },
             });
@@ -190,6 +283,21 @@ export default {
                         gte: startLastWeek,
                         lte: endLastWeek,
                     },
+                    roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId: mitraId,
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 include: { transaction: true },
             });
@@ -230,7 +338,7 @@ export default {
         }
     },
 
-    async grafikRevenueServices() {
+    async grafikRevenueServices(mitraId) {
         try {
             const currentYear = new Date().getFullYear();
             const monthlyRevenue = [];
@@ -245,7 +353,22 @@ export default {
                             gte: start,
                             lte: end,
                         },
-                    },
+                        roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId: mitraId,
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                     include: { transaction: true },
                 });
 
@@ -267,7 +390,7 @@ export default {
         }
     },
 
-    async grafikBookingServices() {
+    async grafikBookingServices(mitraId) {
         try {
             const currentYear = new Date().getFullYear();
             const monthlyBooking = [];
@@ -284,6 +407,21 @@ export default {
                     },
                     transactionId: {
                     not: "",
+                    },
+                        roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId: mitraId,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
                 include: {

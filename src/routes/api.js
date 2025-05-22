@@ -72,7 +72,6 @@ router.post('/plane-type', authMiddleware, mitraMiddleware.mitraPenerbangan, mit
 router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
 router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
 router.delete('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlane);
-// router.post('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatCategory);
 router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
 router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
 router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat); //di cek nnti
@@ -85,6 +84,12 @@ router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware,
 router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
 router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadAirportImage);// blm fiks
 router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
+//dashboard
+router.get('/dashboard-flight/booking-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.bookingFlightToday);
+router.get('/dashboard-flight/revenue-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.revenueToday);
+router.get('/dashboard-flight/monthly-revenue', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpRevenueMonthly);
+router.get('/dashboard-flight/monthly-booking', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpBookingMonthly);
+
 
 
 //Mitra-Hotel
@@ -116,20 +121,21 @@ router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotel
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
 //dashboard
-router.get('/dashboard-hotel/new-booking', authMiddleware, userMiddleware, mitraHotelController.newBookingToday);
-router.get('/dashboard-hotel/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
-router.get('/dashboard-hotel/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
-router.get('/dashboard-hotel/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
-router.get('/dashboard-hotel/grafik-revenue', authMiddleware, userMiddleware, mitraHotelController.grafikRevenue);
-router.get('/dashboard-hotel/grafik-booking', authMiddleware, userMiddleware, mitraHotelController.grafikBooking);
+router.get('/dashboard-hotel/new-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.newBookingToday);
+router.get('/dashboard-hotel/new-available-room', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.availableRoom);
+router.get('/dashboard-hotel/active-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.activeBooking);
+router.get('/dashboard-hotel/revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.revenueReport);
+router.get('/dashboard-hotel/grafik-revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikRevenue);
+router.get('/dashboard-hotel/grafik-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikBooking);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.get('/search/flights', userController.searchFlights);
-
 //booking
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
+//payment-flight
+router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 
 
 export default router;

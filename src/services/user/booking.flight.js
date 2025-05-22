@@ -131,4 +131,151 @@ export default {
             throw new Error(error.message);
         };
     },
+
+    async paymentFlightService(userId, transactionId) {
+        try {
+            const transaction = await prisma.transaction.findUnique({
+                where: { 
+                    id: transactionId,
+                    userId: userId
+                },
+                include: {
+                    tickets: {
+                        include: {
+                            flight: {
+                                include: {
+                                    plane: {
+                                        include: {
+                                            airline: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (!transaction) {
+                throw new Error('Transaction not found or does not belong to this user');
+            }
+
+            if (transaction.status === 'PAID') {
+                throw new Error('This transaction is already paid');
+            }
+
+            if (transaction.status === 'CANCELED') {
+                throw new Error('Cannot pay for a canceled transaction');
+            }
+
+            if (!transaction.tickets || transaction.tickets.length === 0) {
+                throw new Error('No tickets found for this transaction');
+            }
+
+            // Get the airline ID from the first ticket
+            const airlineId = transaction.tickets[0].flight.plane.airline.id;
+
+            const airlinePartner = await prisma.airlinePartner.findFirst({
+                where: {
+                    airlineId: airlineId
+                },
+                include: {
+                    partner: true
+                }
+            });
+
+            if (!airlinePartner) {
+                throw new Error('No airline partner found for this flight');
+            }
+
+            // Get the current user's balance
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { currentAmount: true }
+            });
+
+            if (user.currentAmount < transaction.price) {
+                throw new Error('Insufficient balance. Please add funds to your account');
+            }
+
+            return await prisma.$transaction(async (tx) => {
+                // Update transaction status to PAID
+                const updatedTransaction = await tx.transaction.update({
+                    where: { id: transactionId },
+                    data: { status: 'PAID' }
+                });
+
+                // Deduct amount from user's balance
+                const updatedUser = await tx.user.update({
+                    where: { id: userId },
+                    data: {
+                        currentAmount: {
+                            decrement: transaction.price
+                        }
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        currentAmount: true
+                    }
+                });
+
+                // Add amount to airline partner's balance
+                const updatedPartner = await tx.user.update({
+                    where: { id: airlinePartner.partnerId },
+                    data: {
+                        currentAmount: {
+                            increment: transaction.price
+                        }
+                    }
+                });
+
+                // Record the transaction for the airline partner
+                await tx.transaction.create({
+                    data: {
+                        userId: airlinePartner.partnerId,
+                        transactionType: 'PURCHASE',
+                        price: transaction.price,
+                        status: 'PAID'
+                    }
+                });
+
+                // Return response data
+                return {
+                    transaction: {
+                        id: updatedTransaction.id,
+                        status: updatedTransaction.status,
+                        price: updatedTransaction.price
+                    },
+                    user: {
+                        id: updatedUser.id,
+                        name: updatedUser.name,
+                        email: updatedUser.email,
+                        currentBalance: updatedUser.currentAmount
+                    },
+                    partner: {
+                        id: airlinePartner.partnerId,
+                        name: airlinePartner.partner.name
+                    },
+                    flight: {
+                        id: transaction.tickets[0].flight.id,
+                        flightCode: transaction.tickets[0].flight.flightCode,
+                        departureTime: transaction.tickets[0].flight.departureTime,
+                        arrivalTime: transaction.tickets[0].flight.arrivalTime
+                    },
+                    tickets: transaction.tickets.map(ticket => ({
+                        id: ticket.id,
+                        name: ticket.name,
+                        nik: ticket.nik,
+                        seatId: ticket.seatId,
+                        type: ticket.type,
+                        gender: ticket.gender
+                    }))
+                };
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        };
+    },
 };

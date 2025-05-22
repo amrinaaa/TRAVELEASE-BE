@@ -97,7 +97,7 @@ export default {
         try {
             const hotels = await prisma.hotel.findMany({
                 select: {
-                    id: true,
+                    id: true, 
                     name: true,
                     description: true,
                     address: true,

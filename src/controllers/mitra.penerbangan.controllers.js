@@ -1,4 +1,5 @@
-import mitraPenerbangan from "../services/mitra/mitra.penerbangan.js";
+import mitraPenerbangan from "../services/mitra/airport/mitra.penerbangan.js";
+import dashboardFlight from "../services/mitra/airport/dashboard.flight.js";
 
 export default {
     async addAirline(req, res) {
@@ -443,6 +444,90 @@ export default {
             const result = await mitraPenerbangan.getPassengersService(flightId);
             res.status(200).json({
                 message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async bookingFlightToday(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await dashboardFlight.bookingFlightTodayService();
+            res.status(200).json({
+                message: 'success',
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async revenueToday(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await dashboardFlight.revenueTodayService();
+            res.status(200).json({
+                message: 'success',
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async grahpRevenueMonthly(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await dashboardFlight.grahpRevenueMonthlyService();
+            res.status(200).json({
+                message: 'success',
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async grahpBookingMonthly(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await dashboardFlight.grahpBookingMonthlyService();
+            res.status(200).json({
+                message: 'success',
                 data: result,
             });
         } catch (error) {

@@ -200,6 +200,10 @@ const doc = {
                 ],
             },
 
+            PaymentFlightRequest: {
+                transactionId: "",
+            },
+
             // addHotelRequest: {
             //     locationId: "",
             //     name: "",
