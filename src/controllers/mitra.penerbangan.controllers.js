@@ -354,6 +354,7 @@ export default {
         };
     },
 
+    //flight code diapain?
     async addFlight(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -461,8 +462,9 @@ export default {
             "bearerAuth": []
          }]
         */
+        const partnerId = res.locals.payload.id;
         try {
-            const result = await dashboardFlight.bookingFlightTodayService();
+            const result = await dashboardFlight.bookingFlightTodayService(partnerId);
             res.status(200).json({
                 message: 'success',
                 data: result,
@@ -504,8 +506,9 @@ export default {
             "bearerAuth": []
          }]
         */
+        const partnerId = res.locals.payload.id;
         try {
-            const result = await dashboardFlight.revenueTodayService();
+            const result = await dashboardFlight.revenueTodayService(partnerId);
             res.status(200).json({
                 message: 'success',
                 data: result,
@@ -525,8 +528,9 @@ export default {
             "bearerAuth": []
          }]
         */
+        const partnerId = res.locals.payload.id;
         try {
-            const result = await dashboardFlight.grahpRevenueMonthlyService();
+            const result = await dashboardFlight.grahpRevenueMonthlyService(partnerId);
             res.status(200).json({
                 message: 'success',
                 data: result,
@@ -546,8 +550,9 @@ export default {
             "bearerAuth": []
          }]
         */
+        const partnerId = res.locals.payload.id;
         try {
-            const result = await dashboardFlight.grahpBookingMonthlyService();
+            const result = await dashboardFlight.grahpBookingMonthlyService(partnerId);
             res.status(200).json({
                 message: 'success',
                 data: result,

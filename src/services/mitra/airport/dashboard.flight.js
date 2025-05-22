@@ -2,43 +2,66 @@ import prisma from "../../../../prisma/prisma.client.js";
 import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth } from 'date-fns';
 
 export default {
-    async bookingFlightTodayService() {
+    async bookingFlightTodayService(partnerId) {
         try {
+            const partnerAirlines = await prisma.airlinePartner.findMany({
+                where: { partnerId: partnerId },
+                select: { airlineId: true }
+            });
+
+            if (partnerAirlines.length === 0) {
+                throw new Error('No airlines found for this partner');
+            }
+
+            // Extract airline IDs
+            const airlineIds = partnerAirlines.map(pa => pa.airlineId);
+
+            // Set up date ranges
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Awal hari ini
-
             const tomorrow = new Date(today);
             tomorrow.setDate(today.getDate() + 1); // Awal besok
-
             const lastWeek = new Date(today);
             lastWeek.setDate(today.getDate() - 7); // Awal hari yang sama minggu lalu
-
             const nextDayLastWeek = new Date(lastWeek);
             nextDayLastWeek.setDate(lastWeek.getDate() + 1); // Besok dari hari minggu lalu
 
-            // Jumlah booking yang dibuat hari ini
+            // Count bookings for partner's airlines today
             const bookingToday = await prisma.ticket.count({
                 where: {
                     createdAt: {
                         gte: today,
                         lt: tomorrow,
                     },
+                    flight: {
+                        plane: {
+                            airline: {
+                                id: { in: airlineIds }
+                            }
+                        }
+                    }
                 },
             });
 
-            // Jumlah booking yang dibuat pada hari yang sama minggu lalu
+            // Count bookings for partner's airlines last week (same day)
             const bookingLastWeek = await prisma.ticket.count({
                 where: {
                     createdAt: {
                         gte: lastWeek,
                         lt: nextDayLastWeek,
                     },
+                    flight: {
+                        plane: {
+                            airline: {
+                                id: { in: airlineIds }
+                            }
+                        }
+                    }
                 },
             });
 
-            // Hitung perubahan persentase
+            // Calculate percentage change
             let percentageChange = 0;
-
             if (bookingLastWeek > 0) {
                 percentageChange = ((bookingToday - bookingLastWeek) / bookingLastWeek) * 100;
             } else if (bookingToday > 0) {
@@ -87,51 +110,119 @@ export default {
         }
     },
 
-    async revenueTodayService() {
+    async revenueTodayService(partnerId) {
         try {
+            const partnerAirlines = await prisma.airlinePartner.findMany({
+                where: { partnerId: partnerId },
+                select: { airlineId: true }
+            });
+
+            if (partnerAirlines.length === 0) {
+                throw new Error('No airlines found for this partner');
+            }
+
+            // Extract airline IDs
+            const airlineIds = partnerAirlines.map(pa => pa.airlineId);
+
+            // Set up date ranges
             const today = new Date();
 
-            // Awal dan akhir hari ini
-            const startToday = startOfDay(today);
-            const endToday = endOfDay(today);
+            today.setHours(0, 0, 0, 0); // Start of today
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1); // Start of tomorrow
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 7); // Start of same day last week
+            const nextDayLastWeek = new Date(lastWeek);
+            nextDayLastWeek.setDate(lastWeek.getDate() + 1); // Next day from last week
 
-            // Awal dan akhir hari yang sama minggu lalu
-            const startLastWeek = startOfDay(subDays(today, 7));
-            const endLastWeek = endOfDay(subDays(today, 7));
-
-            // Ambil reservation yang DIBUAT hari ini
+            // Get tickets created today for partner's airlines
             const bookingsToday = await prisma.ticket.findMany({
                 where: {
                     createdAt: {
-                        gte: startToday,
-                        lte: endToday,
+                        gte: today,
+                        lt: tomorrow,
                     },
+                    flight: {
+                        plane: {
+                            airline: {
+                                id: { in: airlineIds }
+                            }
+                        }
+                    }
                 },
-                include: { transaction: true },
+                include: { 
+                    transaction: true,
+                    flight: {
+                        include: {
+                            plane: {
+                                include: {
+                                    airline: true
+                                }
+                            }
+                        }
+                    }
+                },
             });
 
-            // Ambil reservation yang DIBUAT pada hari yang sama minggu lalu
+            // Get tickets created on same day last week for partner's airlines
             const bookingsLastWeek = await prisma.ticket.findMany({
                 where: {
                     createdAt: {
-                        gte: startLastWeek,
-                        lte: endLastWeek,
+                        gte: lastWeek,
+                        lt: nextDayLastWeek,
                     },
+                    flight: {
+                        plane: {
+                            airline: {
+                                id: { in: airlineIds }
+                            }
+                        }
+                    }
                 },
-                include: { transaction: true },
+                include: { 
+                    transaction: true,
+                    flight: {
+                        include: {
+                            plane: {
+                                include: {
+                                    airline: true
+                                }
+                            }
+                        }
+                    }
+                },
             });
 
-            // Total revenue hari ini dan minggu lalu
+            // Calculate revenue today and last week
             const revenueToday = bookingsToday.reduce(
-                (sum, res) => sum + (res.transaction?.price ?? 0),
-                0
-            );
-            const revenueLastWeek = bookingsLastWeek.reduce(
-                (sum, res) => sum + (res.transaction?.price ?? 0),
+                (sum, ticket) => {
+                    // Only count tickets from paid transactions
+                    if (ticket.transaction?.status === 'PAID') {
+                        // Calculate proportional revenue per ticket
+                        const transactionPrice = ticket.transaction.price || 0;
+                        const ticketsInTransaction = bookingsToday.filter(t => t.transactionId === ticket.transactionId).length;
+                        return sum + (transactionPrice / ticketsInTransaction);
+                    }
+                    return sum;
+                },
                 0
             );
 
-            // Hitung perubahan persentase
+            const revenueLastWeek = bookingsLastWeek.reduce(
+                (sum, ticket) => {
+                    // Only count tickets from paid transactions
+                    if (ticket.transaction?.status === 'PAID') {
+                        // Calculate proportional revenue per ticket
+                        const transactionPrice = ticket.transaction.price || 0;
+                        const ticketsInTransaction = bookingsLastWeek.filter(t => t.transactionId === ticket.transactionId).length;
+                        return sum + (transactionPrice / ticketsInTransaction);
+                    }
+                    return sum;
+                },
+                0
+            );
+
+            // Calculate percentage change
             let percentageChange = 0;
             if (revenueLastWeek === 0 && revenueToday > 0) {
                 percentageChange = 100;
@@ -149,8 +240,8 @@ export default {
                     : '0%';
 
             return {
-                revenueToday,
-                revenueLastWeek,
+                revenueToday: Math.round(revenueToday),
+                revenueLastWeek: Math.round(revenueLastWeek),
                 percentageChange: percentageStatus,
             };
         } catch (error) {
@@ -158,69 +249,140 @@ export default {
         }
     },
 
-    async grahpRevenueMonthlyService() {
+    async grahpRevenueMonthlyService(partnerId) {
         try {
+            const partnerAirlines = await prisma.airlinePartner.findMany({
+                where: { partnerId: partnerId },
+                select: { airlineId: true }
+            });
+
+            if (partnerAirlines.length === 0) {
+                throw new Error('No airlines found for this partner');
+            }
+
+            // Extract airline IDs
+            const airlineIds = partnerAirlines.map(pa => pa.airlineId);
+
             const currentYear = new Date().getFullYear();
             const monthlyRevenue = [];
-    
+
             for (let month = 0; month < 12; month++) {
-                const start = startOfMonth(new Date(currentYear, month));
-                const end = endOfMonth(new Date(currentYear, month));
-    
+                const start = new Date(currentYear, month, 1);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(currentYear, month + 1, 0);
+                end.setHours(23, 59, 59, 999);
+
+                // Get tickets for partner's airlines in this month
                 const bookings = await prisma.ticket.findMany({
                     where: {
                         createdAt: {
                             gte: start,
                             lte: end,
                         },
+                        flight: {
+                            plane: {
+                                airline: {
+                                    id: { in: airlineIds }
+                                }
+                            }
+                        }
                     },
-                    include: { transaction: true },
+                    include: { 
+                        transaction: true,
+                        flight: {
+                            include: {
+                                plane: {
+                                    include: {
+                                        airline: true
+                                    }
+                                }
+                            }
+                        }
+                    },
                 });
-    
-                const total = bookings.reduce(
-                    (sum, res) => sum + (res.transaction?.price ?? 0),
-                    0
-                );
-    
+
+                // Calculate total revenue for this month
+                const total = bookings.reduce((sum, ticket) => {
+                    // Only count tickets from paid transactions
+                    if (ticket.transaction?.status === 'PAID') {
+                        // Calculate proportional revenue per ticket
+                        const transactionPrice = ticket.transaction.price || 0;
+                        const ticketsInTransaction = bookings.filter(t => t.transactionId === ticket.transactionId).length;
+                        return sum + (transactionPrice / ticketsInTransaction);
+                    }
+                    return sum;
+                }, 0);
+
                 monthlyRevenue.push({
                     month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
-                    totalRevenue: total,
+                    totalRevenue: Math.round(total),
                 });
             }
-    
+
             return monthlyRevenue;
         } catch (error) {
             throw new Error(error.message);
         }
     },
 
-    async grahpBookingMonthlyService() {
+    async grahpBookingMonthlyService(partnerId) {
         try {
+            const partnerAirlines = await prisma.airlinePartner.findMany({
+                where: { partnerId: partnerId },
+                select: { airlineId: true }
+            });
+
+            if (partnerAirlines.length === 0) {
+                throw new Error('No airlines found for this partner');
+            }
+
+            // Extract airline IDs
+            const airlineIds = partnerAirlines.map(pa => pa.airlineId);
+
             const currentYear = new Date().getFullYear();
             const monthlyBooking = [];
 
             for (let month = 0; month < 12; month++) {
-                const start = startOfMonth(new Date(currentYear, month));
-                const end = endOfMonth(new Date(currentYear, month));
+                const start = new Date(currentYear, month, 1);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(currentYear, month + 1, 0);
+                end.setHours(23, 59, 59, 999);
 
+                // Get bookings for partner's airlines in this month
                 const booking = await prisma.ticket.findMany({
-                where: {
-                    createdAt: {
-                    gte: start,
-                    lte: end,
+                    where: {
+                        createdAt: {
+                            gte: start,
+                            lte: end,
+                        },
+                        flight: {
+                            plane: {
+                                airline: {
+                                    id: { in: airlineIds }
+                                }
+                            }
+                        },
+                        transactionId: {
+                            not: "",
+                        },
                     },
-                    transactionId: {
-                    not: "",
+                    include: {
+                        transaction: true,
+                        flight: {
+                            include: {
+                                plane: {
+                                    include: {
+                                        airline: true
+                                    }
+                                }
+                            }
+                        }
                     },
-                },
-                include: {
-                    transaction: true,
-                },
                 });
 
                 monthlyBooking.push({
-                month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
-                totalBooking: booking.length,
+                    month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
+                    totalBooking: booking.length,
                 });
             }
 
