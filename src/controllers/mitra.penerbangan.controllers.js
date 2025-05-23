@@ -1,4 +1,5 @@
-import mitraPenerbangan from "../services/mitra/mitra.penerbangan.js";
+import mitraPenerbangan from "../services/mitra/airport/mitra.penerbangan.js";
+import dashboardFlight from "../services/mitra/airport/dashboard.flight.js";
 
 export default {
     async addAirline(req, res) {
@@ -233,33 +234,6 @@ export default {
         }
     },
 
-    //bakal ke hapus nnti
-    // async addSeatCategory(req, res) {
-    //     /**
-    //     #swagger.tags = ['Mitra Penerbangan']
-    //     #swagger.requestBody = {
-    //         required: true,
-    //         schema: {$ref: "#/components/schemas/AddSeatCategoryRequest"}
-    //     },
-    //     #swagger.security = [{
-    //         "bearerAuth": []
-    //     }]
-    //     */
-    //     const { planeId, name, price } = req.body;
-    //     try {
-    //         const result = await mitraPenerbangan.addSeatCategoryService(planeId, name, price);
-    //         res.status(200).json({
-    //             message: "success",
-    //             data: result,
-    //         });
-    //     } catch (error) {
-    //         return res.status(400).json({
-    //             message: error.message,
-    //             data: null,
-    //         });
-    //     };
-    // },
-
     async getSeatCategory(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -380,6 +354,7 @@ export default {
         };
     },
 
+    //flight code diapain?
     async addFlight(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -395,18 +370,18 @@ export default {
             planeId,
             departureAirportId,
             arrivalAirportId,
-            flightCode,
             departureTime,
             arrivalTime,
+            price,
         } = req.body;
         try {
             const result = await mitraPenerbangan.addFlightService(
                 planeId,
                 departureAirportId,
                 arrivalAirportId,
-                flightCode,
                 departureTime,
-                arrivalTime
+                arrivalTime,
+                price,
             );
 
             res.status(200).json({
@@ -421,9 +396,31 @@ export default {
         }
     },
 
-    // async updateFlight(req, res) {},
-
-    // async deleteFlight(req, res) {},
+    async deleteFlight(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/DeleteFlightRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { flightId } = req.body;
+        try {
+            const result = await mitraPenerbangan.deleteFlightService(flightId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
 
     async getPassengers(req, res) {
         /**
@@ -444,6 +441,116 @@ export default {
             const result = await mitraPenerbangan.getPassengersService(flightId);
             res.status(200).json({
                 message: "success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async bookingFlightToday(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const partnerId = res.locals.payload.id;
+        try {
+            const result = await dashboardFlight.bookingFlightTodayService(partnerId);
+            res.status(200).json({
+                message: 'success',
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async avalaibleAirplane(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const partnerId = res.locals.payload.id;
+        try {
+            const result = await dashboardFlight.avalaibleAirplaneService(partnerId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            })
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async revenueToday(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const partnerId = res.locals.payload.id;
+        try {
+            const result = await dashboardFlight.revenueTodayService(partnerId);
+            res.status(200).json({
+                message: 'success',
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async grahpRevenueMonthly(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const partnerId = res.locals.payload.id;
+        try {
+            const result = await dashboardFlight.grahpRevenueMonthlyService(partnerId);
+            res.status(200).json({
+                message: 'success',
+                data: result,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
+    async grahpBookingMonthly(_req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        const partnerId = res.locals.payload.id;
+        try {
+            const result = await dashboardFlight.grahpBookingMonthlyService(partnerId);
+            res.status(200).json({
+                message: 'success',
                 data: result,
             });
         } catch (error) {

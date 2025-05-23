@@ -24,6 +24,9 @@ import userController from "../controllers/user.controller.js";
 
 import { getAirports } from "../controllers/airport/airportController.js";
 
+import hotelControllers from "../controllers/hotel/hotel.controllers.js";
+
+
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -47,17 +50,17 @@ router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
 router.post('/admin/profile/:id', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfilebyAdmin);
 router.delete('/admin/profile/:id', authMiddleware, adminMiddleware, deleteFileController.deleteProfilebyAdmin);
 
-//route flights
-// api get
-router.get('/airport-city', flightsController.getCityFlight);
-router.get('/airport-city/:city', flightsController.getCityFlightSpesific);
-router.get('/flights', flightsController.getFlights);
-
-//route Seat
-router.get('/seats/:flightId', seatsController.getSeat);
-
-//route airport
+//route Airport
 router.get('/airports', authMiddleware, getAirports);
+router.get('/flights-by-city', authMiddleware, flightsController.getFlightsByCity);
+router.get('/flights', flightsController.getFlights);
+router.get('/seats/:flightId', seatsController.getSeat);
+router.post('/booking-flight', authMiddleware, userController.bookingFlight); //endpoint user (sementara taro disini biar gk conflick)
+
+//route Hotel
+router.get('/guest/hotels', authMiddleware, hotelControllers.getHotels);
+router.get('/hotels-by-city', authMiddleware, hotelControllers.getHotelsByCity);
+router.get('/search-rooms', authMiddleware, hotelControllers.searchRooms);
 
 //Mitra-Penerbangan
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
@@ -69,22 +72,31 @@ router.post('/plane-type', authMiddleware, mitraMiddleware.mitraPenerbangan, mit
 router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
 router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
 router.delete('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlane);
-// router.post('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addSeatCategory);
 router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
 router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
 router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat); //di cek nnti
 router.delete('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlaneSeat);
 router.post('/flight', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addFlight);
+router.delete('/flight', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deleteFlight);
 router.get('/passengers', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPassengers);
+router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadProfile);
 router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadProfile);
 router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
 router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadAirportImage);// blm fiks
 router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
+//dashboard
+router.get('/dashboard-flight/booking-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.bookingFlightToday);
+router.get('/dashboard-flight/avalaible-airplane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.avalaibleAirplane);
+router.get('/dashboard-flight/revenue-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.revenueToday);
+router.get('/dashboard-flight/monthly-revenue', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpRevenueMonthly);
+router.get('/dashboard-flight/monthly-booking', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpBookingMonthly);
+
 
 
 //Mitra-Hotel
 router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
 router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
+router.post('/location', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addLocation);
 router.post('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
 router.patch('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
 router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
@@ -93,21 +105,39 @@ router.get('/customers', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelC
 router.get('/rooms/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomList);
 router.get('/roomType/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomType);
 router.post('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomType);
+router.patch('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomType);
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
-router.delete('/room/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoom);//sementara belum ngedelete sampe keika room di pesan
+//sementara belum ngedelete sampe ketika room di pesan
+router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
 router.get('/roomType-facilities/:roomTypeId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomTypeFacility);
 router.post('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomTypeFacility);
+router.patch('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomTypeFacility);
+router.delete('/roomType-facilities/:roomTypeFacilityId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoomTypeFacility);
+router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
 router.post('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addFacility);
-//blum fiks mau disatuin ke endpoint
+router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
+router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editFacility);
+//blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
-router.post('/roomImage/:roomId', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadRoomImage);
-router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
+//dashboard
+router.get('/dashboard-hotel/new-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.newBookingToday);
+router.get('/dashboard-hotel/new-available-room', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.availableRoom);
+router.get('/dashboard-hotel/active-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.activeBooking);
+router.get('/dashboard-hotel/revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.revenueReport);
+router.get('/dashboard-hotel/grafik-revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikRevenue);
+router.get('/dashboard-hotel/grafik-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikBooking);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.get('/search/flights', userController.searchFlights);
+//booking
+router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
+router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
+//payment-flight
+router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
+
 
 export default router;

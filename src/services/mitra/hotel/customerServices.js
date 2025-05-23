@@ -1,8 +1,30 @@
 import prisma from "../../../../prisma/prisma.client.js";
 
 export default {
-    async getCustomerListService(){
+    async getCustomerListService(mitraId){
             const customers = await prisma.reservation.findMany({
+                where: {
+                    transaction: {
+                        user: {
+                            role: 'USER',
+                        },
+                    },
+                    roomReservations: {
+                        some: {
+                            room: {
+                                roomType: {
+                                    hotel: {
+                                        hotelPartners: {
+                                            some: {
+                                                partnerId: mitraId,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
                 select: {
                     id: true,
                     startDate: true,
@@ -33,13 +55,6 @@ export default {
                         }
                     }
                     },
-                    where: {
-                    transaction: {
-                        user: {
-                        role: 'USER',
-                        }
-                    }
-                    }
                 });
                 
                 const formatted = customers.map((reservation) => {

@@ -28,8 +28,8 @@ const doc = {
 
         schemas: {
             LoginRequest: {
-                email: "example@gmail.com",
-                password: "Password123",
+                email: "citilink@gmail.com",
+                password: "Citilink123",
             },
 
             RegisterRequest: {
@@ -83,6 +83,10 @@ const doc = {
             SearchMitraRequest: {
                 identifier: "name or email",
                 role: "MITRA_PENERBANGAN",
+            },
+
+            GetFlightsByCityRequest: {
+                city: "",
             },
 
             FilterFLightRequest: {
@@ -169,13 +173,34 @@ const doc = {
                 planeId: "",
                 departureAirportId: "",
                 arrivalAirportId: "",
-                flightCode: "",
                 departureTime: "",
                 arrivalTime: "",
+                price: null,
+            },
+
+            DeleteFlightRequest: {
+                flightId: "",
             },
 
             GetPassangersRequest: {
                 flightId: "",
+            },
+
+            BookingFlightRequest: {
+                flightId: "",
+                passengers: [
+                    {
+                        "name": "John Doe",
+                        "nik": "3201234567890001",
+                        "gender": "MALE",
+                        "type": "ADULT",
+                        "seatId": "",
+                    },
+                ],
+            },
+
+            PaymentFlightRequest: {
+                transactionId: "",
             },
 
             // addHotelRequest: {
@@ -194,6 +219,19 @@ const doc = {
             //     address: "",
             //     contact: "",
             // },
+
+            GetHotelsByCityRequest: {
+                city: ""
+            },
+
+            SearchRoomsRequest: {
+                city: "",
+                hotel: "",
+                checkIn: "",
+                checkOut: "",
+                guests: "",
+                roomType: "",
+            },
 
             deleteHotelRequest: {
                 hotelId: "",

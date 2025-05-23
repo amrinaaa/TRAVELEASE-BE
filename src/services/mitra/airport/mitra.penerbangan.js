@@ -1,4 +1,4 @@
-import prisma from "../../../prisma/prisma.client.js";
+import prisma from "../../../../prisma/prisma.client.js";
 
 //klo mau dipake
 // function calculateDuration(departureTime, arrivalTime) {
@@ -8,6 +8,21 @@ import prisma from "../../../prisma/prisma.client.js";
 
 //     return `${hours}h ${minutes}m`;
 // };
+
+function generateFlightCode() {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+
+    const randomLetters = Array.from({ length: 2 }, () =>
+        letters[Math.floor(Math.random() * letters.length)]
+    ).join('');
+
+    const randomNumbers = Array.from({ length: 2 }, () =>
+        numbers[Math.floor(Math.random() * numbers.length)]
+    ).join('');
+
+    return randomLetters + randomNumbers;
+}
 
 export default {
     async addAirlineService(mitraId, name, description) {
@@ -364,33 +379,6 @@ export default {
         }
     },
 
-    //gk kepake
-    // async addSeatCategoryService(planeId, name, price) {
-    //     try {
-    //         const existingCategory = await prisma.seatCategory.findFirst({
-    //             where: {
-    //                 name,
-    //             }
-    //         });
-
-    //         if (existingCategory) {
-    //             throw new Error("Category is exist");
-    //         };
-
-    //         const seatCategory = await prisma.seatCategory.create({
-    //             data: {
-    //                 planeId,
-    //                 name,
-    //                 price,
-    //             },
-    //         });
-
-    //         return seatCategory;
-    //     } catch (error) {
-    //         throw new Error(error.message);
-    //     };
-    // },
-
     async getSeatCategoryService(planeId) {
         try {
             const categories = await prisma.seatCategory.findMany({
@@ -408,7 +396,7 @@ export default {
             throw new Error(error.message);
         };
     },
-
+ 
     async getPlaneSeatsService(planeId) {
         try {
             const seatCategories = await prisma.seatCategory.findMany({
@@ -578,9 +566,9 @@ export default {
         planeId,
         departureAirportId,
         arrivalAirportId,
-        flightCode,
         departureTime,
-        arrivalTime
+        arrivalTime,
+        price,
     ) {
         try {
             const parsedDepartureTime = new Date(departureTime);
@@ -629,14 +617,15 @@ export default {
                 throw new Error('Pesawat sudah dijadwalkan untuk penerbangan lain pada waktu tersebut');
             };
 
+            const flightCodeGenerated = generateFlightCode()
             const existingFlightCode = await prisma.flight.findFirst({
                 where: {
-                    flightCode: flightCode,
+                    flightCode: flightCodeGenerated,
                 },
             });
 
             if (existingFlightCode) {
-                throw new Error(`Kode penerbangan ${flightCode} sudah digunakan`);
+                throw new Error(`Kode penerbangan ${flightCodeGenerated} sudah digunakan`);
             };
 
             const newFlight = await prisma.flight.create({
@@ -644,9 +633,10 @@ export default {
                     planeId,
                     departureAirportId,
                     arrivalAirportId,
-                    flightCode,
+                    flightCode: flightCodeGenerated,
                     departureTime: parsedDepartureTime,
-                    arrivalTime: parsedArrivalTime
+                    arrivalTime: parsedArrivalTime,
+                    price,
                 },
                 include: {
                     plane: {
@@ -685,6 +675,29 @@ export default {
         } catch (error) {
             throw new Error(error.message);
         };
+    },
+
+    async deleteFlightService(flightId) {
+        try {
+            return await prisma.$transaction(async (tx) => {
+                // Hapus semua ticket yang terkait dengan flight ini
+                await tx.ticket.deleteMany({
+                    where: { flightId }
+                });
+
+                // Hapus flight
+                const deletedFlight = await tx.flight.delete({
+                    where: { id: flightId }
+                });
+
+                return {
+                    id: deletedFlight.id,
+                    flightCode: deletedFlight.flightCode
+                };
+            });
+        } catch (error) {
+            throw new Error(`Failed to delete flight: ${error.message}`);
+        }
     },
 
     async getPassengersService(flightId) {

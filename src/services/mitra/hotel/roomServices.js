@@ -88,7 +88,7 @@ export default {
         }
     },
 
-    async editRoomService({ roomId, name, roomTypeId, files }) {
+    async editRoomService({ roomId, name, files }) {
         try {
             const room = await prisma.room.findUnique({
                 where: { id: roomId },
@@ -103,7 +103,6 @@ export default {
                 where: { id: roomId },
                 data: {
                     name,
-                    roomTypeId,
                 },
             });
 
@@ -116,51 +115,5 @@ export default {
             console.error("Error editing room:", error);
             throw new Error("Failed to edit room");
         }
-    },
-
-    async deleteRoomService({ roomId }) {
-        try {
-            const room = await prisma.room.findFirst({
-                where: {
-                    id: roomId, 
-                },
-                include: {
-                    roomImages: true, 
-                },
-            });
-    
-            if (!room) {
-                throw new Error("Room not found");
-            }
-    
-            const images = room.roomImages;
-    
-            if (images.length === 0) {
-                throw new Error("No images found for this room");
-            }
-    
-            for (const image of images) {
-                const filePath = extractFilePath(image.urlImage); 
-                await deleteFile.deleteFile(filePath); 
-            }
-            
-            await prisma.roomImage.deleteMany({
-                where: {
-                    roomId: roomId,
-                },
-            });
-            
-            await prisma.room.delete({
-                where: {
-                    id: roomId, 
-                },
-            });
-    
-            return { message: "Room and associated images deleted successfully" };
-        } catch (error) {
-            console.error("Error deleting room:", error);
-            throw new Error("Failed to delete room");
-        }
     }
-        
 }

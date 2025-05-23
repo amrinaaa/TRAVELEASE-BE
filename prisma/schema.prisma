@@ -92,6 +92,7 @@ model Flight {
   flightCode         String
   departureTime      DateTime
   arrivalTime        DateTime
+  price              Int      @default(0)
   arrivalAirport     Airport  @relation("ArrivalRelation", fields: [arrivalAirportId], references: [id])
   departureAirport   Airport  @relation("DepartureRelation", fields: [departureAirportId], references: [id])
   plane              Plane    @relation(fields: [planeId], references: [id])
@@ -116,6 +117,7 @@ model Ticket {
   transactionId String
   name          String
   nik           String
+  createdAt     DateTime?    @default(now())
   type          Type        @default(ADULT)
   gender        Gender      @default(MALE)
   flight        Flight      @relation(fields: [flightId], references: [id])
@@ -187,6 +189,7 @@ model Room {
   id               String            @id @default(cuid())
   roomTypeId       String
   name             String
+  description      String?
   roomType         RoomType          @relation(fields: [roomTypeId], references: [id])
   roomImages       RoomImage[]
   roomReservations RoomReservation[]
@@ -204,6 +207,7 @@ model Reservation {
   transactionId    String
   startDate        DateTime
   endDate          DateTime
+  createdAt        DateTime?          @default(now())
   transaction      Transaction       @relation(fields: [transactionId], references: [id])
   roomReservations RoomReservation[]
 }

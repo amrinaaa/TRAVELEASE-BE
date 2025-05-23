@@ -620,38 +620,40 @@
         ]
       }
     },
-    "/airport-city": {
+    "/airports": {
       "get": {
         "tags": [
-          "Flight"
+          "Airport"
         ],
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
           },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "403": {
+            "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/airport-city/{city}": {
+    "/flights-by-city": {
       "get": {
         "tags": [
-          "Flight"
+          "Airport"
         ],
         "description": "",
         "parameters": [
           {
             "name": "city",
-            "in": "path",
+            "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/GetFlightsByCityRequest"
             }
           }
         ],
@@ -659,19 +661,24 @@
           "200": {
             "description": "OK"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/flights": {
       "get": {
         "tags": [
-          "Flight"
+          "Airport"
         ],
         "description": "",
         "responses": {
@@ -690,7 +697,7 @@
     "/seats/{flightId}": {
       "get": {
         "tags": [
-          "Seat"
+          "Airport"
         ],
         "description": "",
         "parameters": [
@@ -713,10 +720,49 @@
         }
       }
     },
-    "/airports": {
+    "/booking-flight": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingFlightRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/guest/hotels": {
       "get": {
         "tags": [
-          "Airport"
+          "Hotel"
         ],
         "description": "",
         "responses": {
@@ -725,6 +771,107 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hotels-by-city": {
+      "get": {
+        "tags": [
+          "Hotel"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetHotelsByCityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/search-rooms": {
+      "get": {
+        "tags": [
+          "Hotel"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "cityOrHotel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkIn",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkOut",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guests",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roomType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -1265,6 +1412,46 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteFlightRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/passengers": {
@@ -1476,6 +1663,141 @@
         ]
       }
     },
+    "/dashboard-flight/booking-today": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-flight/avalaible-airplane": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-flight/revenue-today": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-flight/monthly-revenue": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-flight/monthly-booking": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/hotels": {
       "get": {
         "tags": [
@@ -1528,6 +1850,47 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/location": {
+      "post": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "city": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/hotel": {
@@ -1613,21 +1976,6 @@
                 "type": "object",
                 "properties": {
                   "hotelId": {
-                    "example": "any"
-                  },
-                  "locationId": {
-                    "example": "any"
-                  },
-                  "name": {
-                    "example": "any"
-                  },
-                  "description": {
-                    "example": "any"
-                  },
-                  "address": {
-                    "example": "any"
-                  },
-                  "contact": {
                     "example": "any"
                   }
                 }
@@ -1866,6 +2214,54 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roomTypeId": {
+                    "example": "any"
+                  },
+                  "typeName": {
+                    "example": "any"
+                  },
+                  "capacity": {
+                    "example": "any"
+                  },
+                  "price": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/room": {
@@ -1891,13 +2287,10 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "hotelId": {
+                  "roomTypeId": {
                     "example": "any"
                   },
                   "name": {
-                    "example": "any"
-                  },
-                  "roomTypeId": {
                     "example": "any"
                   }
                 }
@@ -1933,9 +2326,6 @@
                   },
                   "name": {
                     "example": "any"
-                  },
-                  "roomTypeId": {
-                    "example": "any"
                   }
                 }
               }
@@ -1944,7 +2334,7 @@
         }
       }
     },
-    "/room/{roomId}": {
+    "/roomImage/{id}": {
       "delete": {
         "tags": [
           "Mitra Hotel"
@@ -1952,7 +2342,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "roomId",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -1963,6 +2353,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -2055,6 +2448,118 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roomTypeFacilityId": {
+                    "example": "any"
+                  },
+                  "roomTypeId": {
+                    "example": "any"
+                  },
+                  "facilityId": {
+                    "example": "any"
+                  },
+                  "amount": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/roomType-facilities/{roomTypeFacilityId}": {
+      "delete": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "roomTypeFacilityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/facilities": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/facility": {
@@ -2088,7 +2593,49 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": {
+                  "facilityName": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "facilityId": {
+                    "example": "any"
+                  },
+                  "facilityName": {
                     "example": "any"
                   }
                 }
@@ -2173,25 +2720,15 @@
         ]
       }
     },
-    "/roomImage/{roomId}": {
-      "post": {
+    "/dashboard-hotel/new-booking": {
+      "get": {
         "tags": [
           "Mitra Hotel"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "roomId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "201": {
-            "description": "Created"
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -2207,51 +2744,126 @@
           {
             "bearerAuth": []
           }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "File gambar yang akan diupload sebagai foto ruangan hotel"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        }
+        ]
       }
     },
-    "/roomImage/{id}": {
-      "delete": {
+    "/dashboard-hotel/new-available-room": {
+      "get": {
         "tags": [
           "Mitra Hotel"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-hotel/active-booking": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-hotel/revenue": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-hotel/grafik-revenue": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard-hotel/grafik-booking": {
+      "get": {
+        "tags": [
+          "Mitra Hotel"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -2360,6 +2972,139 @@
           }
         }
       }
+    },
+    "/booking-room": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roomId": {
+                    "example": "any"
+                  },
+                  "startDate": {
+                    "example": "any"
+                  },
+                  "endDate": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment-room/{transactionId}": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentBookingRoomRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentBookingRoomRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment-flight": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentFlightRequest"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2375,11 +3120,11 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "example@gmail.com"
+            "example": "citilink@gmail.com"
           },
           "password": {
             "type": "string",
-            "example": "Password123"
+            "example": "Citilink123"
           }
         },
         "xml": {
@@ -2556,6 +3301,18 @@
         },
         "xml": {
           "name": "SearchMitraRequest"
+        }
+      },
+      "GetFlightsByCityRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetFlightsByCityRequest"
         }
       },
       "FilterFLightRequest": {
@@ -2837,10 +3594,6 @@
             "type": "string",
             "example": ""
           },
-          "flightCode": {
-            "type": "string",
-            "example": ""
-          },
           "departureTime": {
             "type": "string",
             "example": ""
@@ -2848,10 +3601,23 @@
           "arrivalTime": {
             "type": "string",
             "example": ""
-          }
+          },
+          "price": {}
         },
         "xml": {
           "name": "AddFlightRequest"
+        }
+      },
+      "DeleteFlightRequest": {
+        "type": "object",
+        "properties": {
+          "flightId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "DeleteFlightRequest"
         }
       },
       "GetPassangersRequest": {
@@ -2864,6 +3630,102 @@
         },
         "xml": {
           "name": "GetPassangersRequest"
+        }
+      },
+      "BookingFlightRequest": {
+        "type": "object",
+        "properties": {
+          "flightId": {
+            "type": "string",
+            "example": ""
+          },
+          "passengers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "nik": {
+                  "type": "string",
+                  "example": "3201234567890001"
+                },
+                "gender": {
+                  "type": "string",
+                  "example": "MALE"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "ADULT"
+                },
+                "seatId": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        },
+        "xml": {
+          "name": "BookingFlightRequest"
+        }
+      },
+      "PaymentFlightRequest": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "PaymentFlightRequest"
+        }
+      },
+      "GetHotelsByCityRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "GetHotelsByCityRequest"
+        }
+      },
+      "SearchRoomsRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": ""
+          },
+          "hotel": {
+            "type": "string",
+            "example": ""
+          },
+          "checkIn": {
+            "type": "string",
+            "example": ""
+          },
+          "checkOut": {
+            "type": "string",
+            "example": ""
+          },
+          "guests": {
+            "type": "string",
+            "example": ""
+          },
+          "roomType": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "SearchRoomsRequest"
         }
       },
       "deleteHotelRequest": {
