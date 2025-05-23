@@ -398,8 +398,6 @@ export default {
         }
     },
 
-    // async updateFlight(req, res) {},
-
     async deleteFlight(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
