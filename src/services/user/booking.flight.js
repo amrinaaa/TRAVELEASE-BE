@@ -122,7 +122,7 @@ export default {
                         name: ticket.name,
                         nik: ticket.nik,
                         seatId: ticket.seatId,
-                        type: ticket.type,
+                        type: ticket.type,  
                         gender: ticket.gender
                     }))
                 };
@@ -172,9 +172,25 @@ export default {
                 throw new Error('No tickets found for this transaction');
             }
 
-            // Get the airline ID from the first ticket
-            const airlineId = transaction.tickets[0].flight.plane.airline.id;
+            //validasi durasi pembayaran
+            //disini masih pakai createAt dari ticket yang dibuat, karena waktunya sama
+            //jika mau buatkan createAt ditabel transaction juga.
+            const bookingTime = transaction.tickets[0].createdAt;
+            if (Date.now() - bookingTime.getTime() > 15 * 60 * 1000) {
+                await prisma.ticket.deleteMany({
+                    where: {
+                            transactionId,
+                        }
+                });
+                
+                await prisma.transaction.update({
+                    where: { id: transactionId },
+                    data: { status: 'CANCELED' }
+                });
+                throw new Error('Waktu pembayaran habis');
+            }
 
+            const airlineId = transaction.tickets[0].flight.plane.airline.id;
             const airlinePartner = await prisma.airlinePartner.findFirst({
                 where: {
                     airlineId: airlineId
@@ -188,7 +204,7 @@ export default {
                 throw new Error('No airline partner found for this flight');
             }
 
-            // Get the current user's balance
+            //Mengambil data saldo user
             const user = await prisma.user.findUnique({
                 where: { id: userId },
                 select: { currentAmount: true }
@@ -199,13 +215,13 @@ export default {
             }
 
             return await prisma.$transaction(async (tx) => {
-                // Update transaction status to PAID
+                // Perbaharui status transaksi
                 const updatedTransaction = await tx.transaction.update({
                     where: { id: transactionId },
                     data: { status: 'PAID' }
                 });
 
-                // Deduct amount from user's balance
+                // Mengurangi saldo user sesuai dengan harga tiket yang dipesan
                 const updatedUser = await tx.user.update({
                     where: { id: userId },
                     data: {
@@ -221,7 +237,7 @@ export default {
                     }
                 });
 
-                // Add amount to airline partner's balance
+                // Menambahkan saldo mitra dari hasil penjualan tiket
                 const updatedPartner = await tx.user.update({
                     where: { id: airlinePartner.partnerId },
                     data: {
@@ -231,16 +247,17 @@ export default {
                     }
                 });
 
-                // Record the transaction for the airline partner
-                await tx.transaction.create({
-                    data: {
-                        userId: airlinePartner.partnerId,
-                        transactionType: 'PURCHASE',
-                        price: transaction.price,
-                        status: 'PAID'
-                    }
-                });
-
+                // Mencatat rekaman transaksi yang didapatkan mitra
+                //ini tidak perlu sepertinya
+                // await tx.transaction.create({
+                //     data: {
+                //         userId: airlinePartner.partnerId,
+                //         transactionType: 'PURCHASE',
+                //         price: transaction.price,
+                //         status: 'PAID'
+                //     }
+                // });
+s
                 // Return response data
                 return {
                     transaction: {
