@@ -135,7 +135,7 @@ router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.d
 router.get('/search/flights', userController.searchFlights);
 //booking
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
-router.post('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
+router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
 //payment-flight
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 
