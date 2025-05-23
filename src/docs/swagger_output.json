@@ -2720,7 +2720,7 @@
         ]
       }
     },
-    "/dashboard/report/new-booking": {
+    "/dashboard-hotel/new-booking": {
       "get": {
         "tags": [
           "Mitra Hotel"
@@ -2747,7 +2747,7 @@
         ]
       }
     },
-    "/dashboard/report/new-available-room": {
+    "/dashboard-hotel/new-available-room": {
       "get": {
         "tags": [
           "Mitra Hotel"
@@ -2774,7 +2774,7 @@
         ]
       }
     },
-    "/dashboard/report/active-booking": {
+    "/dashboard-hotel/active-booking": {
       "get": {
         "tags": [
           "Mitra Hotel"
@@ -2801,7 +2801,7 @@
         ]
       }
     },
-    "/dashboard/report/revenue": {
+    "/dashboard-hotel/revenue": {
       "get": {
         "tags": [
           "Mitra Hotel"
@@ -2828,7 +2828,7 @@
         ]
       }
     },
-    "/dashboard/report/grafik-revenue": {
+    "/dashboard-hotel/grafik-revenue": {
       "get": {
         "tags": [
           "Mitra Hotel"
@@ -2855,7 +2855,7 @@
         ]
       }
     },
-    "/dashboard/report/grafik-booking": {
+    "/dashboard-hotel/grafik-booking": {
       "get": {
         "tags": [
           "Mitra Hotel"
@@ -3006,6 +3006,58 @@
                     "example": "any"
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment-room/{transactionId}": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentBookingRoomRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentBookingRoomRequest"
               }
             }
           }
@@ -3539,10 +3591,6 @@
             "example": ""
           },
           "arrivalAirportId": {
-            "type": "string",
-            "example": ""
-          },
-          "flightCode": {
             "type": "string",
             "example": ""
           },

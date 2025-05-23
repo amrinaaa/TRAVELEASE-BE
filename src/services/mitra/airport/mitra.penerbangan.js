@@ -9,6 +9,21 @@ import prisma from "../../../../prisma/prisma.client.js";
 //     return `${hours}h ${minutes}m`;
 // };
 
+function generateFlightCode() {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+
+    const randomLetters = Array.from({ length: 2 }, () =>
+        letters[Math.floor(Math.random() * letters.length)]
+    ).join('');
+
+    const randomNumbers = Array.from({ length: 2 }, () =>
+        numbers[Math.floor(Math.random() * numbers.length)]
+    ).join('');
+
+    return randomLetters + randomNumbers;
+}
+
 export default {
     async addAirlineService(mitraId, name, description) {
         try {
@@ -381,7 +396,7 @@ export default {
             throw new Error(error.message);
         };
     },
-
+ 
     async getPlaneSeatsService(planeId) {
         try {
             const seatCategories = await prisma.seatCategory.findMany({
@@ -551,7 +566,6 @@ export default {
         planeId,
         departureAirportId,
         arrivalAirportId,
-        flightCode,
         departureTime,
         arrivalTime,
         price,
@@ -603,14 +617,15 @@ export default {
                 throw new Error('Pesawat sudah dijadwalkan untuk penerbangan lain pada waktu tersebut');
             };
 
+            const flightCodeGenerated = generateFlightCode()
             const existingFlightCode = await prisma.flight.findFirst({
                 where: {
-                    flightCode: flightCode,
+                    flightCode: flightCodeGenerated,
                 },
             });
 
             if (existingFlightCode) {
-                throw new Error(`Kode penerbangan ${flightCode} sudah digunakan`);
+                throw new Error(`Kode penerbangan ${flightCodeGenerated} sudah digunakan`);
             };
 
             const newFlight = await prisma.flight.create({
@@ -618,7 +633,7 @@ export default {
                     planeId,
                     departureAirportId,
                     arrivalAirportId,
-                    flightCode,
+                    flightCode: flightCodeGenerated,
                     departureTime: parsedDepartureTime,
                     arrivalTime: parsedArrivalTime,
                     price,
