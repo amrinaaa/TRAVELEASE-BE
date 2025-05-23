@@ -122,12 +122,12 @@ router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotel
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
 //dashboard
-router.get('/dashboard/report/new-booking', authMiddleware, userMiddleware, mitraHotelController.newBookingToday);
-router.get('/dashboard/report/new-available-room', authMiddleware, userMiddleware, mitraHotelController.availableRoom);
-router.get('/dashboard/report/active-booking', authMiddleware, userMiddleware, mitraHotelController.activeBooking);
-router.get('/dashboard/report/revenue', authMiddleware, userMiddleware, mitraHotelController.revenueReport);
-router.get('/dashboard/report/grafik-revenue', authMiddleware, userMiddleware, mitraHotelController.grafikRevenue);
-router.get('/dashboard/report/grafik-booking', authMiddleware, userMiddleware, mitraHotelController.grafikBooking);
+router.get('/dashboard-hotel/new-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.newBookingToday);
+router.get('/dashboard-hotel/new-available-room', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.availableRoom);
+router.get('/dashboard-hotel/active-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.activeBooking);
+router.get('/dashboard-hotel/revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.revenueReport);
+router.get('/dashboard-hotel/grafik-revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikRevenue);
+router.get('/dashboard-hotel/grafik-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikBooking);
 
 //User
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
@@ -135,6 +135,7 @@ router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.d
 router.get('/search/flights', userController.searchFlights);
 //booking
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
+router.post('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
 //payment-flight
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 

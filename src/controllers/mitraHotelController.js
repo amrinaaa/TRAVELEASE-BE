@@ -5,7 +5,7 @@ import roomTypeServices from "../services/mitra/hotel/roomTypeServices.js";
 import facilityServices from "../services/mitra/hotel/facilityServices.js";
 import validation from "../utils/validation/hotel.js"
 import { validateImage } from "../utils/validation/fileImage.js"
-import bookingTodayService from "../services/mitra/hotel/dashboardHotelService.js";
+import bookingTodayService from "../services/mitra/hotel/dashboardService.js"
 
 export default {
     async getListHotel(_req, res) {
@@ -578,7 +578,9 @@ export default {
         }]
          */
         try {
-            const result = await bookingTodayService.newBookingTodayService();
+
+            const mitraId = res.locals.payload.id;
+            const result = await bookingTodayService.newBookingTodayService(mitraId);
 
             return res.status(200).json({
             success: true,
@@ -603,7 +605,8 @@ export default {
         }]
          */
         try {
-            const result = await bookingTodayService.availableRoomService();
+            const mitraId = res.locals.payload.id;
+            const result = await bookingTodayService.availableRoomService(mitraId);
 
             return res.status(200).json({
             success: true,
@@ -628,7 +631,8 @@ export default {
         }]
          */
         try {
-            const result = await bookingTodayService.activeBookingRoomService();
+            const mitraId = res.locals.payload.id;
+            const result = await bookingTodayService.activeBookingRoomService(mitraId);
 
             return res.status(200).json({
             success: true,
@@ -653,7 +657,8 @@ export default {
         }]
          */
         try {
-            const result = await bookingTodayService.revenueReportService();
+            const mitraId = res.locals.payload.id;
+            const result = await bookingTodayService.revenueReportService(mitraId);
 
             return res.status(200).json({
             success: true,
@@ -678,7 +683,8 @@ export default {
         }]
          */
         try {
-            const result = await bookingTodayService.grafikRevenueServices();
+            const mitraId = res.locals.payload.id;
+            const result = await bookingTodayService.grafikRevenueServices(mitraId);
 
             return res.status(200).json({
             success: true,
@@ -703,7 +709,8 @@ export default {
         }]
          */
         try {
-            const result = await bookingTodayService.grafikBookingServices();
+            const mitraId = res.locals.payload.id;
+            const result = await bookingTodayService.grafikBookingServices(mitraId);
 
             return res.status(200).json({
             success: true,
