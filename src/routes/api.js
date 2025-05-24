@@ -132,7 +132,10 @@ router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.d
 router.get('/search/flights', userController.searchFlights);
 
 //booking
-router.get('/user-hotels', userController.getHotel);
+router.get('/user/hotels', userController.getHotel);
+router.get('/user/hotel-rooms/:hotelId', userController.getRoomsByIdHotel);
+router.get('/user/detail-room/:roomId', authMiddleware, userMiddleware,userController.detailRoomByIdRoom);
+router.get('/user/saldo', authMiddleware, userMiddleware, userController.getSaldoUser);
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
 

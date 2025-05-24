@@ -271,26 +271,180 @@ export default {
     },
 
     async getHotelService() {
+    try {
+        const hotels = await prisma.hotel.findMany({               
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                address: true,
+                location: {
+                    select: {
+                        city: true
+                    }
+                },
+                hotelImages: {
+                    select: {
+                        id: true,
+                        imageUrl: true
+                    }
+                }
+            }                
+        });
+
+        return hotels;
+
+    } catch (error) {
+        console.error("Error fetching hotels:", error);
+        throw new Error("Failed to fetch hotels");
+    }
+},
+
+    async getRoomsByIdHotelService(hotelId) {
         try {
-            const hotels = await prisma.hotel.findMany({               
+            const hotel = await prisma.hotel.findUnique({
+                where: {
+                    id: hotelId
+                },
                 select: {
-                    id: true,
                     name: true,
                     description: true,
-                    address: true,
-                    location: {
+                    hotelImages: {
                         select: {
-                            city: true
+                            imageUrl: true
+                        }
+                    },
+                    roomTypes: {
+                        select: {
+                            typeName: true,
+                            price: true,
+                            rooms: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    description: true,
+                                    roomReservations: {
+                                        select: {
+                                            id: true
+                                        }
+                                    },
+                                    roomImages: {
+                                        select: {
+                                            urlImage: true
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }                
-            });
-    
-            return hotels;
-    
-            } catch (error) {
-                    console.error("Error fetching hotels:", error);
-                    throw new Error("Failed to fetch hotels");
                 }
+            });
+
+            if (!hotel) {
+                throw new Error("Hotel not found");
+            }
+
+            const formattedRooms = hotel.roomTypes.flatMap(roomType =>
+                roomType.rooms.map(room => ({
+                    hotelName: hotel.name,
+                    hotelDescription: hotel.description,
+                    hotelImages: hotel.hotelImages.map(img => img.imageUrl),
+                    roomName: room.name,
+                    roomDescription: room.description,
+                    price: roomType.price,
+                    status: room.roomReservations.length === 0 ? 'Available' : 'Not Available',
+                    roomImages: room.roomImages.map(img => img.urlImage)
+                }))
+            );
+
+            return formattedRooms;
+
+        } catch (error) {
+            console.error("Error fetching rooms by hotel:", error);
+            throw new Error("Failed to fetch rooms");
+        }
+    },
+
+    async detailRoomByIdRoomService(roomId) {
+    try {
+        if (!roomId) {
+            throw new Error("roomId is required");
+        }
+
+        const room = await prisma.room.findUnique({
+            where: {
+                id: roomId
             },
+            select: {
+                name: true,
+                description: true,
+                roomImages: {
+                    select: {
+                        urlImage: true
+                    }
+                },
+                roomType: {
+                    select: {
+                        typeName: true,
+                        price: true,
+                        roomTypeFacilities: {
+                            select: {
+                                amount: true,
+                                facility: {
+                                    select: {
+                                        facilityName: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!room) {
+            throw new Error("Room not found");
+        }
+
+        const formattedRoom = {
+            roomName: room.name,
+            roomDescription: room.description,
+            roomTypeName: room.roomType.typeName,
+            roomPrice: room.roomType.price,
+            roomImages: room.roomImages.map(img => img.urlImage),
+            facilities: room.roomType.roomTypeFacilities.map(fac => ({
+                name: fac.facility.facilityName,
+                amount: fac.amount
+            }))
+        };
+
+        return formattedRoom;
+
+    } catch (error) {
+        console.error("Error fetching room detail:", error);
+        throw new Error("Failed to fetch room detail");
+    }
+},
+
+    async mySaldoService(userId) {
+        try {
+            const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                currentAmount: true,
+            },
+            });
+
+            if (!user) {
+            throw new Error("User not found");
+            }
+
+            return user;
+        } catch (error) {
+            console.error("Error fetching user balance:", error);
+            throw new Error(error.message || "Failed to fetch user balance");
+        }
+    }
 };
