@@ -115,6 +115,29 @@ export default {
         }
     },
 
+    async hotelDataById(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { hotelId } = req.params;
+        try {
+            const result = await hotelServices.hotelDataByIdServices(hotelId);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async editHotel(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
@@ -272,7 +295,7 @@ export default {
     },
 
     async addRoom(req, res) {
-        const { roomTypeId, name } = req.body;
+        const { name, description, roomTypeId } = req.body;
         const files = req.files;
 
         try {
@@ -288,8 +311,9 @@ export default {
             }
 
             const result = await roomServices.addRoomService({
-                roomTypeId,
                 name,
+                description,
+                roomTypeId,
                 files
             });
 
@@ -307,8 +331,24 @@ export default {
 
     },
 
+    async dataRoomById(req, res) {
+        const { roomId } = req.params;
+        try {
+            const result = await roomServices.dataRoomByIdServices(roomId);
+            return res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
     async editRoom(req, res) {
-        const { roomId, name } = req.body;
+        const { roomId, name, description } = req.body;
         const files = req.files;
 
         try {
@@ -326,6 +366,7 @@ export default {
             const result = await roomServices.editRoomService({
                 roomId,
                 name,
+                description,
                 files
             });
 
@@ -393,6 +434,50 @@ export default {
 
         } catch (error) {
             return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async dataRoomTypeByIdRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomId } = req.params;
+        try {
+            const result = await roomTypeServices.dataRoomTypeByIdRoomServices(roomId);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async facilityNameByRoomId(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomId } = req.params;
+        try {
+            const result = await roomTypeServices.facilityNameByRoomIdServices(roomId);
+            res.status(200).json({
+                message: "Success",
+                data: result,
+            });
+        } catch (error) {
+            return res.status(500).json({
                 message: error.message,
                 data: null,
             });

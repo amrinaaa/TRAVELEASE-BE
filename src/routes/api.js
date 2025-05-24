@@ -97,6 +97,7 @@ router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelCont
 router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
 router.post('/location', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addLocation);
 router.post('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
+router.get('/hotel/data/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.hotelDataById);
 router.patch('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
 router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
 router.delete('/hotelImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteHotelImage);
@@ -104,8 +105,11 @@ router.get('/customers', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelC
 router.get('/rooms/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomList);
 router.get('/roomType/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomType);
 router.post('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomType);
+router.get('/roomType/data/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.dataRoomTypeByIdRoom);
+router.get('/facilityName/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.facilityNameByRoomId);
 router.patch('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomType);
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
+router.get('/room/data/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.dataRoomById);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
 
 //sementara belum ngedelete sampe ketika room di pesan

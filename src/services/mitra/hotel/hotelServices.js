@@ -119,6 +119,36 @@ export default {
         }
     },
 
+    async hotelDataByIdServices(hotelId) {
+        try { 
+            const dataHotel = await prisma.hotel.findUnique({
+                where: { id: hotelId },
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    address: true,
+                    contact: true,
+                    location: {
+                        select: {
+                            city: true
+                        }
+                    },
+                    hotelImages: {
+                        select: {
+                            imageUrl: true
+                        }
+                    }
+                }
+            });
+
+            return dataHotel;
+        } catch (error) {
+            console.error("Error fetching hotel data:", error);
+            throw new Error("Failed to fetch hotel data");
+        }
+    },
+
     async deleteHotelService(hotelId, mitraId) {
         try {
             const hotel = await prisma.hotel.findUnique({

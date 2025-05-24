@@ -2,18 +2,84 @@ import prisma from "../../../../prisma/prisma.client.js";
 
 export default {
     async getRoomType(hotelId) {
-            try {
-                const typeRoom = await prisma.roomType.findMany({
-                    where: {
-                        hotelId: hotelId
-                    }
-                });
-    
-                return typeRoom;
-            } catch (error) {
-                throw new Error(error.message);
+    try {
+        const roomtypeName = await prisma.roomType.findMany({
+            where: {
+                hotelId: hotelId
+            },
+            select: {
+                typeName: true
             }
-        },
+        });
+
+        return roomtypeName;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async dataRoomTypeByIdRoomServices(roomId) {
+        try {
+            const roomTypeData = await prisma.room.findUnique({
+            where: { id: roomId },
+            select: {
+                roomType: {
+                select: {
+                    typeName: true,
+                    capacity: true,
+                    price: true,
+                    roomTypeFacilities: {
+                    select: {
+                        id: true,
+                        amount: true,
+                        facility: {
+                        select: {
+                            facilityName: true
+                        }
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            });
+
+            if (!roomTypeData) {
+            throw new Error('Room not found');
+            }
+
+            return roomTypeData.roomType;
+        } catch (error) {
+            console.error('Error fetching room type data:', error);
+            throw new Error('Failed to fetch room type data');
+        }
+    },
+
+    async facilityNameByRoomIdServices(roomId) {
+        try {
+            const facilities = await prisma.roomTypeFacility.findMany({
+            where: {
+                roomTypeId: (await prisma.room.findUnique({
+                where: { id: roomId },
+                select: { roomTypeId: true }
+                })).roomTypeId
+            },
+            select: {
+                facility: {
+                select: {
+                    facilityName: true
+                }
+                }
+            }
+            });
+
+            // Extract hanya nama fasilitas dari hasil query
+            return facilities.map(f => f.facility.facilityName);
+        } catch (error) {
+            console.error('Error fetching facility names:', error);
+            throw new Error('Failed to fetch facility names');
+        }
+    },
 
     async addRoomTypeService(hotelId, typeName, capacity, price, facilities) {
     try {
@@ -76,10 +142,10 @@ export default {
             amount: f.amount,
         })),
         };
-    } catch (error) {
-        throw new Error(error.message);
-    }
-},     
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },     
 
     async editRoomType(roomTypeId, typeName, capacity, price) {
         try {
