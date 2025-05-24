@@ -173,7 +173,6 @@ const doc = {
                 planeId: "",
                 departureAirportId: "",
                 arrivalAirportId: "",
-                flightCode: "",
                 departureTime: "",
                 arrivalTime: "",
                 price: null,

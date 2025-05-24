@@ -220,7 +220,8 @@ export default {
                     }
                 });
 
-                const updatedPartner = await tx.user.update({
+                // Menambahkan saldo mitra dari hasil penjualan tiket
+                await tx.user.update({
                     where: { id: airlinePartner.partnerId },
                     data: {
                         currentAmount: {
@@ -229,6 +230,7 @@ export default {
                     }
                 });
 
+                // Return response data
                 return {
                     transaction: {
                         id: updatedTransaction.id,
