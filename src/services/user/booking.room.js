@@ -367,10 +367,6 @@ export default {
 
     async detailRoomByIdRoomService(roomId) {
     try {
-        if (!roomId) {
-            throw new Error("roomId is required");
-        }
-
         const room = await prisma.room.findUnique({
             where: {
                 id: roomId

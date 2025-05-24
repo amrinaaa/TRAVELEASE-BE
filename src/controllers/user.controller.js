@@ -160,6 +160,7 @@ export default {
         }]
         */
         const roomId = req.params.roomId;
+
         try {
             const result = await bookingServices.detailRoomByIdRoomService(roomId);
             res.status(200).json({message: "success", data: result});
