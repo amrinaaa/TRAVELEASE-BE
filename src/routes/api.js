@@ -84,14 +84,13 @@ router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware,
 router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
 router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadAirportImage);// blm fiks
 router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
+
 //dashboard
 router.get('/dashboard-flight/booking-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.bookingFlightToday);
 router.get('/dashboard-flight/avalaible-airplane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.avalaibleAirplane);
 router.get('/dashboard-flight/revenue-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.revenueToday);
 router.get('/dashboard-flight/monthly-revenue', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpRevenueMonthly);
 router.get('/dashboard-flight/monthly-booking', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpBookingMonthly);
-
-
 
 //Mitra-Hotel
 router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
@@ -108,18 +107,17 @@ router.post('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelC
 router.patch('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomType);
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
+
 //sementara belum ngedelete sampe ketika room di pesan
 router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
 router.get('/roomType-facilities/:roomTypeId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomTypeFacility);
-router.post('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomTypeFacility);
+router.post('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addFacility);
 router.delete('/roomType-facilities/:roomTypeFacilityId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoomTypeFacility);
-// router.patch('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomTypeFacility);
-// router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
-// router.post('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addFacility);
-// router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editFacility);
+
 //blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
+
 //dashboard
 router.get('/dashboard-hotel/new-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.newBookingToday);
 router.get('/dashboard-hotel/new-available-room', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.availableRoom);
@@ -132,10 +130,12 @@ router.get('/dashboard-hotel/grafik-booking', authMiddleware, mitraMiddleware.mi
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.get('/search/flights', userController.searchFlights);
+
 //booking
 router.get('/user-hotels', userController.getHotel);
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
+
 //payment-flight
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 

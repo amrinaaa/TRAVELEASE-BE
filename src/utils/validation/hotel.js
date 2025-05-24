@@ -122,7 +122,7 @@ export default {
     },
 
     async validateAddRoomType(data) {
-        const { hotelId, typeName, capacity, price } = data;
+        const { hotelId, typeName, capacity, price, facilities } = data;
 
         if (!hotelId) {
             const error = new Error("Hotel ID is required");
@@ -130,102 +130,55 @@ export default {
             throw error;
         }
 
-        if (!typeName) {
-            const error = new Error("Room type name is required");
+        if (typeof typeName !== "string" || typeName.trim() === "") {
+            const error = new Error("Room type name is required and must be a non-empty string");
             error.statusCode = 400;
             throw error;
         }
 
-        if (typeof typeName !== "string") {
-            const error = new Error("Room type name must be a string");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (capacity === undefined || capacity === null) {
-            const error = new Error("Capacity is required");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (isNaN(capacity) || Number(capacity) <= 0) {
+        if (capacity === undefined || isNaN(capacity) || Number(capacity) <= 0) {
             const error = new Error("Capacity must be a positive number");
             error.statusCode = 400;
             throw error;
         }
 
-        if (price === undefined || price === null) {
-            const error = new Error("Price is required");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (isNaN(price) || Number(price) <= 0) {
+        if (price === undefined || isNaN(price) || Number(price) <= 0) {
             const error = new Error("Price must be a positive number");
             error.statusCode = 400;
             throw error;
         }
-    },
 
-    async validateAddRoomTypeFacility(data) {
-        const { roomTypeId, facilityName, amount } = data;
-
-        if (!roomTypeId) {
-            const error = new Error("Room Type ID is required");
+        if (facilities && !Array.isArray(facilities)) {
+            const error = new Error("Facilities must be an array if provided");
             error.statusCode = 400;
             throw error;
         }
 
-        if (!facilityName || typeof facilityName !== "string" || facilityName.trim() === "") {
-            const error = new Error("Facility Name is required and must be a non-empty string");
-            error.statusCode = 400;
-            throw error;
-        }
+        if (facilities) {
+            for (const facility of facilities) {
+                if (
+                    typeof facility.facilityName !== "string" ||
+                    facility.facilityName.trim() === ""
+                ) {
+                    const error = new Error("Each facility must have a valid non-empty string 'facilityName'");
+                    error.statusCode = 400;
+                    throw error;
+                }
 
-        if (amount === undefined || amount === null) {
-            const error = new Error("Amount is required");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (isNaN(amount) || Number(amount) <= 0) {
-            const error = new Error("Amount must be a positive number");
-            error.statusCode = 400;
-            throw error;
+                if (facility.amount === undefined || isNaN(facility.amount) || Number(facility.amount) <= 0) {
+                    const error = new Error("Each facility must have a valid positive number 'amount'");
+                    error.statusCode = 400;
+                    throw error;
+                }
+            }
         }
     },
 
     async validateAddFacility(data) {
         const { facilityName } = data;
 
-        if (!facilityName) {
-            const error = new Error("Facility name is required");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (typeof facilityName !== 'string') {
-            const error = new Error("Facility name must be a string");
-            error.statusCode = 400;
-            throw error;
-        }
-    },
-
-    async validateEditRoomTypeFacilityServices(roomTypeFacilityId, facilityName, amount) {
-        if (!roomTypeFacilityId) {
-            const error = new Error("Room Type Facility ID is required");
-            error.statusCode = 400;
-            throw error;
-        }
-
         if (!facilityName || typeof facilityName !== "string" || facilityName.trim() === "") {
             const error = new Error("Facility Name is required and must be a non-empty string");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (isNaN(amount) || Number(amount) <= 0) {
-            const error = new Error("Amount must be a positive number");
             error.statusCode = 400;
             throw error;
         }

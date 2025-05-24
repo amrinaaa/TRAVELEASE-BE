@@ -3,7 +3,7 @@ import prisma from "../../../prisma/prisma.client.js";
 export default {
     async bookingFlightService(userId, flightId, passengers) {
         try {
-            //ngambil data penerbangan buat dipake untuk validasi waktu & kursi yg tersedia
+            
             const flight = await prisma.flight.findUnique({
                 where: { id: flightId },
                 include: {
@@ -16,7 +16,6 @@ export default {
                 throw new Error('Invalid flight. Flight not found.');
             };
 
-            //validasi kapan tiket di pesan berdasarkan waktu dari penerbangannya
             const now = new Date();
             const departureDate = new Date(flight.departureTime);
             const timeDiff = departureDate.getTime() - now.getTime();
@@ -26,10 +25,8 @@ export default {
                 throw new Error('Pemesanan minimal 1 hari sebelum tanggal keberangkatan.');
             };
 
-            //menghitung total kursi yang di booking
             const seatIds = passengers.map(passenger => passenger.seatId);
 
-            //validasi kursi-kursi tersebut ada atau tidak di penerbangan tersebut
             const seats = await prisma.seat.findMany({
                 where: {
                     id: { in: seatIds },
@@ -47,7 +44,6 @@ export default {
                 throw new Error('Seats not found.');
             };
 
-            //validasi apakah kursi tersedia
             const existingTickets = await prisma.ticket.findMany({
                 where: {
                     flightId: flightId,
@@ -60,23 +56,17 @@ export default {
                 throw new Error(`Seats with IDs: ${bookedSeatIds.join(', ')} are already booked.`);
             };
 
-            //Menhitung total harga berdasarkan harga flight + kategori kursi
             let totalPrice = 0;
             const seatPriceMap = {};
-            
-            // Mangambil harga flightnya
             const baseFlightPrice = flight.price;
             
             for (const seat of seats) {
-                // Menjumlahkan harga flight + kategori kursi
                 const price = baseFlightPrice + seat.seatCategory.price;
                 seatPriceMap[seat.id] = price;
                 totalPrice += price;
             };
 
-            //menggunakan transaction agar jika terjadi error langsung ke rollback
             return await prisma.$transaction(async (tx) => {
-                // Membuat transaksi
                 const transaction = await tx.transaction.create({
                     data: {
                         userId: userId,
@@ -86,7 +76,6 @@ export default {
                     }
                 });
 
-                // Membuat tiket untuk tiap-tiap penumpang
                 const tickets = await Promise.all(
                     passengers.map(passenger => 
                         tx.ticket.create({
@@ -171,10 +160,7 @@ export default {
             if (!transaction.tickets || transaction.tickets.length === 0) {
                 throw new Error('No tickets found for this transaction');
             }
-
-            //validasi durasi pembayaran
-            //disini masih pakai createAt dari ticket yang dibuat, karena waktunya sama
-            //jika mau buatkan createAt ditabel transaction juga.
+            
             const bookingTime = transaction.tickets[0].createdAt;
             if (Date.now() - bookingTime.getTime() > 15 * 60 * 1000) {
                 await prisma.ticket.deleteMany({
@@ -204,7 +190,6 @@ export default {
                 throw new Error('No airline partner found for this flight');
             }
 
-            //Mengambil data saldo user
             const user = await prisma.user.findUnique({
                 where: { id: userId },
                 select: { currentAmount: true }
@@ -215,13 +200,11 @@ export default {
             }
 
             return await prisma.$transaction(async (tx) => {
-                // Perbaharui status transaksi
                 const updatedTransaction = await tx.transaction.update({
                     where: { id: transactionId },
                     data: { status: 'PAID' }
                 });
 
-                // Mengurangi saldo user sesuai dengan harga tiket yang dipesan
                 const updatedUser = await tx.user.update({
                     where: { id: userId },
                     data: {
@@ -237,7 +220,6 @@ export default {
                     }
                 });
 
-                // Menambahkan saldo mitra dari hasil penjualan tiket
                 const updatedPartner = await tx.user.update({
                     where: { id: airlinePartner.partnerId },
                     data: {
@@ -247,18 +229,6 @@ export default {
                     }
                 });
 
-                // Mencatat rekaman transaksi yang didapatkan mitra
-                //ini tidak perlu sepertinya
-                // await tx.transaction.create({
-                //     data: {
-                //         userId: airlinePartner.partnerId,
-                //         transactionType: 'PURCHASE',
-                //         price: transaction.price,
-                //         status: 'PAID'
-                //     }
-                // });
-s
-                // Return response data
                 return {
                     transaction: {
                         id: updatedTransaction.id,
