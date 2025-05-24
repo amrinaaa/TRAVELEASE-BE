@@ -119,5 +119,20 @@ export default {
         } catch (error) {
             res.status(400).json({ message: error.message, data: null });
         }
+    },
+
+    async getHotel(req, res) {
+        /**
+        #swagger.tags = ['User']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        try {
+            const result = await bookingServices.getHotelService();
+            res.status(200).json({message: "success", data: result});
+        } catch (error) {
+            res.status(400).json({ message: error.message, data: null });
+        }
     }
 };

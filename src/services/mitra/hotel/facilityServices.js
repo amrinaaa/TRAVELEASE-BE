@@ -25,40 +25,29 @@ export default {
         }
     },
 
-    async addRoomTypeFacilityServices(roomTypeId, facilityId, amount) {
+    async addRoomTypeFacilityServices(roomTypeId, facilityName, amount) {
         try {
-            const newRoomTypeFacility = await prisma.roomTypeFacility.create({
-                data: {
-                    roomTypeId: roomTypeId,
-                    facilityId: facilityId,
-                    amount: amount
-                }
+            // Upsert facility berdasarkan nama
+            const facility = await prisma.facility.upsert({
+            where: { facilityName: facilityName },
+            update: {},
+            create: {
+                facilityName: facilityName
+            }
             });
-    
+
+            const newRoomTypeFacility = await prisma.roomTypeFacility.create({
+            data: {
+                roomTypeId: roomTypeId,
+                facilityId: facility.id,
+                amount: amount
+            }
+            });
+
             return newRoomTypeFacility;
         } catch (error) {
             console.error("Error adding room type facility:", error);
             throw new Error("Failed to add room type facility");
-        }
-    },
-
-    async editRoomTypeFacilityServices(roomTypeFacilityId, facilityId, roomTypeId, amount) {
-        try {
-            const updatedRoomTypeFacility = await prisma.roomTypeFacility.update({
-                where: {
-                    id: roomTypeFacilityId
-                },
-                data: {
-                    facilityId: facilityId,
-                    roomTypeId: roomTypeId,
-                    amount: amount
-                }
-            });
-    
-            return updatedRoomTypeFacility;
-        } catch (error) {
-            console.error("Error updating room type facility:", error);
-            throw new Error("Failed to update room type facility");
         }
     },
 
@@ -77,54 +66,95 @@ export default {
         }
     },
 
-    async addFacilityServices(facilityName) {
-        try {
-            const newFacility = await prisma.facility.create({
-                data: {
-                    facilityName: facilityName
-                }
-            });
-    
-            return newFacility;
-        } catch (error) {
-            console.error("Error adding facility:", error);
-            throw new Error("Failed to add facility");
-        }
-    },
+        // async editRoomTypeFacilityServices(roomTypeFacilityId, facilityName, amount) {
+    //     try {
+    //         // Cari fasilitas baru berdasarkan nama
+    //         let facility = await prisma.facility.findUnique({
+    //             where: { facilityName: facilityName },
+    //         });
 
-    async editFacilityServices (facilityId, facilityName) {
-        try {
-            const result = await prisma.facility.update({
-                where: {
-                    id: facilityId
-                },
-                data: {
-                    facilityName: facilityName
-                }
-            });
-    
-            return result;
-        } catch (error) {
-            console.error("Error updating facility:", error);
-            throw new Error("Failed to update facility");
-        }
-    },
+    //         // Kalau belum ada, buat baru
+    //         if (!facility) {
+    //             facility = await prisma.facility.create({
+    //                 data: { facilityName: facilityName },
+    //             });
+    //         }
 
-    async getFacilityService () {
-        try {
-            const result = await prisma.facility.findMany({
-                select: {
-                    id: true,
-                    facilityName: true
-                }
-            });
+    //         // Update facilityId dan amount berdasarkan id unik
+    //         const updated = await prisma.roomTypeFacility.update({
+    //             where: { 
+    //                 id: roomTypeFacilityId },
+    //             data: {
+    //                 facilityId: facility.id,
+    //                 amount: amount,
+    //             },
+    //             include: {
+    //                 facility: true,
+    //                 roomType: true,
+    //             }
+    //         });
+
+    //         // Return yang lengkap
+    //         return {
+    //             roomTypeFacilityId: updated.id,
+    //             roomTypeId: updated.roomTypeId,
+    //             facilityName: updated.facility.facilityName,
+    //             amount: updated.amount
+    //         };
+    //     } catch (error) {
+    //         console.error("Error editing room type facility:", error);
+    //         throw new Error(error.message || "Failed to edit room type facility");
+    //     }
+    // },
+
+//     async addFacilityServices(facilityName) {
+//         try {
+//             const newFacility = await prisma.facility.create({
+//                 data: {
+//                     facilityName: facilityName
+//                 }
+//             });
     
-            return result;
-        } catch (error) {
-            console.error("Error fetching facilities:", error);
-            throw new Error("Failed to fetch facilities");
-        }
-    }
+//             return newFacility;
+//         } catch (error) {
+//             console.error("Error adding facility:", error);
+//             throw new Error("Failed to add facility");
+//         }
+//     },
+
+//     async editFacilityServices (facilityId, facilityName) {
+//         try {
+//             const result = await prisma.facility.update({
+//                 where: {
+//                     id: facilityId
+//                 },
+//                 data: {
+//                     facilityName: facilityName
+//                 }
+//             });
+    
+//             return result;
+//         } catch (error) {
+//             console.error("Error updating facility:", error);
+//             throw new Error("Failed to update facility");
+//         }
+//     },
+
+//     async getFacilityService () {
+//         try {
+//             const result = await prisma.facility.findMany({
+//                 select: {
+//                     id: true,
+//                     facilityName: true
+//                 }
+//             });
+    
+//             return result;
+//         } catch (error) {
+//             console.error("Error fetching facilities:", error);
+//             throw new Error("Failed to fetch facilities");
+//         }
+//     }
 
     
 }

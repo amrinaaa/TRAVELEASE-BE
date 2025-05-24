@@ -423,52 +423,32 @@ export default {
     },
 
     async addRoomTypeFacility(req, res) {
-        /**
-        #swagger.tags = ['Mitra Hotel']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
-        const { roomTypeId, facilityId, amount } = req.body;
-
+    /**
+     * #swagger.tags = ['Mitra Hotel']
+     * #swagger.security = [{
+     *   "bearerAuth": []
+     * }]
+     */
         try {
+            const { roomTypeId, facilityName, amount } = req.body;
+
             await validation.validateAddRoomTypeFacility(req.body);
 
-            const result = await facilityServices.addRoomTypeFacilityServices(roomTypeId, facilityId, amount);
-            res.status(200).json({
-                message: "Success",
-                data: result,
-            });
+            const result = await facilityServices.addRoomTypeFacilityServices(
+            roomTypeId,
+            facilityName,
+            amount
+            );
 
+            return res.status(200).json({
+            message: "Room type facility added successfully",
+            data: result,
+            });
         } catch (error) {
+            console.error("Add RoomTypeFacility Error:", error);
             return res.status(error.statusCode || 500).json({
-                message: error.message,
-                data: null,
-            });
-        }
-    },
-
-    async editRoomTypeFacility(req, res) {
-        /**
-        #swagger.tags = ['Mitra Hotel']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
-        const { roomTypeFacilityId, roomTypeId, facilityId, amount } = req.body;
-
-        try {
-
-            const result = await facilityServices.editRoomTypeFacilityServices(roomTypeFacilityId,facilityId, roomTypeId, amount);
-            res.status(200).json({
-                message: "Success",
-                data: result,
-            });
-
-        } catch (error) {
-            return res.status(error.statusCode || 500).json({
-                message: error.message,
-                data: null,
+            message: error.message || "Internal Server Error",
+            data: null,
             });
         }
     },
@@ -496,78 +476,111 @@ export default {
         }
     },
 
-    async addFacility(req, res) {
-        /**
-        #swagger.tags = ['Mitra Hotel']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
-        const { facilityName } = req.body;
+    // async editRoomTypeFacility(req, res) {
+    //     /**
+    //     #swagger.tags = ['Mitra Hotel']
+    //     #swagger.security = [{
+    //         "bearerAuth": []
+    //     }]
+    //     */
+    //       try {
+    //         const { roomTypeFacilityId, facilityName, amount } = req.body;
 
-        try {
-            await validation.validateAddFacility(req.body);
+    //         // Validasi input (bisa disesuaikan dengan validasi yang kamu punya)
+    //         await validation.validateEditRoomTypeFacilityServices(req.body);
 
-            const result = await facilityServices.addFacilityServices(facilityName);
-            res.status(200).json({
-                message: "Success",
-                data: result,
-            });
+    //         // Panggil service untuk update
+    //         const result = await facilityServices.editRoomTypeFacilityServices(
+    //         roomTypeFacilityId,
+    //         facilityName,
+    //         amount
+    //         );
 
-        } catch (error) {
-            return res.status(error.statusCode || 500).json({
-                message: error.message,
-                data: null,
-            });
-        }        
-    },
+    //         return res.status(200).json({
+    //         message: "Room type facility updated successfully",
+    //         data: result,
+    //         });
+    //     } catch (error) {
+    //         console.error("Edit RoomTypeFacility Error:", error);
+    //         return res.status(error.statusCode || 500).json({
+    //         message: error.message || "Internal Server Error",
+    //         data: null,
+    //         });
+    //     }
+    // },
 
-    async editFacility(req, res) {
-        /**
-        #swagger.tags = ['Mitra Hotel']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
-        const { facilityId, facilityName } = req.body;
+    // async addFacility(req, res) {
+    //     /**
+    //     #swagger.tags = ['Mitra Hotel']
+    //     #swagger.security = [{
+    //         "bearerAuth": []
+    //     }]
+    //     */
+    //     const { facilityName } = req.body;
 
-        try {
+    //     try {
+    //         await validation.validateAddFacility(req.body);
 
-            const result = await facilityServices.editFacilityServices(facilityId, facilityName);
-            res.status(200).json({
-                message: "Success",
-                data: result,
-            });
+    //         const result = await facilityServices.addFacilityServices(facilityName);
+    //         res.status(200).json({
+    //             message: "Success",
+    //             data: result,
+    //         });
 
-        } catch (error) {
-            return res.status(error.statusCode || 500).json({
-                message: error.message,
-                data: null,
-            });
-        }        
-    },
+    //     } catch (error) {
+    //         return res.status(error.statusCode || 500).json({
+    //             message: error.message,
+    //             data: null,
+    //         });
+    //     }        
+    // },
 
-    async getFacilities (req, res) {
-    /**
-    #swagger.tags = ['Mitra Hotel']
-    #swagger.security = [{
-        "bearerAuth": []
-    }]
-    */
-        try {
-            const result = await facilityServices.getFacilityService();
-            res.status(200).json({
-                message: "Success",
-                data: result,
-            });
+    // async editFacility(req, res) {
+    //     /**
+    //     #swagger.tags = ['Mitra Hotel']
+    //     #swagger.security = [{
+    //         "bearerAuth": []
+    //     }]
+    //     */
+    //     const { facilityId, facilityName } = req.body;
+
+    //     try {
+
+    //         const result = await facilityServices.editFacilityServices(facilityId, facilityName);
+    //         res.status(200).json({
+    //             message: "Success",
+    //             data: result,
+    //         });
+
+    //     } catch (error) {
+    //         return res.status(error.statusCode || 500).json({
+    //             message: error.message,
+    //             data: null,
+    //         });
+    //     }        
+    // },
+
+    // async getFacilities (req, res) {
+    // /**
+    // #swagger.tags = ['Mitra Hotel']
+    // #swagger.security = [{
+    //     "bearerAuth": []
+    // }]
+    // */
+    //     try {
+    //         const result = await facilityServices.getFacilityService();
+    //         res.status(200).json({
+    //             message: "Success",
+    //             data: result,
+    //         });
             
-        }catch (error) {
-            return res.status(500).json({
-                message: error.message,
-                data: null,
-            })
-        }
-    },
+    //     }catch (error) {
+    //         return res.status(500).json({
+    //             message: error.message,
+    //             data: null,
+    //         })
+    //     }
+    // },
 
     //dashboard
     async newBookingToday(req, res) {

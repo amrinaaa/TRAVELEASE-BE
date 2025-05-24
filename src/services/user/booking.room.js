@@ -280,11 +280,11 @@ export default {
     }
 },
 
-    async hotelListServices(){
+    async getHotelService() {
         try {
-            const hotels = await prisma.hotel.findMany({
+            const hotels = await prisma.hotel.findMany({               
                 select: {
-                    id: true, 
+                    id: true,
                     name: true,
                     description: true,
                     address: true,
@@ -293,14 +293,14 @@ export default {
                             city: true
                         }
                     }
-                }
+                }                
             });
-
+    
             return hotels;
-        }
-        catch (error) {
-            console.error("Error fetching hotels:", error);
-            throw new Error("Failed to fetch hotels");
-        }
-    },
+    
+            } catch (error) {
+                    console.error("Error fetching hotels:", error);
+                    throw new Error("Failed to fetch hotels");
+                }
+            },
 };
