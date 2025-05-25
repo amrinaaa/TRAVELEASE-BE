@@ -319,4 +319,174 @@ export default {
             throw new Error("Failed to fetch hotels");
         }
     },
+
+    async cancelRoomService(userId, transactionId) {
+        try {
+            return prisma.$transaction(async (tx) => {
+                // 1. Ambil transaksi beserta reservasi dan detail hotel (untuk partner)
+                const transaction = await tx.transaction.findUnique({
+                    where: { id: transactionId },
+                    include: {
+                        user: { select: { id: true } },
+                        reservations: { // Ini adalah array dari reservasi hotel
+                            include: {
+                                roomReservations: { // Setiap reservasi memiliki array roomReservations
+                                    include: {
+                                        room: {
+                                            include: {
+                                                roomType: {
+                                                    include: {
+                                                        hotel: { // Untuk mendapatkan hotelId
+                                                            select: { id: true }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                    },
+                });
+
+                if (!transaction) {
+                    throw new Error('Transaction not found');
+                }
+
+                if (transaction.userId !== userId) {
+                    throw new Error('User does not own this transaction');
+                }
+
+                if (transaction.status === 'CANCELED') {
+                    throw new Error('Order already cancelled');
+                }
+
+                // Asumsi tipe transaksi 'PURCHASE' juga berlaku untuk hotel, atau sesuaikan jika ada tipe lain
+                if (transaction.transactionType !== 'PURCHASE') {
+                    throw new Error('Only purchase transactions can be cancelled for hotel reservations.');
+                }
+
+                if (!transaction.reservations || transaction.reservations.length === 0) {
+                    await tx.transaction.update({
+                        where: {id: transactionId},
+                        data: {status: 'CANCELED', notes: "Cancelled due to no hotel reservations found."}
+                    });
+                    throw new Error('No hotel reservations found in this transaction. Order marked as cancelled.');
+                }
+
+                // 2. Tentukan tanggal check-in (startDate) paling awal dari semua reservasi hotel
+                let earliestCheckInDate = null;
+                for (const reservation of transaction.reservations) {
+                    if (reservation.startDate) {
+                        const checkIn = new Date(reservation.startDate);
+                        if (!earliestCheckInDate || checkIn < earliestCheckInDate) {
+                            earliestCheckInDate = checkIn;
+                        }
+                    }
+                }
+
+                if (!earliestCheckInDate) {
+                    await tx.transaction.update({
+                        where: {id: transactionId},
+                        data: {status: 'CANCELED', notes: "Cancelled due to missing check-in dates."}
+                    });
+                    throw new Error('Could not determine check-in date for reservations in transaction. Order marked as cancelled.');
+                }
+
+                // 3. Cek aturan pembatalan (minimal 2 hari sebelum tanggal check-in)
+                const currentTime = new Date();
+                if ((earliestCheckInDate.getTime() - currentTime.getTime()) < 2 * 24 * 60 * 60 * 1000) {
+                    throw new Error(`Cancellation window has passed. Must be at least 2 days before check-in (Earliest check-in: ${earliestCheckInDate.toISOString()})`);
+                }
+
+                // Kumpulkan ID semua reservasi dan roomReservation yang akan dihapus
+                const reservationIdsToDelete = transaction.reservations.map(res => res.id);
+
+                // 4. Logika berdasarkan status transaksi
+                if (transaction.status === 'ORDERED') {
+                    // Hapus semua RoomReservation yang terkait dengan reservasi dalam transaksi ini
+                    if (reservationIdsToDelete.length > 0) {
+                        await tx.roomReservation.deleteMany({
+                            where: { reservationId: { in: reservationIdsToDelete } },
+                        });
+                        // Hapus semua Reservation yang terkait dengan transaksi ini
+                        await tx.reservation.deleteMany({
+                            where: { transactionId: transactionId }
+                        });
+                    }
+
+                    // Update status transaksi menjadi CANCELED
+                    const updatedTransaction = await tx.transaction.update({
+                        where: { id: transactionId },
+                        data: { status: 'CANCELED' },
+                    });
+                    return { status: updatedTransaction.status, message: "Hotel reservation cancelled. Reservation data deleted." };
+
+                } else if (transaction.status === 'PAID') {
+                    // Kembalikan saldo ke pengguna
+                    await tx.user.update({
+                        where: { id: userId },
+                        data: { currentAmount: { increment: transaction.price } },
+                    });
+
+                    // Identifikasi Hotel dari reservasi/kamar pertama untuk menemukan partner yang akan didebit (ASUMSI PENYEDERHANAAN)
+                    const firstReservation = transaction.reservations[0];
+                    if (!firstReservation || !firstReservation.roomReservations || firstReservation.roomReservations.length === 0) {
+                        throw new Error('Primary reservation or room information missing for partner debiting.');
+                    }
+                    const firstRoomReservation = firstReservation.roomReservations[0];
+                    if (!firstRoomReservation.room || !firstRoomReservation.room.roomType || !firstRoomReservation.room.roomType.hotel || !firstRoomReservation.room.roomType.hotel.id) {
+                        throw new Error('Primary hotel ID for debiting not found in reservation details.');
+                    }
+                    const hotelIdToDebit = firstRoomReservation.room.roomType.hotel.id;
+
+                    // Cari mitra (User dengan peran MITRA_HOTEL) yang terkait dengan hotelIdToDebit
+                    const hotelPartnerRecord = await tx.hotelPartner.findFirst({
+                        where: { hotelId: hotelIdToDebit },
+                        select: { partnerId: true } // partnerId adalah ID User si mitra
+                    });
+
+                    if (!hotelPartnerRecord || !hotelPartnerRecord.partnerId) {
+                        throw new Error('Hotel partner not found for refund debiting.');
+                    }
+                    const partnerUserIdToDebit = hotelPartnerRecord.partnerId;
+
+                    // Debit saldo dari User mitra
+                    await tx.user.update({
+                        where: { id: partnerUserIdToDebit },
+                        data: { currentAmount: { decrement: transaction.price } },
+                    });
+
+                    // Hapus semua RoomReservation dan Reservation terkait
+                    if (reservationIdsToDelete.length > 0) {
+                        await tx.roomReservation.deleteMany({
+                            where: { reservationId: { in: reservationIdsToDelete } },
+                        });
+                        await tx.reservation.deleteMany({
+                            where: { transactionId: transactionId }
+                        });
+                    }
+
+                    // Update status transaksi menjadi CANCELED
+                    const updatedTransaction = await tx.transaction.update({
+                        where: { id: transactionId },
+                        data: { status: 'CANCELED' },
+                    });
+
+                    return {
+                        status: updatedTransaction.status,
+                        message: "Hotel reservation cancelled. User refunded. Partner debited. Reservation data deleted.",
+                        refundedAmount: transaction.price,
+                        debitedPartnerUserId: partnerUserIdToDebit
+                    };
+
+                } else {
+                    throw new Error(`Invalid transaction status for cancellation: ${transaction.status}`);
+                }
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
 };

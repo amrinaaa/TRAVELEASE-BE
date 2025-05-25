@@ -203,6 +203,14 @@ const doc = {
                 transactionId: "",
             },
 
+            CancelFlightRequest: {
+                transactionId: "",
+            },
+
+            CancelRoomRequest: {
+                transactionId: "",
+            },
+
             // addHotelRequest: {
             //     locationId: "",
             //     name: "",

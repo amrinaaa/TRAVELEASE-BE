@@ -138,6 +138,11 @@ router.post('/booking-room', authMiddleware, userMiddleware, userController.book
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
 //payment-flight
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
+router.get('/transaction-history', authMiddleware, userMiddleware, userController.transactionHistory);
+//cancel
+router.put('/cancel-flight', authMiddleware, userMiddleware, userController.cancelFlight);
+router.put('/cancel-room', authMiddleware, userMiddleware, userController.cancelRoom);
+
 
 
 export default router;
