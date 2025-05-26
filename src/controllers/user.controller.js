@@ -2,9 +2,52 @@ import bookingServices from '../services/user/booking.room.js';
 import searchService from '../services/user/searchService.js';
 import bookingFlight from '../services/user/booking.flight.js';
 import transactionService from '../services/user/transaction.js';
+import userService from '../services/user/user.service.js';
 
 export default {
+    async editProfile(req, res) {
+        /**
+        #swagger.tags = ['User-Login']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/EditProfileRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const userId = res.locals.payload.id; // Mengambil ID pengguna dari token JWT
+        const { newName } = req.body;
+
+        try {
+            if (!newName) {
+                return res.status(400).json({ message: "New name (name) is required in the request body." });
+            }
+
+            const updatedUser = await userService.updateUserNameService(userId, newName);
+            res.status(200).json({
+                message: "User name updated successfully",
+                data: updatedUser,
+            });
+        } catch (error) {
+            console.error("Error in UserController.updateMyName:", error);
+            if (error.message.includes('New name is required') || error.message.includes('cannot be empty')) {
+                return res.status(400).json({ message: error.message, data: null });
+            }
+            if (error.message === 'User not found.') { // Meskipun seharusnya tidak terjadi
+                return res.status(404).json({ message: error.message, data: null });
+            }
+            return res.status(500).json({
+                message: error.message || "Internal Server Error",
+                data: null,
+            });
+        }
+    },
+
     async searchFlights(req, res) {
+        /**
+        #swagger.tags = ['User-Guest']
+        */
         try {
             const flights = await searchService.filterFlights(req.query);
             if (flights.length === 0) {
@@ -29,7 +72,7 @@ export default {
 
     async bookingFlight(req, res) {
         /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/BookingFlightRequest"}
@@ -57,7 +100,7 @@ export default {
 
     async paymentFlight(req, res) {
         /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/PaymentFlightRequest"}
@@ -84,7 +127,7 @@ export default {
 
     async transactionHistory(_req, res) {
         /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.security = [{
             "bearerAuth": []
         }]
@@ -113,7 +156,7 @@ export default {
 
     async cancelFlight(req, res) {
         /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/CancelFlightRequest"}
@@ -159,6 +202,16 @@ export default {
     },
 
     async bookingRoom(req, res) {
+        /**
+        #swagger.tags = ['User-Login']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/BookingRoomRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         try {
             const { roomId, startDate, endDate } = req.body;
             const userId = res.locals.payload.id;
@@ -178,11 +231,7 @@ export default {
 
     async paymentBookingRoom(req, res) {
         /**
-        #swagger.tags = ['User']
-        #swagger.requestBody = {
-            required: true,
-            schema: {$ref: "#/components/schemas/PaymentBookingRoomRequest"}
-        },
+        #swagger.tags = ['User-Login']
         #swagger.security = [{
             "bearerAuth": []
         }]
@@ -200,7 +249,7 @@ export default {
 
     async cancelRoom(req, res) {
         /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/CancelRoomRequest"}

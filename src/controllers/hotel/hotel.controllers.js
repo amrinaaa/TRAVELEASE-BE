@@ -4,7 +4,7 @@ export default {
     async getHotels(_req, res) {
         try {
             /**
-            #swagger.tags = ['Hotel']
+            #swagger.tags = ['User-Guest']
             #swagger.security = [{
                 "bearerAuth": []
             }]
@@ -24,7 +24,7 @@ export default {
 
     async getHotelsByCity(req, res) {
         /**
-        #swagger.tags = ['Hotel']
+        #swagger.tags = ['User-Guest']
         #swagger.parameters['city'] = {
             in: 'query',
             required: true,
@@ -53,7 +53,7 @@ export default {
 
     async searchRooms(req, res) {
         /**
-        #swagger.tags = ['Hotel']
+        #swagger.tags = ['User-Guest']
         #swagger.security = [{
             "bearerAuth": []
          }]

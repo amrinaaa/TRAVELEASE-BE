@@ -69,6 +69,10 @@ const doc = {
                 email: "EmailBaru@gmail.com / Kosong"
             },
 
+            EditProfileRequest: {
+                newName: "",
+            },
+
             AddMitraRequest: {
                 name: "Nama",
                 email: "example@gmail.com",
@@ -247,6 +251,12 @@ const doc = {
 
             getCustomerListRequest: {
                 mitraId: "",
+            },
+
+            BookingRoomRequest: {
+                roomId: "", 
+                startDate: "", 
+                endDate: "",
             },
         },
     },

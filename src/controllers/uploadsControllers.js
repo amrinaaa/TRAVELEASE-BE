@@ -93,7 +93,7 @@ export default {
 
     async uploadAirportImage(req, res) {
         /**
-        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.tags = ['Airport']
         #swagger.consumes = ['multipart/form-data']
         #swagger.requestBody = {
             required: true,

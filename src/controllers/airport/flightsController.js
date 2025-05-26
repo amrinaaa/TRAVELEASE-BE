@@ -3,7 +3,7 @@ import flightsService from '../../services/airport/flights.js';
 export default {
     async getFlightsByCity(req, res) {
         /**
-        #swagger.tags = ['Airport']
+        #swagger.tags = ['User-Guest']
         #swagger.parameters['city'] = {
             in: 'query',
             required: true,
@@ -33,7 +33,7 @@ export default {
 
     async getFlights(req, res) {
         /**
-        #swagger.tags = ['Airport']
+        #swagger.tags = ['User-Guest']
         */
         try {
             const flights = await flightsService.getFlightsService();

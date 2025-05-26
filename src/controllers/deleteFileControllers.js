@@ -111,7 +111,7 @@ export default {
 
     async deleteAirportImage(req, res) {
         /**
-         #swagger.tags = ['Mitra Penerbangan']
+         #swagger.tags = ['Airport']
          #swagger.security = [{
             "bearerAuth": []
          }]

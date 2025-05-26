@@ -50,38 +50,35 @@ router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
 router.post('/admin/profile/:id', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfilebyAdmin);
 router.delete('/admin/profile/:id', authMiddleware, adminMiddleware, deleteFileController.deleteProfilebyAdmin);
 
-//route Airport
-router.get('/airports', authMiddleware, getAirports);
-router.get('/flights-by-city', authMiddleware, flightsController.getFlightsByCity);
-router.get('/flights', flightsController.getFlights);
-router.get('/seats/:flightId', seatsController.getSeat);
-router.post('/booking-flight', authMiddleware, userController.bookingFlight); //endpoint user (sementara taro disini biar gk conflick)
-
-//route Hotel
-router.get('/guest/hotels', authMiddleware, hotelControllers.getHotels);
-router.get('/hotels-by-city', authMiddleware, hotelControllers.getHotelsByCity);
-router.get('/search-rooms', authMiddleware, hotelControllers.searchRooms);
-
-//Mitra-Penerbangan
+//Penerbangan
+//Airline
 router.get('/airlines', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getAirlines);
 router.post('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addAirline);
 router.put('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.updateAirline);
 router.delete('/airline', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deleteAirline);
+//Plane
 router.get('/plane-type', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneType);
 router.post('/plane-type', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneType);
 router.get('/planes', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlanes);
 router.post('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlane);
 router.delete('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlane);
+//Seat
 router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
 router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
-router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat); //di cek nnti
-router.delete('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deletePlaneSeat);
+router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat); 
+router.delete('/seat', authMiddleware, mitraControllers.deletePlaneSeat); //admin bisa menggunakannya juga
+//Flight
+router.get('/mitra-flights', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getMitraFlight);
 router.post('/flight', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addFlight);
 router.delete('/flight', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.deleteFlight);
+//Passengers
 router.get('/passengers', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPassengers);
+//Mitra-Profile
 router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadProfile);
 router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadProfile);
 router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
+//Airport
+router.get('/airports', authMiddleware, getAirports); //bisa diakses oleh semua role
 router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadAirportImage);// blm fiks
 router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
 //dashboard
@@ -90,8 +87,6 @@ router.get('/dashboard-flight/avalaible-airplane', authMiddleware, mitraMiddlewa
 router.get('/dashboard-flight/revenue-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.revenueToday);
 router.get('/dashboard-flight/monthly-revenue', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpRevenueMonthly);
 router.get('/dashboard-flight/monthly-booking', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.grahpBookingMonthly);
-
-
 
 //Mitra-Hotel
 router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getListHotel);
@@ -129,15 +124,29 @@ router.get('/dashboard-hotel/revenue', authMiddleware, mitraMiddleware.mitraHote
 router.get('/dashboard-hotel/grafik-revenue', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikRevenue);
 router.get('/dashboard-hotel/grafik-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.grafikBooking);
 
-//User
+//User-Guest
+//Penerbangan
+router.get('/flights', flightsController.getFlights); //digunakan juga oleh admin 
+router.get('/search/flights', userController.searchFlights);
+router.get('/flights-by-city', flightsController.getFlightsByCity);
+//Hotel
+router.get('/guest/hotels', hotelControllers.getHotels);
+router.get('/hotels-by-city', hotelControllers.getHotelsByCity);
+router.get('/search-rooms', hotelControllers.searchRooms);
+
+//User-Login
+//Profile
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
-router.get('/search/flights', userController.searchFlights);
+router.put('/profile', authMiddleware, userMiddleware, userController.editProfile);
+//Avalaible-Seat
+router.get('/seats/:flightId', authMiddleware,seatsController.getSeat); //bisa diakses oleh semua role
+router.post('/booking-flight', authMiddleware, userController.bookingFlight);
+router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 //booking
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
 //payment-flight
-router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 router.get('/transaction-history', authMiddleware, userMiddleware, userController.transactionHistory);
 //cancel
 router.put('/cancel-flight', authMiddleware, userMiddleware, userController.cancelFlight);

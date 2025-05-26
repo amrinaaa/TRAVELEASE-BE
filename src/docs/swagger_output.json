@@ -620,267 +620,6 @@
         ]
       }
     },
-    "/airports": {
-      "get": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/flights-by-city": {
-      "get": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "city",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/GetFlightsByCityRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/flights": {
-      "get": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/seats/{flightId}": {
-      "get": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "flightId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/booking-flight": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BookingFlightRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/BookingFlightRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/guest/hotels": {
-      "get": {
-        "tags": [
-          "Hotel"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/hotels-by-city": {
-      "get": {
-        "tags": [
-          "Hotel"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "city",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/GetHotelsByCityRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/search-rooms": {
-      "get": {
-        "tags": [
-          "Hotel"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "cityOrHotel",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "checkIn",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "checkOut",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "guests",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "roomType",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/airlines": {
       "get": {
         "tags": [
@@ -1343,9 +1082,6 @@
           "400": {
             "description": "Bad Request"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "403": {
             "description": "Forbidden"
           }
@@ -1370,6 +1106,45 @@
             }
           }
         }
+      }
+    },
+    "/mitra-flights": {
+      "get": {
+        "tags": [
+          "Mitra Penerbangan"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "planeId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/flight": {
@@ -1566,10 +1341,31 @@
         ]
       }
     },
+    "/airports": {
+      "get": {
+        "tags": [
+          "Airport"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/airportImage/{airportId}": {
       "post": {
         "tags": [
-          "Mitra Penerbangan"
+          "Airport"
         ],
         "description": "",
         "parameters": [
@@ -1626,7 +1422,7 @@
     "/airportImage/{id}": {
       "delete": {
         "tags": [
-          "Mitra Penerbangan"
+          "Airport"
         ],
         "description": "",
         "parameters": [
@@ -2882,6 +2678,188 @@
         ]
       }
     },
+    "/flights": {
+      "get": {
+        "tags": [
+          "User-Guest"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search/flights": {
+      "get": {
+        "tags": [
+          "User-Guest"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/flights-by-city": {
+      "get": {
+        "tags": [
+          "User-Guest"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetFlightsByCityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/guest/hotels": {
+      "get": {
+        "tags": [
+          "User-Guest"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hotels-by-city": {
+      "get": {
+        "tags": [
+          "User-Guest"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GetHotelsByCityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/search-rooms": {
+      "get": {
+        "tags": [
+          "User-Guest"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "cityOrHotel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkIn",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkOut",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guests",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roomType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/profile": {
       "post": {
         "tags": [
@@ -2955,14 +2933,24 @@
             "bearerAuth": []
           }
         ]
-      }
-    },
-    "/search/flights": {
-      "get": {
+      },
+      "put": {
+        "tags": [
+          "User-Login"
+        ],
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2970,11 +2958,102 @@
           "500": {
             "description": "Internal Server Error"
           }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditProfileRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/EditProfileRequest"
+              }
+            }
+          }
         }
       }
     },
-    "/booking-room": {
+    "/seats/{flightId}": {
+      "get": {
+        "tags": [
+          "User-Login"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "flightId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/booking-flight": {
       "post": {
+        "tags": [
+          "User-Login"
+        ],
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingFlightRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment-flight": {
+      "put": {
+        "tags": [
+          "User-Login"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -2990,22 +3069,64 @@
             "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "roomId": {
-                    "example": "any"
-                  },
-                  "startDate": {
-                    "example": "any"
-                  },
-                  "endDate": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/PaymentFlightRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentFlightRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/booking-room": {
+      "post": {
+        "tags": [
+          "User-Login"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingRoomRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingRoomRequest"
               }
             }
           }
@@ -3015,7 +3136,7 @@
     "/payment-room/{transactionId}": {
       "patch": {
         "tags": [
-          "User"
+          "User-Login"
         ],
         "description": "",
         "parameters": [
@@ -3046,70 +3167,13 @@
           {
             "bearerAuth": []
           }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentBookingRoomRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentBookingRoomRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payment-flight": {
-      "put": {
-        "tags": [
-          "User"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentFlightRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentFlightRequest"
-              }
-            }
-          }
-        }
+        ]
       }
     },
     "/transaction-history": {
       "get": {
         "tags": [
-          "User"
+          "User-Login"
         ],
         "description": "",
         "responses": {
@@ -3139,7 +3203,7 @@
     "/cancel-flight": {
       "put": {
         "tags": [
-          "User"
+          "User-Login"
         ],
         "description": "",
         "responses": {
@@ -3187,7 +3251,7 @@
     "/cancel-room": {
       "put": {
         "tags": [
-          "User"
+          "User-Login"
         ],
         "description": "",
         "responses": {
@@ -3375,6 +3439,18 @@
         },
         "xml": {
           "name": "EditUsersRequest"
+        }
+      },
+      "EditProfileRequest": {
+        "type": "object",
+        "properties": {
+          "newName": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "EditProfileRequest"
         }
       },
       "AddMitraRequest": {
@@ -3900,6 +3976,26 @@
         },
         "xml": {
           "name": "getCustomerListRequest"
+        }
+      },
+      "BookingRoomRequest": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string",
+            "example": ""
+          },
+          "startDate": {
+            "type": "string",
+            "example": ""
+          },
+          "endDate": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "BookingRoomRequest"
         }
       }
     }
