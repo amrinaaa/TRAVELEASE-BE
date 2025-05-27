@@ -22,7 +22,7 @@ import mitraHotelController from "../controllers/mitraHotelController.js";
 
 import userController from "../controllers/user.controller.js";
 
-import { getAirports } from "../controllers/airport/airportController.js";
+import airportsController from "../controllers/airport/airportController.js";
 
 import hotelControllers from "../controllers/hotel/hotel.controllers.js";
 
@@ -49,6 +49,13 @@ router.delete("/user", authMiddleware, adminMiddleware, adminControllers.deleteU
 router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
 router.post('/admin/profile/:id', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfilebyAdmin);
 router.delete('/admin/profile/:id', authMiddleware, adminMiddleware, deleteFileController.deleteProfilebyAdmin);
+
+//Airport
+router.get('/airports', authMiddleware, airportsController.getAirports); //bisa diakses oleh semua role
+router.post('/airport', authMiddleware, airportsController.addAirport);
+router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, uploadController.uploadAirportImage);
+router.delete('/airportImage/:id', authMiddleware, deleteFileController.deleteAirportImage);
+
 
 //Penerbangan
 //Airline
@@ -77,10 +84,6 @@ router.get('/passengers', authMiddleware, mitraMiddleware.mitraPenerbangan, mitr
 router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadProfile);
 router.post('/mitra-penerbangan/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadProfile);
 router.delete('/mitra-penerbangan/profile', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteProfileImage);
-//Airport
-router.get('/airports', authMiddleware, getAirports); //bisa diakses oleh semua role
-router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, mitraMiddleware.mitraPenerbangan, uploadController.uploadAirportImage);// blm fiks
-router.delete('/airportImage/:id', authMiddleware, mitraMiddleware.mitraPenerbangan, deleteFileController.deleteAirportImage);
 //dashboard
 router.get('/dashboard-flight/booking-today', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.bookingFlightToday);
 router.get('/dashboard-flight/avalaible-airplane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.avalaibleAirplane);

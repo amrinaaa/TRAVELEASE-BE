@@ -403,6 +403,12 @@ export default {
             price,
         } = req.body;
         try {
+            if(price < 0){
+                return res.status(400).json({
+                    message: "Harga tidak boleh minus",
+                    data: null,
+                });
+            };
             const result = await mitraPenerbangan.addFlightService(
                 planeId,
                 departureAirportId,

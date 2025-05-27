@@ -620,6 +620,154 @@
         ]
       }
     },
+    "/airports": {
+      "get": {
+        "tags": [
+          "Airport"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/airport": {
+      "post": {
+        "tags": [
+          "Airport"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAirportRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAirportRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/airportImage/{airportId}": {
+      "post": {
+        "tags": [
+          "Airport"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "airportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "File gambar yang akan diupload sebagai foto airport"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/airportImage/{id}": {
+      "delete": {
+        "tags": [
+          "Airport"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/airlines": {
       "get": {
         "tags": [
@@ -1317,124 +1465,6 @@
           "Profile Mitra dan User"
         ],
         "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/airports": {
-      "get": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/airportImage/{airportId}": {
-      "post": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "airportId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "File gambar yang akan diupload sebagai foto airport"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    "/airportImage/{id}": {
-      "delete": {
-        "tags": [
-          "Airport"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -3798,13 +3828,16 @@
           },
           "departureTime": {
             "type": "string",
-            "example": ""
+            "example": "2025-07-07T10:00:00Z"
           },
           "arrivalTime": {
             "type": "string",
-            "example": ""
+            "example": "2025-07-07T12:00:00Z"
           },
-          "price": {}
+          "price": {
+            "type": "number",
+            "example": 1000000
+          }
         },
         "xml": {
           "name": "AddFlightRequest"
@@ -3996,6 +4029,26 @@
         },
         "xml": {
           "name": "BookingRoomRequest"
+        }
+      },
+      "AddAirportRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": ""
+          },
+          "code": {
+            "type": "string",
+            "example": ""
+          },
+          "city": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "xml": {
+          "name": "AddAirportRequest"
         }
       }
     }

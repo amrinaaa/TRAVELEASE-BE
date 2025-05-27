@@ -177,9 +177,9 @@ const doc = {
                 planeId: "",
                 departureAirportId: "",
                 arrivalAirportId: "",
-                departureTime: "",
-                arrivalTime: "",
-                price: null,
+                departureTime: "2025-07-07T10:00:00Z",
+                arrivalTime: "2025-07-07T12:00:00Z",
+                price: 1000000,
             },
 
             DeleteFlightRequest: {
@@ -257,6 +257,12 @@ const doc = {
                 roomId: "", 
                 startDate: "", 
                 endDate: "",
+            },
+
+            AddAirportRequest: {
+                name: "",
+                code: "",
+                city: "",
             },
         },
     },
