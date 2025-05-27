@@ -12,7 +12,7 @@ export const topupService = async (uid, amount, type) => {
         if(type === "adding"){
             newAmount = user.currentAmount + amount;
         }else if(type === "reduce"){  
-            if(user.currentAmount < amount){    
+            if(user.currentAmount < amount){
                 throw new Error("Insufficient balance")
             };
 
