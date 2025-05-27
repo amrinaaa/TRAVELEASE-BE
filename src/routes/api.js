@@ -153,5 +153,4 @@ router.put('/cancel-flight', authMiddleware, userMiddleware, userController.canc
 router.put('/cancel-room', authMiddleware, userMiddleware, userController.cancelRoom);
 
 
-
 export default router;
