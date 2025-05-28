@@ -43,4 +43,24 @@ export default {
             throw error;
         }
     },
+
+    async getUserProflieService(userId) {
+        try {
+            const userProfile = await prisma.user.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    name: true,
+                    email: true,
+                    currentAmount: true,
+                    profilePicture: true,
+                },
+            });
+
+            return userProfile;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
 };

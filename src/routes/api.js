@@ -139,6 +139,7 @@ router.get('/search-rooms', hotelControllers.searchRooms);
 
 //User-Login
 //Profile
+router.get('/profile', authMiddleware, userMiddleware, userController.getProfile);
 router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, uploadController.uploadProfile);
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.put('/profile', authMiddleware, userMiddleware, userController.editProfile);

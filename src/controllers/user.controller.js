@@ -5,6 +5,28 @@ import transactionService from '../services/user/transaction.js';
 import userService from '../services/user/user.service.js';
 
 export default {
+    async getProfile(_req, res) {
+        /**
+        #swagger.tags = ['User-Login']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const userId = res.locals.payload.id;
+        try {
+            const result = await userService.getUserProflieService(userId);
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        };
+    },
+
     async editProfile(req, res) {
         /**
         #swagger.tags = ['User-Login']
