@@ -293,6 +293,11 @@ export default {
                             manufacture: true,
                         },
                     },
+                    seatCategories: {
+                        select: {
+                            name: true,
+                        }
+                    }
                 },
             });
 
