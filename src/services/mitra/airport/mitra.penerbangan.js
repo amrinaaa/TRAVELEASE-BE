@@ -296,8 +296,8 @@ export default {
                     seatCategories: {
                         select: {
                             name: true,
-                        }
-                    }
+                        },
+                    },
                 },
             });
 
