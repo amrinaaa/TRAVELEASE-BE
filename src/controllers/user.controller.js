@@ -305,7 +305,7 @@ export default {
 
   async getHotel(req, res) {
     /**
-    #swagger.tags = ['User']
+    #swagger.tags = ['User-Login']
     #swagger.security = [{
       "bearerAuth": []
     }]
@@ -320,7 +320,7 @@ export default {
 
   async getRoomsByIdHotel(req, res) {
     /**
-          #swagger.tags = ['User']
+          #swagger.tags = ['User-Login']
           #swagger.security = [{
               "bearerAuth": []
           }]
@@ -336,7 +336,7 @@ export default {
 
   async detailRoomByIdRoom(req, res) {
     /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.security = [{
             "bearerAuth": []
         }]
@@ -353,7 +353,7 @@ export default {
 
   async getSaldoUser(req, res) {
     /**
-        #swagger.tags = ['User']
+        #swagger.tags = ['User-Login']
         #swagger.security = [{
             "bearerAuth": []
         }]

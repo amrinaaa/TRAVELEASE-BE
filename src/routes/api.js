@@ -110,6 +110,7 @@ router.patch('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotel
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
 router.get('/room/data/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.dataRoomById);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
+router.delete('/room', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoom);
 
 //sementara belum ngedelete sampe ketika room di pesan
 router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);

@@ -572,11 +572,11 @@ export default {
 
     async addFacility(req, res) {
     /**
-     * #swagger.tags = ['Mitra Hotel']
-     * #swagger.security = [{
-     *   "bearerAuth": []
-     * }]
-     */
+    #swagger.tags = ['Mitra Hotel']
+    #swagger.security = [{
+        "bearerAuth": []
+    }]
+    */
         try {
             const { facilityName} = req.body;
 
