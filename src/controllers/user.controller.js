@@ -284,11 +284,11 @@ export default {
 
   async paymentBookingRoom(req, res) {
     /**
-        #swagger.tags = ['User-Login']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
-        */
+    #swagger.tags = ['User-Login']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    */
     const userId = res.locals.payload.id;
     const { transactionId } = req.params;
 
@@ -298,6 +298,70 @@ export default {
         transactionId,
       });
       res.status(200).json({ message: "success", data: result });
+    } catch (error) {
+      res.status(400).json({ message: error.message, data: null });
+    }
+  },
+
+  async getHotel(req, res) {
+    /**
+    #swagger.tags = ['User']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    */
+    try {
+      const result = await bookingServices.getHotelService();
+      res.status(200).json({ message: "success", data: result });
+    } catch (error) {
+      res.status(400).json({ message: error.message, data: null });
+    }
+  },
+
+  async getRoomsByIdHotel(req, res) {
+    /**
+          #swagger.tags = ['User']
+          #swagger.security = [{
+              "bearerAuth": []
+          }]
+          */
+    const hotelId = req.params.hotelId;
+    try {
+      const result = await bookingServices.getRoomsByIdHotelService(hotelId);
+      res.status(200).json({ message: "success", data: result });
+    } catch (error) {
+      res.status(400).json({ message: error.message, data: null });
+    }
+  },
+
+  async detailRoomByIdRoom(req, res) {
+    /**
+        #swagger.tags = ['User']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+    const roomId = req.params.roomId;
+
+    try {
+      const result = await bookingServices.detailRoomByIdRoomService(roomId);
+      res.status(200).json({ message: "success", data: result });
+    } catch (error) {
+      res.status(400).json({ message: error.message, data: null });
+    }
+  },
+
+  async getSaldoUser(req, res) {
+    /**
+        #swagger.tags = ['User']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+    const userId = res.locals.payload.id;
+    try {
+      const saldo = await bookingServices.mySaldoService(userId);
+      res.status(200).json({ message: "success", data: saldo });
     } catch (error) {
       res.status(400).json({ message: error.message, data: null });
     }

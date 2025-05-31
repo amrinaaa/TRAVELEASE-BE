@@ -119,6 +119,36 @@ export default {
         }
     },
 
+    async hotelDataByIdServices(hotelId) {
+        try { 
+            const dataHotel = await prisma.hotel.findUnique({
+                where: { id: hotelId },
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    address: true,
+                    contact: true,
+                    location: {
+                        select: {
+                            city: true
+                        }
+                    },
+                    hotelImages: {
+                        select: {
+                            imageUrl: true
+                        }
+                    }
+                }
+            });
+
+            return dataHotel;
+        } catch (error) {
+            console.error("Error fetching hotel data:", error);
+            throw new Error("Failed to fetch hotel data");
+        }
+    },
+
     async deleteHotelService(hotelId, mitraId) {
         try {
             const hotel = await prisma.hotel.findUnique({
@@ -207,18 +237,16 @@ export default {
                 where: { hotelId: hotel.id },
                 });
                 
-                if (images.length === 0) {
-                    throw new Error("No hotel images found");
-                }
+                if (images.length > 0) {
+                    for (const image of images) {
+                        const filePath = extractFilePath(image.imageUrl);
+                        await deleteFile.deleteFile(filePath);
+                    }
 
-                for (const image of images) {
-                    const filePath = extractFilePath(image.imageUrl);
-                    await deleteFile.deleteFile(filePath);
+                    await prisma.hotelImage.deleteMany({
+                        where: { hotelId: hotel.id },
+                    });
                 }
-
-                await prisma.hotelImage.deleteMany({
-                    where: { hotelId: hotel.id },
-                });
     
             for (const reservationId of reservationIds) {
                 await prisma.reservation.delete({

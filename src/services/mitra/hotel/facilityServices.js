@@ -25,43 +25,6 @@ export default {
         }
     },
 
-    async addRoomTypeFacilityServices(roomTypeId, facilityId, amount) {
-        try {
-            const newRoomTypeFacility = await prisma.roomTypeFacility.create({
-                data: {
-                    roomTypeId: roomTypeId,
-                    facilityId: facilityId,
-                    amount: amount
-                }
-            });
-    
-            return newRoomTypeFacility;
-        } catch (error) {
-            console.error("Error adding room type facility:", error);
-            throw new Error("Failed to add room type facility");
-        }
-    },
-
-    async editRoomTypeFacilityServices(roomTypeFacilityId, facilityId, roomTypeId, amount) {
-        try {
-            const updatedRoomTypeFacility = await prisma.roomTypeFacility.update({
-                where: {
-                    id: roomTypeFacilityId
-                },
-                data: {
-                    facilityId: facilityId,
-                    roomTypeId: roomTypeId,
-                    amount: amount
-                }
-            });
-    
-            return updatedRoomTypeFacility;
-        } catch (error) {
-            console.error("Error updating room type facility:", error);
-            throw new Error("Failed to update room type facility");
-        }
-    },
-
     async deleteRoomTypeFacilitiesServices(roomTypeFacilityId) {
         try {
             const deletedRoomTypeFacility = await prisma.roomTypeFacility.delete({
@@ -77,54 +40,20 @@ export default {
         }
     },
 
-    async addFacilityServices(facilityName) {
+    async addFacility(facilityName) {
         try {
-            const newFacility = await prisma.facility.create({
-                data: {
-                    facilityName: facilityName
-                }
+            const facility = await prisma.facility.upsert({
+            where: { facilityName: facilityName },
+            update: {},
+            create: {
+                facilityName: facilityName
+            }
             });
-    
-            return newFacility;
+
+            return facility;
         } catch (error) {
-            console.error("Error adding facility:", error);
-            throw new Error("Failed to add facility");
+            console.error("Error adding room type facility:", error);
+            throw new Error("Failed to add room type facility");
         }
     },
-
-    async editFacilityServices (facilityId, facilityName) {
-        try {
-            const result = await prisma.facility.update({
-                where: {
-                    id: facilityId
-                },
-                data: {
-                    facilityName: facilityName
-                }
-            });
-    
-            return result;
-        } catch (error) {
-            console.error("Error updating facility:", error);
-            throw new Error("Failed to update facility");
-        }
-    },
-
-    async getFacilityService () {
-        try {
-            const result = await prisma.facility.findMany({
-                select: {
-                    id: true,
-                    facilityName: true
-                }
-            });
-    
-            return result;
-        } catch (error) {
-            console.error("Error fetching facilities:", error);
-            throw new Error("Failed to fetch facilities");
-        }
-    }
-
-    
 }

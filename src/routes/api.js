@@ -72,7 +72,7 @@ router.delete('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraC
 //Seat
 router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
 router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
-router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat); 
+router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat);
 router.delete('/seat', authMiddleware, mitraControllers.deletePlaneSeat); //admin bisa menggunakannya juga
 //Flight
 router.get('/mitra-flights', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getMitraFlight);
@@ -96,6 +96,7 @@ router.get('/hotels', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelCont
 router.get('/locations', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getLocation);
 router.post('/location', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addLocation);
 router.post('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addHotel);
+router.get('/hotel/data/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.hotelDataById);
 router.patch('/hotel', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editHotel);
 router.delete('/hotel', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteHotel);
 router.delete('/hotelImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteHotelImage);
@@ -103,22 +104,23 @@ router.get('/customers', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelC
 router.get('/rooms/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomList);
 router.get('/roomType/:hotelId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomType);
 router.post('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomType);
+router.get('/roomType/data/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.dataRoomTypeByIdRoom);
+router.get('/facilityName/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.facilityNameByRoomId);
 router.patch('/roomType', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomType);
 router.post('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoom);
+router.get('/room/data/:roomId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.dataRoomById);
 router.patch('/room', upload.array("files", 10), authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoom);
+
 //sementara belum ngedelete sampe ketika room di pesan
 router.delete('/roomImage/:id', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteRoomImage);
 router.get('/roomType-facilities/:roomTypeId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getRoomTypeFacility);
-router.post('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addRoomTypeFacility);
-router.patch('/roomType-facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editRoomTypeFacility);
-router.delete('/roomType-facilities/:roomTypeFacilityId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoomTypeFacility);
-router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
 router.post('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.addFacility);
-router.get('/facilities', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.getFacilities);
-router.patch('/facility', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.editFacility);
+router.delete('/roomType-facilities/:roomTypeFacilityId', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.deleteRoomTypeFacility);
+
 //blum fiks
 router.post('/mitra-hotel/profile', upload.single('file'), authMiddleware, mitraMiddleware.mitraHotel, uploadController.uploadProfile);
 router.delete('/mitra-hotel/profile', authMiddleware, mitraMiddleware.mitraHotel, deleteFileController.deleteProfileImage);
+
 //dashboard
 router.get('/dashboard-hotel/new-booking', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.newBookingToday);
 router.get('/dashboard-hotel/new-available-room', authMiddleware, mitraMiddleware.mitraHotel, mitraHotelController.availableRoom);
@@ -144,12 +146,17 @@ router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, u
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.put('/profile', authMiddleware, userMiddleware, userController.editProfile);
 //Avalaible-Seat
-router.get('/seats/:flightId', authMiddleware,seatsController.getSeat); //bisa diakses oleh semua role
+router.get('/seats/:flightId', authMiddleware, seatsController.getSeat); //bisa diakses oleh semua role
 router.post('/booking-flight', authMiddleware, userController.bookingFlight);
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 //booking
+router.get('/user/hotels', userController.getHotel);
+router.get('/user/hotel-rooms/:hotelId', userController.getRoomsByIdHotel);
+router.get('/user/detail-room/:roomId', authMiddleware, userMiddleware, userController.detailRoomByIdRoom);
+router.get('/user/saldo', authMiddleware, userMiddleware, userController.getSaldoUser);
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
+
 //payment-flight
 router.get('/transaction-history', authMiddleware, userMiddleware, userController.transactionHistory);
 //cancel

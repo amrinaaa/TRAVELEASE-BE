@@ -67,12 +67,13 @@ export default {
         }
     },
 
-    async addRoomService({ roomTypeId, name, files }) {
+    async addRoomService({ name, description, roomTypeId, files }) {
 
         try {
             const newRoom = await prisma.room.create({
                 data: {
                     name,
+                    description,
                     roomTypeId,
                 },
             });
@@ -88,7 +89,55 @@ export default {
         }
     },
 
-    async editRoomService({ roomId, name, files }) {
+    async dataRoomByIdServices(roomId) {
+        try {
+            const dataRoom = await prisma.room.findUnique({
+                where: { id: roomId },
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    roomImages: {
+                        select: {
+                            urlImage: true
+                        }
+                    },
+                    roomType: {
+                        select: {
+                            typeName: true, 
+                            hotel: {
+                                select: {
+                                    address: true,
+                                    contact: true,
+                                    location: {
+                                        select: {
+                                            city: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            return {
+                idRoom: dataRoom.id,
+                name: dataRoom.name,
+                description: dataRoom.description,
+                roomTypeName: dataRoom.roomType.typeName,  // Tambahan
+                address: dataRoom.roomType.hotel.address,
+                contact: dataRoom.roomType.hotel.contact,
+                location: dataRoom.roomType.hotel.location.city,
+                roomImages: dataRoom.roomImages
+            };
+        } catch (error) {
+            console.error("Error fetching room data:", error);
+            throw new Error("Failed to fetch room data");
+        }
+    },
+
+    async editRoomService({ roomId, name, description, files }) {
         try {
             const room = await prisma.room.findUnique({
                 where: { id: roomId },
@@ -103,6 +152,7 @@ export default {
                 where: { id: roomId },
                 data: {
                     name,
+                    description,
                 },
             });
 
