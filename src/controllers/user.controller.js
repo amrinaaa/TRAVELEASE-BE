@@ -262,33 +262,20 @@ export default {
         const { transactionId } = req.params;
 
         try {
-            const result = await bookingServices.paymentBookingRoomServ ices({userId, transactionId});
+            const result = await bookingServices.paymentBookingRoomServices({userId, transactionId});
             res.status(200).json({message: "success", data: result});
         } catch (error) {
             res.status(400).json({ message: error.message, data: null });
         }
-<<<<<<< HEAD
     },
 
     async getHotel(req, res) {
         /**
         #swagger.tags = ['User']
-=======
-    }, 
-
-    async cancelRoom(req, res) {
-        /**
-        #swagger.tags = ['User-Login']
-        #swagger.requestBody = {
-            required: true,
-            schema: {$ref: "#/components/schemas/CancelRoomRequest"}
-        },
->>>>>>> development
         #swagger.security = [{
             "bearerAuth": []
         }]
         */
-<<<<<<< HEAD
         try {
             const result = await bookingServices.getHotelService();
             res.status(200).json({message: "success", data: result});
@@ -344,8 +331,19 @@ export default {
         } catch (error) {
             res.status(400).json({ message: error.message, data: null });
         }
-    }
-=======
+    },
+
+        async cancelRoom(req, res) {
+        /**
+        #swagger.tags = ['User-Login']
+        #swagger.requestBody = {
+            required: true,
+            schema: {$ref: "#/components/schemas/CancelRoomRequest"}
+        },
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { transactionId } = req.body;
         const userId = res.locals.payload.id; // Mengambil ID pengguna dari token JWT
 
@@ -381,6 +379,5 @@ export default {
                 data: null,
             });
         };
-    },
->>>>>>> development
+    }
 };
