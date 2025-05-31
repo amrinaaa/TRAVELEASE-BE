@@ -295,6 +295,12 @@ export default {
     },
 
     async addRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { name, description, roomTypeId } = req.body;
         const files = req.files;
 
@@ -332,6 +338,12 @@ export default {
     },
 
     async dataRoomById(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomId } = req.params;
         try {
             const result = await roomServices.dataRoomByIdServices(roomId);
@@ -348,6 +360,12 @@ export default {
     },
 
     async editRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomId, name, description } = req.body;
         const files = req.files;
 
@@ -383,13 +401,35 @@ export default {
         }        
     },
 
-    async getRoomTypeFacility(req, res) {
+    async deleteRoom(req, res) {
         /**
-        #swagger.tags = ['Mitra Hotel]
+        #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
             "bearerAuth": []
         }]
-         */
+        */
+        const {roomId} = req.body;
+        try {
+            const result = await roomServices.deleteRoomService(roomId);
+            res.status(200).json({
+                message: 'success',
+                data: result
+            });
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        } 
+    },
+
+    async getRoomTypeFacility(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomTypeId } = req.params;
         if (!roomTypeId) {
             return res.status(400).json({
