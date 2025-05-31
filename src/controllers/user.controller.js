@@ -262,7 +262,7 @@ export default {
         const { transactionId } = req.params;
 
         try {
-            const result = await bookingServices.paymentBookingRoomServices({userId, transactionId});
+            const result = await bookingServices.paymentBookingRoomServ ices({userId, transactionId});
             res.status(200).json({message: "success", data: result});
         } catch (error) {
             res.status(400).json({ message: error.message, data: null });
