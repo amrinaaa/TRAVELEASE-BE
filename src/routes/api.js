@@ -72,7 +72,7 @@ router.delete('/plane', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraC
 //Seat
 router.get('/seat-category', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getSeatCategory);
 router.get('/seats', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getPlaneSeats);
-router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat); 
+router.post('/seat', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.addPlaneSeat);
 router.delete('/seat', authMiddleware, mitraControllers.deletePlaneSeat); //admin bisa menggunakannya juga
 //Flight
 router.get('/mitra-flights', authMiddleware, mitraMiddleware.mitraPenerbangan, mitraControllers.getMitraFlight);
@@ -146,13 +146,13 @@ router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, u
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.put('/profile', authMiddleware, userMiddleware, userController.editProfile);
 //Avalaible-Seat
-router.get('/seats/:flightId', authMiddleware,seatsController.getSeat); //bisa diakses oleh semua role
+router.get('/seats/:flightId', authMiddleware, seatsController.getSeat); //bisa diakses oleh semua role
 router.post('/booking-flight', authMiddleware, userController.bookingFlight);
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 //booking
 router.get('/user/hotels', userController.getHotel);
 router.get('/user/hotel-rooms/:hotelId', userController.getRoomsByIdHotel);
-router.get('/user/detail-room/:roomId', authMiddleware, userMiddleware,userController.detailRoomByIdRoom);
+router.get('/user/detail-room/:roomId', authMiddleware, userMiddleware, userController.detailRoomByIdRoom);
 router.get('/user/saldo', authMiddleware, userMiddleware, userController.getSaldoUser);
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
