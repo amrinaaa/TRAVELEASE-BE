@@ -10,7 +10,7 @@
     "docs": "node src/docs/swagger.js"
   },
   "prisma": {
-    "seed": "node ./prisma/seedHotel.js"
+    "seed": "node ./prisma/seedLocation.js"
   },
   "keywords": [],
   "author": "",

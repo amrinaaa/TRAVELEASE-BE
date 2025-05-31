@@ -237,18 +237,16 @@ export default {
                 where: { hotelId: hotel.id },
                 });
                 
-                if (images.length === 0) {
-                    throw new Error("No hotel images found");
-                }
+                if (images.length > 0) {
+                    for (const image of images) {
+                        const filePath = extractFilePath(image.imageUrl);
+                        await deleteFile.deleteFile(filePath);
+                    }
 
-                for (const image of images) {
-                    const filePath = extractFilePath(image.imageUrl);
-                    await deleteFile.deleteFile(filePath);
+                    await prisma.hotelImage.deleteMany({
+                        where: { hotelId: hotel.id },
+                    });
                 }
-
-                await prisma.hotelImage.deleteMany({
-                    where: { hotelId: hotel.id },
-                });
     
             for (const reservationId of reservationIds) {
                 await prisma.reservation.delete({

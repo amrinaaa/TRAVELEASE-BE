@@ -508,6 +508,28 @@ export default {
         }
     },
 
+    async deleteRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomId } = req.params;
+        try {
+            await roomServices.deleteRoomService(roomId);
+            res.status(200).json({
+                message: "Room deleted successfully",
+                data: null,
+            });
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+            }
+    },
+
     async addFacility(req, res) {
     /**
      * #swagger.tags = ['Mitra Hotel']

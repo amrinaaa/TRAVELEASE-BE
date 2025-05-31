@@ -104,7 +104,7 @@ export default {
                     },
                     roomType: {
                         select: {
-                            typeName: true,       // Tambahan: nama tipe kamar
+                            typeName: true, 
                             hotel: {
                                 select: {
                                     address: true,
