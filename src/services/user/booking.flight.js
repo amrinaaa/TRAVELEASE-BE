@@ -267,4 +267,150 @@ export default {
             throw new Error(error.message);
         };
     },
+
+    async cancelFlightService(userId, transactionId) {
+        try {
+            // Menggunakan transaksi Prisma untuk memastikan atomicity
+            return prisma.$transaction(async (tx) => {
+                const transaction = await tx.transaction.findUnique({
+                    where: { id: transactionId },
+                    include: {
+                        user: {
+                            select: { id: true }
+                        },
+                        tickets: {
+                            include: {
+                                flight: {
+                                    select: { id: true, departureTime: true, planeId: true },
+                                },
+                            },
+                        },
+                    },
+                });
+
+                if (!transaction) {
+                    throw new Error('Transaction not found');
+                }
+
+                if (transaction.userId !== userId) {
+                    throw new Error('User does not own this transaction');
+                }
+
+                // Gunakan string langsung untuk nilai enum
+                if (transaction.status === 'CANCELED') {
+                    throw new Error('Order already cancelled');
+                }
+
+                if (transaction.transactionType !== 'PURCHASE') {
+                    throw new Error('Only purchase transactions can be cancelled for flights.');
+                }
+
+                if (!transaction.tickets || transaction.tickets.length === 0) {
+                    await tx.transaction.update({
+                        where: {id: transactionId},
+                        // Gunakan string langsung untuk nilai enum
+                        data: {status: 'CANCELED', notes: "Cancelled due to no tickets found."}
+                    });
+                    throw new Error('No flights found in this transaction. Order marked as cancelled.');
+                }
+
+                let earliestDepartureTime = null;
+                for (const ticket of transaction.tickets) {
+                    if (ticket.flight && ticket.flight.departureTime) {
+                        const departure = new Date(ticket.flight.departureTime);
+                        if (!earliestDepartureTime || departure < earliestDepartureTime) {
+                            earliestDepartureTime = departure;
+                        }
+                    }
+                }
+
+                if (!earliestDepartureTime) {
+                    await tx.transaction.update({
+                        where: {id: transactionId},
+                        // Gunakan string langsung untuk nilai enum
+                        data: {status: 'CANCELED', notes: "Cancelled due to missing departure times."}
+                    });
+                    throw new Error('Could not determine departure time for flights in transaction. Order marked as cancelled.');
+                }
+
+                const currentTime = new Date();
+                if ((earliestDepartureTime.getTime() - currentTime.getTime()) < 2 * 24 * 60 * 60 * 1000) {
+                    throw new Error(`Cancellation window has passed. Must be at least 2 days before departure (Earliest departure: ${earliestDepartureTime.toISOString()})`);
+                }
+
+                // Gunakan string langsung untuk nilai enum
+                if (transaction.status === 'ORDERED') {
+                    await tx.ticket.deleteMany({
+                        where: { transactionId: transactionId },
+                    });
+
+                    const updatedTransaction = await tx.transaction.update({
+                        where: { id: transactionId },
+                        // Gunakan string langsung untuk nilai enum
+                        data: { status: 'CANCELED' },
+                    });
+                    return { status: updatedTransaction.status, message: "Order cancelled. Tickets deleted." };
+
+                // Gunakan string langsung untuk nilai enum
+                } else if (transaction.status === 'PAID') {
+                    await tx.user.update({
+                        where: { id: userId },
+                        data: { currentAmount: { increment: transaction.price } },
+                    });
+
+                    const firstTicket = transaction.tickets[0];
+                    if (!firstTicket || !firstTicket.flight || !firstTicket.flight.planeId) {
+                        throw new Error('Primary flight information missing for partner debiting.');
+                    }
+
+                    const planeOfFirstFlight = await tx.plane.findUnique({
+                        where: { id: firstTicket.flight.planeId },
+                        select: { airlineId: true }
+                    });
+
+                    if (!planeOfFirstFlight || !planeOfFirstFlight.airlineId) {
+                        throw new Error('Primary airline for debiting not found.');
+                    }
+                    const airlineIdToDebit = planeOfFirstFlight.airlineId;
+
+                    const airlinePartnerRecord = await tx.airlinePartner.findFirst({
+                        where: { airlineId: airlineIdToDebit },
+                        select: { partnerId: true }
+                    });
+
+                    if (!airlinePartnerRecord || !airlinePartnerRecord.partnerId) {
+                        throw new Error('Airline partner not found for refund debiting.');
+                    }
+                    const partnerUserIdToDebit = airlinePartnerRecord.partnerId;
+
+                    await tx.user.update({
+                        where: { id: partnerUserIdToDebit },
+                        data: { currentAmount: { decrement: transaction.price } },
+                    });
+
+                    await tx.ticket.deleteMany({
+                        where: { transactionId: transactionId },
+                    });
+
+                    const updatedTransaction = await tx.transaction.update({
+                        where: { id: transactionId },
+                        // Gunakan string langsung untuk nilai enum
+                        data: { status: 'CANCELED' },
+                    });
+
+                    return {
+                        status: updatedTransaction.status,
+                        message: "Order cancelled. User refunded. Partner debited. Tickets deleted.",
+                        refundedAmount: transaction.price,
+                        debitedPartnerUserId: partnerUserIdToDebit
+                    };
+
+                } else {
+                    throw new Error(`Invalid transaction status for cancellation: ${transaction.status}`);
+                }
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }  
+    },
 };

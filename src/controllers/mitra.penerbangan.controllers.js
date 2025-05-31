@@ -354,7 +354,35 @@ export default {
         };
     },
 
-    //flight code diapain?
+    async getMitraFlight(req, res) {
+        /**
+        #swagger.tags = ['Mitra Penerbangan']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const {planeId} = req.query;
+        try {
+            const flights = await mitraPenerbangan.getMitraFlightsService(planeId);
+            if (!flights || flights.length === 0) {
+                return res.status(404).json({
+                    message: "Flights not found",
+                    data: null,
+                });
+            }
+            res.status(200).json({
+                message: "Success",
+                data: flights,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            res.status(500).json({
+                message: "Internal Server Error",
+                data: null,
+            });
+        }
+    },
+
     async addFlight(req, res) {
         /**
         #swagger.tags = ['Mitra Penerbangan']
@@ -375,6 +403,12 @@ export default {
             price,
         } = req.body;
         try {
+            if(price < 0){
+                return res.status(400).json({
+                    message: "Harga tidak boleh minus",
+                    data: null,
+                });
+            };
             const result = await mitraPenerbangan.addFlightService(
                 planeId,
                 departureAirportId,

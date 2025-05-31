@@ -257,6 +257,13 @@ export default {
          */
         const { uid, amount, type } = req.body;
         try {
+            if(amount < 0){
+                return res.status(400).json({
+                    message: "Saldo tidak boleh minus",
+                    data: null,
+                });
+            };
+
             const result = await topupService(uid, amount, type)
             res.status(200).json({
                 message: result,
@@ -268,5 +275,4 @@ export default {
             });
         };
     },
-
 };

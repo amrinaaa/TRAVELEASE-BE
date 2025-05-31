@@ -1,14 +1,5 @@
 import prisma from "../../../../prisma/prisma.client.js";
 
-//klo mau dipake
-// function calculateDuration(departureTime, arrivalTime) {
-//     const milliseconds = arrivalTime - departureTime;
-//     const hours = Math.floor(milliseconds / (1000 * 60 * 60));
-//     const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
-
-//     return `${hours}h ${minutes}m`;
-// };
-
 function generateFlightCode() {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
@@ -22,6 +13,30 @@ function generateFlightCode() {
     ).join('');
 
     return randomLetters + randomNumbers;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+// Helper function untuk format harga (Rp X.XXX.XXX)
+function formatPrice(price) {
+    if (price === null || price === undefined) return null;
+    // Menggunakan Intl.NumberFormat untuk format mata uang Rupiah
+    // Menghilangkan desimal default ,00 jika ada
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(price).replace(/\u00A0/g, ' '); // Ganti non-breaking space dengan spasi biasa jika perlu
 }
 
 export default {
@@ -276,6 +291,11 @@ export default {
                         select: {
                             name: true,
                             manufacture: true,
+                        },
+                    },
+                    seatCategories: {
+                        select: {
+                            name: true,
                         },
                     },
                 },
@@ -560,6 +580,122 @@ export default {
         } catch (error) {
             throw new Error(error.message);
         };
+    },
+
+    async getMitraFlightsService(planeId) {
+        try {
+            // 1. Ambil detail pesawat, termasuk nama maskapai, nama pesawat,
+            //    harga seat category, dan jumlah kursi per seat category.
+            const planeDetails = await prisma.plane.findUnique({
+                where: { id: planeId },
+                select: { // Pilih hanya field yang dibutuhkan
+                    name: true, // Nama pesawat, misal "GT-25"
+                    airline: { // Informasi maskapai
+                        select: { name: true } // Nama maskapai, misal "ITK"
+                    },
+                    seatCategories: { // Informasi kategori kursi pesawat ini
+                        select: {
+                            price: true, // Harga untuk kategori kursi ini (tambahan dari base price flight)
+                            _count: { // Untuk menghitung total kursi di pesawat
+                                select: { seats: true }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (!planeDetails) {
+                throw new Error('Plane not found');
+            }
+
+            const planeNameForResponse = `${planeDetails.name}`;
+            const planeSeatCategories = planeDetails.seatCategories || []; // Pastikan array
+
+            let totalSeatsOnPlane = 0;
+            planeSeatCategories.forEach(sc => {
+                totalSeatsOnPlane += sc._count.seats;
+            });
+
+            // 2. Ambil semua penerbangan untuk planeId yang diberikan
+            const flights = await prisma.flight.findMany({
+                where: { planeId: planeId },
+                include: {
+                    departureAirport: { select: { name: true, code: true } },
+                    arrivalAirport: { select: { name: true, code: true } },
+                },
+                orderBy: {
+                    departureTime: 'asc'
+                }
+            });
+
+            if (!flights.length && totalSeatsOnPlane === 0 && planeSeatCategories.length === 0) {
+                 // Jika pesawat tidak punya seat category sama sekali dan tidak ada flight, anggap pesawatnya mungkin belum lengkap datanya
+                 // atau memang tidak ada penerbangan. Mengembalikan array kosong adalah tindakan yang aman.
+                return [];
+            }
+             if (!flights.length) {
+                return []; // Kembalikan array kosong jika tidak ada penerbangan
+            }
+
+
+            // 3. Format setiap penerbangan
+            const formattedFlights = [];
+            for (const flight of flights) {
+                const basePrice = flight.price; // Harga dasar penerbangan
+                let minTotalPrice = Number.MAX_SAFE_INTEGER;
+                let maxTotalPrice = 0;
+
+                if (planeSeatCategories.length > 0) {
+                    planeSeatCategories.forEach(category => {
+                        const totalPrice = basePrice + category.price; // Harga total = harga flight + harga seat category
+                        if (totalPrice < minTotalPrice) minTotalPrice = totalPrice;
+                        if (totalPrice > maxTotalPrice) maxTotalPrice = totalPrice;
+                    });
+                } else {
+                    // Jika tidak ada seat category, harga adalah harga dasar penerbangan
+                    minTotalPrice = basePrice;
+                    maxTotalPrice = basePrice;
+                }
+
+                const priceOutput = (minTotalPrice === maxTotalPrice)
+                    ? formatPrice(minTotalPrice)
+                    : `${formatPrice(minTotalPrice)} - ${formatPrice(maxTotalPrice)}`;
+
+                // Hitung kursi yang sudah dipesan untuk penerbangan ini
+                const bookedSeatsCount = await prisma.ticket.count({
+                    where: {
+                        flightId: flight.id,
+                        transaction: {
+                            status: {
+                                not: 'CANCELED'
+                            }
+                        }
+                    }
+                });
+
+                const seatsAvailable = totalSeatsOnPlane - bookedSeatsCount;
+
+                formattedFlights.push({
+                    "Name Plane": planeNameForResponse,
+                    "Last Check in": formatDate(flight.departureTime),
+                    "Departure Time": formatDate(flight.departureTime),
+                    "Departure Airport": `${flight.departureAirport.name} (${flight.departureAirport.code})`,
+                    "Arrival Time": formatDate(flight.arrivalTime),
+                    "Arrival Airport": `${flight.arrivalAirport.name} (${flight.arrivalAirport.code})`,
+                    "Price": priceOutput, // Harga sekarang adalah rentang atau harga tunggal yang diformat
+                    "Seats Available": `${seatsAvailable}/${totalSeatsOnPlane}`
+                });
+            }
+
+            return formattedFlights;
+
+        } catch (error) {
+            console.error(`Error in getFlightsByPlaneIdService: ${error.message}`);
+            if (error.message === 'Plane not found') {
+                 throw error;
+            }
+            throw new Error(`Failed to get flight data for plane: ${error.message}`);
+        }
     },
 
     async addFlightService(

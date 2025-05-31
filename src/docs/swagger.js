@@ -69,6 +69,10 @@ const doc = {
                 email: "EmailBaru@gmail.com / Kosong"
             },
 
+            EditProfileRequest: {
+                newName: "",
+            },
+
             AddMitraRequest: {
                 name: "Nama",
                 email: "example@gmail.com",
@@ -173,9 +177,9 @@ const doc = {
                 planeId: "",
                 departureAirportId: "",
                 arrivalAirportId: "",
-                departureTime: "",
-                arrivalTime: "",
-                price: null,
+                departureTime: "2025-07-07T10:00:00Z",
+                arrivalTime: "2025-07-07T12:00:00Z",
+                price: 1000000,
             },
 
             DeleteFlightRequest: {
@@ -200,6 +204,14 @@ const doc = {
             },
 
             PaymentFlightRequest: {
+                transactionId: "",
+            },
+
+            CancelFlightRequest: {
+                transactionId: "",
+            },
+
+            CancelRoomRequest: {
                 transactionId: "",
             },
 
@@ -239,6 +251,18 @@ const doc = {
 
             getCustomerListRequest: {
                 mitraId: "",
+            },
+
+            BookingRoomRequest: {
+                roomId: "", 
+                startDate: "", 
+                endDate: "",
+            },
+
+            AddAirportRequest: {
+                name: "",
+                code: "",
+                city: "",
             },
         },
     },
