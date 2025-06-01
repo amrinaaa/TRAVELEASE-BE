@@ -383,7 +383,13 @@ export default {
                 roomType: {
                     select: {
                         typeName: true,
+                        capacity: true,
                         price: true,
+                        hotel: {
+                            select: {
+                                name: true // Ambil nama hotel
+                            }
+                        },
                         roomTypeFacilities: {
                             select: {
                                 amount: true,
@@ -404,8 +410,11 @@ export default {
         }
 
         const formattedRoom = {
+            roomId: roomId,
             roomName: room.name,
+            hotelName: room.roomType.hotel.name,
             roomDescription: room.description,
+            capacity: room.roomType.capacity,
             roomTypeName: room.roomType.typeName,
             roomPrice: room.roomType.price,
             roomImages: room.roomImages.map(img => img.urlImage),
