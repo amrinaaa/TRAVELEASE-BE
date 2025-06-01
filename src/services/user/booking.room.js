@@ -349,6 +349,7 @@ export default {
                     hotelName: hotel.name,
                     hotelDescription: hotel.description,
                     hotelImages: hotel.hotelImages.map(img => img.imageUrl),
+                    roomId: room.id,
                     roomName: room.name,
                     roomDescription: room.description,
                     price: roomType.price,
