@@ -170,9 +170,10 @@ export default {
             }
 
             const result = await hotelServices.editHotelService({
-                hotelId, 
-                updateData, 
-                files});
+                hotelId,
+                updateData,
+                files
+            });
 
             res.status(200).json({
                 message: "Hotel updated successfully",
@@ -295,6 +296,12 @@ export default {
     },
 
     async addRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { name, description, roomTypeId } = req.body;
         const files = req.files;
 
@@ -332,6 +339,12 @@ export default {
     },
 
     async dataRoomById(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomId } = req.params;
         try {
             const result = await roomServices.dataRoomByIdServices(roomId);
@@ -348,6 +361,12 @@ export default {
     },
 
     async editRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
         const { roomId, name, description } = req.body;
         const files = req.files;
 
@@ -380,16 +399,38 @@ export default {
                 message: error.message,
                 data: null,
             });
-        }        
+        }
+    },
+
+    async deleteRoom(req, res) {
+        /**
+        #swagger.tags = ['Mitra Hotel']
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
+        */
+        const { roomId } = req.body;
+        try {
+            const result = await roomServices.deleteRoomService(roomId);
+            res.status(200).json({
+                message: 'success',
+                data: result
+            });
+        } catch (error) {
+            return res.status(error.statusCode || 500).json({
+                message: error.message,
+                data: null,
+            });
+        }
     },
 
     async getRoomTypeFacility(req, res) {
         /**
-        #swagger.tags = ['Mitra Hotel]
+        #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
             "bearerAuth": []
         }]
-         */
+        */
         const { roomTypeId } = req.params;
         if (!roomTypeId) {
             return res.status(400).json({
@@ -420,9 +461,9 @@ export default {
             "bearerAuth": []
             }]
         */
-    
+
         try {
-            const { hotelId, typeName, capacity, price, facilities} = req.body;
+            const { hotelId, typeName, capacity, price, facilities } = req.body;
 
             await validation.validateAddRoomType(req.body);
 
@@ -508,53 +549,31 @@ export default {
         }
     },
 
-    async deleteRoom(req, res) {
+    async addFacility(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
             "bearerAuth": []
         }]
         */
-        const { roomId } = req.params;
         try {
-            await roomServices.deleteRoomService(roomId);
-            res.status(200).json({
-                message: "Room deleted successfully",
-                data: null,
-            });
-        } catch (error) {
-            return res.status(error.statusCode || 500).json({
-                message: error.message,
-                data: null,
-            });
-            }
-    },
-
-    async addFacility(req, res) {
-    /**
-     * #swagger.tags = ['Mitra Hotel']
-     * #swagger.security = [{
-     *   "bearerAuth": []
-     * }]
-     */
-        try {
-            const { facilityName} = req.body;
+            const { facilityName } = req.body;
 
             await validation.validateAddFacility(req.body);
 
             const result = await facilityServices.addFacility(
-            facilityName
+                facilityName
             );
 
             return res.status(200).json({
-            message: "Facility added successfully",
-            data: result,
+                message: "Facility added successfully",
+                data: result,
             });
         } catch (error) {
             console.error("Add Facility Error:", error);
             return res.status(error.statusCode || 500).json({
-            message: error.message || "Internal Server Error",
-            data: null,
+                message: error.message || "Internal Server Error",
+                data: null,
             });
         }
     },
@@ -596,16 +615,16 @@ export default {
             const result = await bookingTodayService.newBookingTodayService(mitraId);
 
             return res.status(200).json({
-            success: true,
-            message: "New room bookings today retrieved successfully",
-            data: result,
+                success: true,
+                message: "New room bookings today retrieved successfully",
+                data: result,
             });
-            
+
         } catch (error) {
             console.error("Error in getNewBookingsToday:", error);
             return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve new room bookings today",
+                success: false,
+                message: "Failed to retrieve new room bookings today",
             });
         }
     },
@@ -622,16 +641,16 @@ export default {
             const result = await bookingTodayService.availableRoomService(mitraId);
 
             return res.status(200).json({
-            success: true,
-            message: "Available rooms today retrieved successfully",
-            data: result,
+                success: true,
+                message: "Available rooms today retrieved successfully",
+                data: result,
             });
-            
+
         } catch (error) {
             console.error("Error in getAvailableRoomsToday:", error);
             return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve available rooms today",
+                success: false,
+                message: "Failed to retrieve available rooms today",
             });
         }
     },
@@ -648,16 +667,16 @@ export default {
             const result = await bookingTodayService.activeBookingRoomService(mitraId);
 
             return res.status(200).json({
-            success: true,
-            message: "Active bookings retrieved successfully",
-            data: result,
+                success: true,
+                message: "Active bookings retrieved successfully",
+                data: result,
             });
-            
+
         } catch (error) {
             console.error("Error in getActiveBookings:", error);
             return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve active bookings",
+                success: false,
+                message: "Failed to retrieve active bookings",
             });
         }
     },
@@ -674,16 +693,16 @@ export default {
             const result = await bookingTodayService.revenueReportService(mitraId);
 
             return res.status(200).json({
-            success: true,
-            message: "Revenue report retrieved successfully",
-            data: result,
+                success: true,
+                message: "Revenue report retrieved successfully",
+                data: result,
             });
-            
+
         } catch (error) {
             console.error("Error in getRevenueReport:", error);
             return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve revenue report",
+                success: false,
+                message: "Failed to retrieve revenue report",
             });
         }
     },
@@ -700,16 +719,16 @@ export default {
             const result = await bookingTodayService.grafikRevenueServices(mitraId);
 
             return res.status(200).json({
-            success: true,
-            message: "Revenue graph data retrieved successfully",
-            data: result,
+                success: true,
+                message: "Revenue graph data retrieved successfully",
+                data: result,
             });
-            
+
         } catch (error) {
             console.error("Error in getGrafikRevenue:", error);
             return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve revenue graph data",
+                success: false,
+                message: "Failed to retrieve revenue graph data",
             });
         }
     },
@@ -726,16 +745,16 @@ export default {
             const result = await bookingTodayService.grafikBookingServices(mitraId);
 
             return res.status(200).json({
-            success: true,
-            message: "Booking graph data retrieved successfully",
-            data: result,
+                success: true,
+                message: "Booking graph data retrieved successfully",
+                data: result,
             });
-            
+
         } catch (error) {
             console.error("Error in getGrafikBooking:", error);
             return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve booking graph data",
+                success: false,
+                message: "Failed to retrieve booking graph data",
             });
         }
     }

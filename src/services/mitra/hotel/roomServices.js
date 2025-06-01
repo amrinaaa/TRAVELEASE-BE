@@ -165,5 +165,52 @@ export default {
             console.error("Error editing room:", error);
             throw new Error("Failed to edit room");
         }
-    }
+    },
+
+    async deleteRoomService(roomId) {
+        try {
+            let deletedRoom;
+            
+            await prisma.$transaction(async (prisma) => {
+                // Ambil data room beserta relasinya sebelum dihapus
+                deletedRoom = await prisma.room.findUnique({
+                    where: { id: roomId },
+                    include: {
+                        roomType: {
+                            include: {
+                                hotel: {
+                                    include: {
+                                        location: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                if (!deletedRoom) {
+                    throw new Error('Room not found');
+                }
+
+                // Hapus relasi RoomImages
+                await prisma.roomImage.deleteMany({
+                    where: { roomId: roomId }
+                });
+
+                // Hapus relasi RoomReservations
+                await prisma.roomReservation.deleteMany({
+                    where: { roomId: roomId }
+                });
+
+                // Hapus room itu sendiri
+                await prisma.room.delete({
+                    where: { id: roomId }
+                });
+            });
+
+            return deletedRoom;
+        } catch (error) {
+            throw new Error(`Failed to delete room: ${error.message}`);
+        }
+    },
 }
