@@ -8,6 +8,7 @@ export default {
                 hotelId: hotelId
             },
             select: {
+                id: true,
                 typeName: true
             }
         });
