@@ -26,19 +26,21 @@ export default {
       const bookedSeatIds = new Set(bookedTickets.map(ticket => ticket.seatId));
 
       const formattedCategories = seatCategories.map(category => {
+        const sortedSeats = category.seats
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
         return {
           categoryId: category.id,
           categoryName: category.name,
           price: category.price,
           totalSeats: category.seats.length,
           availableSeats: category.seats.filter(seat => !bookedSeatIds.has(seat.id)).length,
-          seats: category.seats.map(seat => {
-            return {
-              id: seat.id,
-              name: seat.name,
-              isAvailable: !bookedSeatIds.has(seat.id)
-            }
-          })
+          seats: sortedSeats.map(seat => ({
+            id: seat.id,
+            name: seat.name,
+            isAvailable: !bookedSeatIds.has(seat.id)
+          }))
         }
       });
 
