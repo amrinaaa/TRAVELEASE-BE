@@ -100,6 +100,25 @@ export default {
     }
   },
 
+  async detailFlight(req, res) {
+    /**
+    #swagger.tags = ['User-Login']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    */
+    const flightId = req.query.flightId;
+    try {
+      const result = await searchService.detailFlightService(flightId);
+      res.status(200).json({
+        message: "success",
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  },
+
   async bookingFlight(req, res) {
     /**
         #swagger.tags = ['User-Login']

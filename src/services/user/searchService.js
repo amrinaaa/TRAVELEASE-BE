@@ -199,5 +199,107 @@ export default {
         }
 
         return { departureFlights };
-    }
+    }, 
+
+    async detailFlightService(flightId) {
+        try {
+            const flight = await prisma.flight.findUnique({
+            where: {
+                id: flightId
+            },
+            select: {
+                flightCode: true,
+                departureTime: true,
+                arrivalTime: true,
+                price: true,
+                departureAirport: {
+                select: {
+                    name: true,
+                    city: true,
+                    code: true,
+                    imageUrl: true,
+                },
+                },
+                arrivalAirport: {
+                select: {
+                    name: true,
+                    city: true,
+                    code: true,
+                    imageUrl: true,
+                },
+                },
+                plane: {
+                select: {
+                    name: true,
+                    airline: {
+                    select: {
+                        name: true,
+                    },
+                    },
+                    planeType: {
+                    select: {
+                        name: true,
+                        manufacture: true,
+                    },
+                    },
+                    seatCategories: {
+                    select: {
+                        name: true,
+                        price: true,
+                    },
+                    },
+                },
+                },
+            },
+            });
+
+            if (!flight) throw new Error("Flight not found");
+
+            const basePrice = flight.price;
+
+            let minTotalPrice = Number.MAX_SAFE_INTEGER;
+            let maxTotalPrice = 0;
+
+            const formattedCategories = flight.plane.seatCategories.map(category => {
+            const totalPrice = basePrice + category.price;
+
+            if (totalPrice < minTotalPrice) minTotalPrice = totalPrice;
+            if (totalPrice > maxTotalPrice) maxTotalPrice = totalPrice;
+
+            return {
+                name: category.name,
+                categoryPrice: category.price,
+                totalPrice
+            };
+            });
+
+            if (formattedCategories.length === 0) {
+            minTotalPrice = basePrice;
+            maxTotalPrice = basePrice;
+            }
+
+            const priceRange = minTotalPrice === maxTotalPrice
+            ? `${minTotalPrice}`
+            : `${minTotalPrice} - ${maxTotalPrice}`;
+
+            return {
+            id: flight.id,
+            flightCode: flight.flightCode,
+            departureTime: flight.departureTime,
+            arrivalTime: flight.arrivalTime,
+            basePrice,
+            priceRange,
+            departureAirport: flight.departureAirport,
+            arrivalAirport: flight.arrivalAirport,
+            plane: {
+                name: flight.plane.name,
+                airline: flight.plane.airline,
+                planeType: flight.plane.planeType,
+                seatCategories: formattedCategories
+            }
+            };
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
 };     

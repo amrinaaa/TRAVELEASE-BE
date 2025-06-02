@@ -155,8 +155,9 @@ router.post('/profile', upload.single('file'), authMiddleware, userMiddleware, u
 router.delete('/profile', authMiddleware, userMiddleware, deleteFileController.deleteProfileImage);
 router.put('/profile', authMiddleware, userMiddleware, userController.editProfile);
 //Avalaible-Seat
+router.get('/detail-flight', authMiddleware, userController.detailFlight);
 router.get('/seats/:flightId', authMiddleware, seatsController.getSeat); //bisa diakses oleh semua role
-router.post('/booking-flight', authMiddleware, userController.bookingFlight);
+router.post('/booking-flight', authMiddleware, userMiddleware, userController.bookingFlight);
 router.put('/payment-flight', authMiddleware, userMiddleware, userController.paymentFlight);
 //booking
 router.get('/user/hotels', userController.getHotel);
