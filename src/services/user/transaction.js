@@ -73,182 +73,144 @@ export default {
 
     async cancelTransactionService(userId, transactionId) {
         try {
-            return await prisma.$transaction(async (tx) => {
-                const transaction = await tx.transaction.findUnique({
+            // 1. Ambil transaksi
+            const transaction = await prisma.transaction.findUnique({
                 where: { id: transactionId },
                 include: {
-                    user: true,
-                    tickets: {
-                    include: {
-                        flight: {
-                        select: { departureTime: true, planeId: true }
-                        }
-                    }
-                    },
                     reservations: {
-                    include: {
-                        roomReservations: {
                         include: {
-                            room: {
-                            include: {
-                                roomType: {
-                                include: {
-                                    hotel: true
-                                }
-                                }
-                            }
-                            }
-                        }
-                        }
-                    }
-                    }
-                }
-                });
-
-                if (!transaction) {
-                throw new Error("Transaction not found or invalid");
-                }
-
-                if (transaction.userId !== userId) {
-                throw new Error("Unauthorized: You do not own this transaction");
-                }
-
-                if (transaction.status === "CANCELED") {
-                throw new Error("This transaction has already been cancelled");
-                }
-
-                if (transaction.transactionType !== "PURCHASE") {
-                throw new Error("Only PURCHASE transactions can be cancelled");
-                }
-
-                const hasFlights = transaction.tickets.length > 0;
-                const hasHotels = transaction.reservations.length > 0;
-
-                if (!hasFlights && !hasHotels) {
-                await tx.transaction.update({
-                    where: { id: transactionId },
-                    data: { status: "CANCELED" }
-                });
-                throw new Error("Transaction contains no flights or hotels");
-                }
-
-                // Hitung tanggal paling awal
-                let earliestDate = null;
-
-                transaction.tickets.forEach(ticket => {
-                const date = ticket.flight?.departureTime;
-                if (date && (!earliestDate || new Date(date) < earliestDate)) {
-                    earliestDate = new Date(date);
-                }
-                });
-
-                transaction.reservations.forEach(res => {
-                if (!earliestDate || res.startDate < earliestDate) {
-                    earliestDate = res.startDate;
-                }
-                });
-
-                if (!earliestDate) {
-                throw new Error("Earliest service date could not be determined");
-                }
-
-                const twoDaysFromNow = new Date();
-                twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
-                if (earliestDate < twoDaysFromNow) {
-                throw new Error("Cancellation period has expired (less than 2 days left)");
-                }
-
-                // Hapus tiket dan reservasi
-                if (hasFlights) {
-                await tx.ticket.deleteMany({ where: { transactionId } });
-                }
-
-                if (hasHotels) {
-                const reservationIds = transaction.reservations.map(r => r.id);
-                if (reservationIds.length > 0) {
-                    await tx.roomReservation.deleteMany({
-                    where: { reservationId: { in: reservationIds } }
-                    });
-                    await tx.reservation.deleteMany({
-                    where: { id: { in: reservationIds } }
-                    });
-                }
-                }
-
-                // Refund jika status PAID
-                let refundData = null;
-
-                if (transaction.status === "PAID") {
-                await tx.user.update({
-                    where: { id: userId },
-                    data: { currentAmount: { increment: transaction.price } }
-                });
-
-                const partnerIds = new Set();
-
-                // Flight partner
-                const planeIds = [...new Set(transaction.tickets.map(t => t.flight?.planeId).filter(Boolean))];
-                if (planeIds.length) {
-                    const planes = await tx.plane.findMany({
-                    where: { id: { in: planeIds } },
-                    select: { airlineId: true }
-                    });
-
-                    const airlineIds = planes.map(p => p.airlineId);
-                    const airlinePartners = await tx.airlinePartner.findMany({
-                    where: { airlineId: { in: airlineIds } },
-                    select: { partnerId: true }
-                    });
-
-                    airlinePartners.forEach(p => partnerIds.add(p.partnerId));
-                }
-
-                // Hotel partner
-                transaction.reservations.forEach(res => {
-                    res.roomReservations.forEach(rr => {
-                    const hotelId = rr.room?.roomType?.hotel?.id;
-                    if (hotelId) {
-                        partnerIds.add(hotelId);
-                    }
-                    });
-                });
-
-                const hotelPartners = await tx.hotelPartner.findMany({
-                    where: { hotelId: { in: Array.from(partnerIds) } },
-                    select: { partnerId: true }
-                });
-
-                hotelPartners.forEach(p => partnerIds.add(p.partnerId));
-
-                if (partnerIds.size === 0) {
-                    throw new Error("No partners found to refund from");
-                }
-
-                const amountPerPartner = Math.floor(transaction.price / partnerIds.size);
-                await Promise.all(Array.from(partnerIds).map(pid => {
-                    return tx.user.update({
-                    where: { id: pid },
-                    data: { currentAmount: { decrement: amountPerPartner } }
-                    });
-                }));
-
-                refundData = {
-                    refundedAmount: transaction.price,
-                    debitedPartners: Array.from(partnerIds),
-                    amountPerPartner
-                };
-                }
-
-                const updated = await tx.transaction.update({
-                where: { id: transactionId },
-                data: { status: "CANCELED" }
-                });
-
-                return {
-                status: updated.status,
-                refundData
-                };
+                        roomReservations: true,
+                        },
+                    },
+                    tickets: {
+                        include: {
+                            flight: true, // ✅ tambahkan ini untuk akses flight.price
+                        },
+                    },
+                },
             });
+
+            if (!transaction) {
+                throw new Error("Transaction not found");
+            }
+
+            if (transaction.userId !== userId) {
+                throw new Error("User does not own this transaction");
+            }
+
+            if (transaction.status === "CANCELED") {
+                throw new Error("Transaction already canceled");
+            }
+
+            let totalRefund = 0;
+            const partnerMap = new Map(); // partnerId => total amount to deduct
+
+            // 2. Hitung refund dari tiket pesawat
+            for (const ticket of transaction.tickets) {
+                totalRefund += ticket.flight.price;
+
+                const seat = await prisma.seat.findUnique({
+                where: { id: ticket.seatId },
+                include: {
+                    seatCategory: {
+                    include: {
+                        plane: {
+                        include: {
+                            airline: {
+                            include: {
+                                airlinePartners: true,
+                            },
+                            },
+                        },
+                        },
+                    },
+                    },
+                },
+                });
+
+                const airlinePartners = seat?.seatCategory?.plane?.airline?.airlinePartners || [];
+                const amount = ticket.flight.price;
+
+                for (const partner of airlinePartners) {
+                const current = partnerMap.get(partner.partnerId) || 0;
+                partnerMap.set(partner.partnerId, current + Math.floor(amount / airlinePartners.length));
+                }
+            }
+
+            // 3. Hitung refund dari reservasi hotel
+            for (const reservation of transaction.reservations) {
+                for (const roomReservation of reservation.roomReservations) {
+                const room = await prisma.room.findUnique({
+                    where: { id: roomReservation.roomId },
+                    include: {
+                    roomType: {
+                        include: {
+                        hotel: {
+                            include: {
+                            hotelPartners: true,
+                            },
+                        },
+                        },
+                    },
+                    },
+                });
+
+                const price = room.roomType.price * roomReservation.amount;
+                totalRefund += price;
+
+                const hotelPartners = room?.roomType?.hotel?.hotelPartners || [];
+
+                for (const partner of hotelPartners) {
+                    const current = partnerMap.get(partner.partnerId) || 0;
+                    partnerMap.set(partner.partnerId, current + Math.floor(price / hotelPartners.length));
+                }
+                }
+            }
+
+            // 4. Update status transaksi
+            await prisma.transaction.update({
+                where: { id: transactionId },
+                data: { status: "CANCELED" },
+            });
+
+            // 5. Refund ke user
+            await prisma.user.update({
+                where: { id: userId },
+                data: {
+                currentAmount: {
+                    increment: totalRefund,
+                },
+                },
+            });
+
+            // 6. Kurangi saldo setiap mitra
+            const refundDetails = [];
+
+            for (const [partnerId, amount] of partnerMap.entries()) {
+                await prisma.user.update({
+                where: { id: partnerId },
+                data: {
+                    currentAmount: {
+                    decrement: amount,
+                    },
+                },
+                });
+
+                refundDetails.push({
+                partnerId,
+                deductedAmount: amount,
+                });
+            }
+
+            // 7. Response
+            return {
+                message: "Transaction canceled successfully",
+                totalRefund,
+                refundedToUser: userId,
+                partnerDeductions: refundDetails,
+                transactionId: transaction.id,
+                status: "CANCELED",
+            };
         } catch (error) {
             throw new Error(error.message)
         }
