@@ -254,7 +254,9 @@ const doc = {
             },
 
             BookingRoomRequest: {
-                roomId: "", 
+                roomId: [
+                    "",
+                ], 
                 startDate: "", 
                 endDate: "",
             },
@@ -264,6 +266,10 @@ const doc = {
                 code: "",
                 city: "",
             },
+
+            CancelTransactionRequest: {
+                transactionId: "",
+            }
         },
     },
 };

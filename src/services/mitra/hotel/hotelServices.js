@@ -153,119 +153,91 @@ export default {
         try {
             const hotel = await prisma.hotel.findUnique({
                 where: { id: hotelId },
-                include: {
-                    hotelPartners: true,
-                    hotelImages: true,
-                    roomTypes: {
-                        include: {
-                            rooms: {
-                                include: {
-                                    roomReservations: {
-                                        include: {
-                                            reservation: {
-                                                include: {
-                                                    transaction: true,
-                                                },
-                                            },
-                                        },
-                                    },
-                                    roomImages: true,
-                                },
-                            },
-                        },
-                    },
-                },
+                include: { hotelPartners: true },
             });
-    
+
             if (!hotel) {
                 throw new Error('Hotel not found');
             }
-    
+
             const isMitraPartner = hotel.hotelPartners.some(
                 (partner) => partner.partnerId === mitraId
             );
-    
+
             if (!isMitraPartner) {
                 throw new Error('You are not authorized to delete this hotel');
             }
-    
-            const reservationIds = new Set();
-            const transactionIds = new Set();
-    
-            for (const roomType of hotel.roomTypes) {
-                for (const room of roomType.rooms) {
-                    for (const roomReservation of room.roomReservations) {
-                        if (roomReservation.reservation) {
-                            reservationIds.add(roomReservation.reservation.id);
-                            if (roomReservation.reservation.transaction) {
-                                transactionIds.add(roomReservation.reservation.transaction.id);
+
+            // Ambil semua data ID terkait dengan efisien
+            const roomTypes = await prisma.roomType.findMany({
+                where: { hotelId },
+                select: {
+                    id: true,
+                    rooms: {
+                        select: {
+                            id: true,
+                            roomImages: { select: { id: true } },
+                            roomReservations: {
+                                select: {
+                                    id: true,
+                                    reservation: {
+                                        select: {
+                                            id: true,
+                                            transaction: { select: { id: true } }
+                                        }
+                                    }
+                                }
                             }
                         }
-    
-                        await prisma.roomReservation.delete({
-                            where: { id: roomReservation.id },
-                        });
                     }
-    
-                    for (const roomImage of room.roomImages) {
-                        await prisma.roomImage.delete({
-                            where: { id: roomImage.id },
-                        });
+                }
+            });
+
+            const roomTypeIds = roomTypes.map(rt => rt.id);
+            const roomIds = [];
+            const roomImageIds = [];
+            const roomReservationIds = [];
+            const reservationIds = new Set();
+            const transactionIds = new Set();
+
+            for (const rt of roomTypes) {
+                for (const room of rt.rooms) {
+                    roomIds.push(room.id);
+                    room.roomImages.forEach(img => roomImageIds.push(img.id));
+                    for (const rr of room.roomReservations) {
+                        roomReservationIds.push(rr.id);
+                        if (rr.reservation) {
+                            reservationIds.add(rr.reservation.id);
+                            if (rr.reservation.transaction) {
+                                transactionIds.add(rr.reservation.transaction.id);
+                            }
+                        }
                     }
                 }
             }
-    
-            for (const roomType of hotel.roomTypes) {
-                await prisma.roomTypeFacility.deleteMany({
-                    where: { roomTypeId: roomType.id },
-                });
-            }
-    
-            await prisma.room.deleteMany({
-                where: { roomTypeId: { in: hotel.roomTypes.map(rt => rt.id) } },
-            });
-    
-            await prisma.roomType.deleteMany({
-                where: { hotelId: hotel.id },
-            });
-    
-            await prisma.hotelPartner.deleteMany({
-                where: { partnerId: mitraId, hotelId: hotel.id },
-            });
 
-            const images = await prisma.hotelImage.findMany({
-                where: { hotelId: hotel.id },
-                });
-                
-                if (images.length > 0) {
-                    for (const image of images) {
-                        const filePath = extractFilePath(image.imageUrl);
-                        await deleteFile.deleteFile(filePath);
-                    }
+            // Ambil dan hapus file image fisik
+            const hotelImages = await prisma.hotelImage.findMany({ where: { hotelId } });
+            for (const image of hotelImages) {
+                const filePath = extractFilePath(image.imageUrl);
+                await deleteFile.deleteFile(filePath);
+            }
 
-                    await prisma.hotelImage.deleteMany({
-                        where: { hotelId: hotel.id },
-                    });
-                }
-    
-            for (const reservationId of reservationIds) {
-                await prisma.reservation.delete({
-                    where: { id: reservationId },
-                });
-            }
-            
-            for (const transactionId of transactionIds) {
-                await prisma.transaction.delete({
-                    where: { id: transactionId },
-                });
-            }
-    
-            await prisma.hotel.delete({
-                where: { id: hotelId },
-            });
-    
+            // Jalankan semua penghapusan dalam transaksi prisma
+            await prisma.$transaction([
+                prisma.roomReservation.deleteMany({ where: { id: { in: roomReservationIds } } }),
+                prisma.roomImage.deleteMany({ where: { id: { in: roomImageIds } } }),
+                prisma.roomTypeFacility.deleteMany({ where: { roomTypeId: { in: roomTypeIds } } }),
+                prisma.room.deleteMany({ where: { id: { in: roomIds } } }),
+                prisma.roomType.deleteMany({ where: { id: { in: roomTypeIds } } }),
+                prisma.hotelImage.deleteMany({ where: { hotelId } }),
+                prisma.hotelPartner.deleteMany({ where: { hotelId, partnerId: mitraId } }),
+                prisma.reservation.deleteMany({ where: { id: { in: Array.from(reservationIds) } } }),
+                prisma.transaction.deleteMany({ where: { id: { in: Array.from(transactionIds) } } }),
+                prisma.hotel.delete({ where: { id: hotelId } })
+            ]);
+
             return { message: 'Hotel and related data deleted successfully' };
-
         } catch (error) {
             console.error("Error deleting hotel:", error);
             throw new Error("Failed to delete hotel");

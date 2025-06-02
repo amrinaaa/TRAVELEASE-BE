@@ -161,8 +161,6 @@ router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, use
 //payment-flight
 router.get('/transaction-history', authMiddleware, userMiddleware, userController.transactionHistory);
 //cancel
-router.put('/cancel-flight', authMiddleware, userMiddleware, userController.cancelFlight);
-router.put('/cancel-room', authMiddleware, userMiddleware, userController.cancelRoom);
-
+router.put('/cancel-payment', authMiddleware, userMiddleware, userController.cancelPayment);
 
 export default router;

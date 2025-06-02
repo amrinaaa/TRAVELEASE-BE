@@ -9,6 +9,9 @@ export default {
             required: true,
             type: 'string'
         }
+        #swagger.security = [{
+            "bearerAuth": []
+        }]
         */
         const { flightId } = req.params;
         try {
