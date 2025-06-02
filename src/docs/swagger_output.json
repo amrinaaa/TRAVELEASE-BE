@@ -1262,15 +1262,6 @@
           "Mitra Penerbangan"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "planeId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"

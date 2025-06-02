@@ -361,9 +361,9 @@ export default {
             "bearerAuth": []
         }]
         */
-        const {planeId} = req.query;
+        const mitraId = res.locals.payload.id;
         try {
-            const flights = await mitraPenerbangan.getMitraFlightsService(planeId);
+            const flights = await mitraPenerbangan.getMitraFlightsService(mitraId);
             if (!flights || flights.length === 0) {
                 return res.status(404).json({
                     message: "Flights not found",
