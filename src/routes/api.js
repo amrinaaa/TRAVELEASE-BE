@@ -59,7 +59,7 @@ router.get('/dashboard/graph-monthly-hotel-partners', authMiddleware, adminMiddl
 router.get('/dashboard/graph-monthly-plane-partners', authMiddleware, adminMiddleware, adminControllers.graphPlanePartners);
 //profile admin sendiri
 router.get('/admin-profile', authMiddleware, adminMiddleware, userController.getProfile);
-router.post('admin-profile', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfile);
+router.post('/admin-profile', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfile);
 router.delete('/admin-profile', authMiddleware, adminMiddleware, deleteFileController.deleteProfileImage);
 router.put('/admin-profile', authMiddleware, adminMiddleware, userController.editProfile);
 
