@@ -110,13 +110,13 @@ export default {
         try {
             const today = new Date();
             const targetDate = new Date(today);
-            targetDate.setDate(targetDate.getDate() + 2);
-            targetDate.setHours(23, 59, 59, 999); // hari ini + 2 hari, akhir hari
+            targetDate.setDate(targetDate.getDate() + 1);
+            targetDate.setHours(23, 59, 59, 999); // hari ini + 1 hari, akhir hari
 
             const flights = await prisma.flight.findMany({
             where: {
                 departureTime: {
-                gt: targetDate, // lebih dari 2 hari setelah hari ini
+                gt: targetDate, // lebih dari 1 hari setelah hari ini
                 },
             },
             select: {
