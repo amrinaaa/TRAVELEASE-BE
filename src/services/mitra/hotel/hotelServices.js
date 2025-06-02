@@ -136,6 +136,7 @@ export default {
                     },
                     hotelImages: {
                         select: {
+                            id: true,
                             imageUrl: true
                         }
                     }
