@@ -584,7 +584,7 @@ export default {
 
     async getMitraFlightsService(mitraId) {
         try {
-            // 1. Dapatkan semua airline partner dari user (mitra)
+            // 1. Ambil semua airline partner berdasarkan mitraId
             const airlinePartners = await prisma.airlinePartner.findMany({
                 where: { partnerId: mitraId },
                 select: { airlineId: true }
@@ -594,9 +594,9 @@ export default {
                 throw new Error('User is not a partner of any airline');
             }
 
-            const airlineIds = airlinePartners.map(partner => partner.airlineId);
+            const airlineIds = airlinePartners.map(p => p.airlineId);
 
-            // 2. Dapatkan semua pesawat dari maskapai-maskapai partner
+            // 2. Ambil semua pesawat berdasarkan airlineIds
             const planes = await prisma.plane.findMany({
                 where: { airlineId: { in: airlineIds } },
                 include: {
@@ -614,17 +614,14 @@ export default {
                 return [];
             }
 
-            // 3. Kumpulkan semua flight untuk semua pesawat mitra
-            let allFlights = [];
+            // 3. Query semua penerbangan secara paralel berdasarkan setiap pesawat
             const flightIdSet = new Set();
 
-            for (const plane of planes) {
-                // Hitung total kursi di pesawat
+            const flightPromises = planes.map(async (plane) => {
                 const totalSeatsOnPlane = plane.seatCategories.reduce(
                     (sum, category) => sum + category._count.seats, 0
                 );
 
-                // Ambil semua penerbangan untuk pesawat ini
                 const flights = await prisma.flight.findMany({
                     where: { planeId: plane.id },
                     include: {
@@ -642,10 +639,8 @@ export default {
                     orderBy: { departureTime: 'asc' }
                 });
 
-                // Format setiap penerbangan
-                for (const flight of flights) {
-                    // Hindari duplikat flight jika ada
-                    if (flightIdSet.has(flight.id)) continue;
+                return flights.map(flight => {
+                    if (flightIdSet.has(flight.id)) return null;
                     flightIdSet.add(flight.id);
 
                     const basePrice = flight.price;
@@ -667,11 +662,10 @@ export default {
                         ? formatPrice(minTotalPrice)
                         : `${formatPrice(minTotalPrice)} - ${formatPrice(maxTotalPrice)}`;
 
-                    // Hitung kursi yang sudah dipesan
                     const bookedSeatsCount = flight.tickets.length;
                     const seatsAvailable = totalSeatsOnPlane - bookedSeatsCount;
 
-                    allFlights.push({
+                    return {
                         "Flight ID": flight.id,
                         "Plane Name": plane.name,
                         "Airline": plane.airline.name,
@@ -681,12 +675,18 @@ export default {
                         "Arrival Airport": `${flight.arrivalAirport.name} (${flight.arrivalAirport.code})`,
                         "Price Range": priceOutput,
                         "Seats Available": `${seatsAvailable}/${totalSeatsOnPlane}`,
-                        "Flight Status": new Date(flight.departureTime) > new Date() 
-                            ? "Upcoming" 
+                        "Flight Status": new Date(flight.departureTime) > new Date()
+                            ? "Upcoming"
                             : "Completed"
-                    });
-                }
-            }
+                    };
+                }).filter(Boolean); // Hapus null
+            });
+
+            // Tunggu semua flights selesai
+            const allFlightResults = await Promise.all(flightPromises);
+
+            // Gabungkan hasil array nested menjadi satu array
+            const allFlights = allFlightResults.flat();
 
             return allFlights;
 

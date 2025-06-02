@@ -341,19 +341,16 @@ export default {
     async grafikRevenueServices(mitraId) {
         try {
             const currentYear = new Date().getFullYear();
-            const monthlyRevenue = [];
+            const startOfYear = new Date(currentYear, 0, 1);
+            const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59, 999);
 
-            for (let month = 0; month < 12; month++) {
-                const start = startOfMonth(new Date(currentYear, month));
-                const end = endOfMonth(new Date(currentYear, month));
-
-                const reservations = await prisma.reservation.findMany({
-                    where: {
-                        createdAt: {
-                            gte: start,
-                            lte: end,
-                        },
-                        roomReservations: {
+            const reservations = await prisma.reservation.findMany({
+                where: {
+                    createdAt: {
+                        gte: startOfYear,
+                        lte: endOfYear,
+                    },
+                    roomReservations: {
                         some: {
                             room: {
                                 roomType: {
@@ -369,23 +366,30 @@ export default {
                         }
                     }
                 },
-                    include: { transaction: true },
-                });
+                select: {
+                    createdAt: true,
+                    transaction: {
+                        select: { price: true }
+                    }
+                }
+            });
 
-                const total = reservations.reduce(
-                    (sum, res) => sum + (res.transaction?.price ?? 0),
-                    0
-                );
+            // Inisialisasi array untuk revenue per bulan (0 - 11)
+            const monthlyRevenueMap = Array(12).fill(0);
 
-                monthlyRevenue.push({
-                    month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
-                    totalRevenue: total,
-                });
+            for (const res of reservations) {
+                const month = new Date(res.createdAt).getMonth();
+                monthlyRevenueMap[month] += res.transaction?.price || 0;
             }
+
+            const monthlyRevenue = monthlyRevenueMap.map((total, index) => ({
+                month: new Date(currentYear, index).toLocaleString('default', { month: 'long' }),
+                totalRevenue: total
+            }));
 
             return monthlyRevenue;
         } catch (error) {
-            console.error('Error in grafikRevenueServices:', error);
+            console.error('Error in grafikRevenueServices:', error.message);
             throw new Error('Gagal mengambil data grafik revenue');
         }
     },
@@ -393,22 +397,19 @@ export default {
     async grafikBookingServices(mitraId) {
         try {
             const currentYear = new Date().getFullYear();
-            const monthlyBooking = [];
+            const startOfYear = new Date(currentYear, 0, 1);
+            const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59, 999);
 
-            for (let month = 0; month < 12; month++) {
-                const start = startOfMonth(new Date(currentYear, month));
-                const end = endOfMonth(new Date(currentYear, month));
-
-                const reservations = await prisma.reservation.findMany({
+            const reservations = await prisma.reservation.findMany({
                 where: {
                     createdAt: {
-                    gte: start,
-                    lte: end,
+                        gte: startOfYear,
+                        lte: endOfYear,
                     },
                     transactionId: {
-                    not: "",
+                        not: "",
                     },
-                        roomReservations: {
+                    roomReservations: {
                         some: {
                             room: {
                                 roomType: {
@@ -424,20 +425,27 @@ export default {
                         },
                     },
                 },
-                include: {
-                    transaction: true,
-                },
-                });
+                select: {
+                    createdAt: true,
+                }
+            });
 
-                monthlyBooking.push({
-                month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
-                totalBooking: reservations.length,
-                });
+            // Inisialisasi array untuk booking per bulan
+            const monthlyBookingMap = Array(12).fill(0);
+
+            for (const res of reservations) {
+                const month = new Date(res.createdAt).getMonth();
+                monthlyBookingMap[month]++;
             }
+
+            const monthlyBooking = monthlyBookingMap.map((count, index) => ({
+                month: new Date(currentYear, index).toLocaleString('default', { month: 'long' }),
+                totalBooking: count
+            }));
 
             return monthlyBooking;
         } catch (error) {
-            console.error('Error in grafikBookingServices:', error);
+            console.error('Error in grafikBookingServices:', error.message);
             throw new Error('Gagal mengambil data grafik booking');
         }
     },

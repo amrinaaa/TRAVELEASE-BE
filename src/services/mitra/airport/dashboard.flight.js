@@ -252,7 +252,7 @@ export default {
     async grahpRevenueMonthlyService(partnerId) {
         try {
             const partnerAirlines = await prisma.airlinePartner.findMany({
-                where: { partnerId: partnerId },
+                where: { partnerId },
                 select: { airlineId: true }
             });
 
@@ -260,75 +260,65 @@ export default {
                 throw new Error('No airlines found for this partner');
             }
 
-            // Extract airline IDs
             const airlineIds = partnerAirlines.map(pa => pa.airlineId);
-
             const currentYear = new Date().getFullYear();
-            const monthlyRevenue = [];
 
-            for (let month = 0; month < 12; month++) {
-                const start = new Date(currentYear, month, 1);
-                start.setHours(0, 0, 0, 0);
-                const end = new Date(currentYear, month + 1, 0);
-                end.setHours(23, 59, 59, 999);
-
-                // Get tickets for partner's airlines in this month
-                const bookings = await prisma.ticket.findMany({
-                    where: {
-                        createdAt: {
-                            gte: start,
-                            lte: end,
-                        },
-                        flight: {
-                            plane: {
-                                airline: {
-                                    id: { in: airlineIds }
-                                }
-                            }
+            // Ambil semua tiket selama tahun ini untuk airline partner
+            const allTickets = await prisma.ticket.findMany({
+                where: {
+                    createdAt: {
+                        gte: new Date(currentYear, 0, 1),
+                        lte: new Date(currentYear, 11, 31, 23, 59, 59, 999),
+                    },
+                    flight: {
+                        plane: {
+                            airlineId: { in: airlineIds }
                         }
                     },
-                    include: { 
-                        transaction: true,
-                        flight: {
-                            include: {
-                                plane: {
-                                    include: {
-                                        airline: true
-                                    }
-                                }
-                            }
-                        }
-                    },
-                });
+                },
+                include: {
+                    transaction: true
+                }
+            });
 
-                // Calculate total revenue for this month
-                const total = bookings.reduce((sum, ticket) => {
-                    // Only count tickets from paid transactions
-                    if (ticket.transaction?.status === 'PAID') {
-                        // Calculate proportional revenue per ticket
-                        const transactionPrice = ticket.transaction.price || 0;
-                        const ticketsInTransaction = bookings.filter(t => t.transactionId === ticket.transactionId).length;
-                        return sum + (transactionPrice / ticketsInTransaction);
-                    }
-                    return sum;
-                }, 0);
+            // Kelompokkan berdasarkan bulan
+            const monthlyRevenueMap = Array(12).fill(0);
 
-                monthlyRevenue.push({
-                    month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
-                    totalRevenue: Math.round(total),
-                });
+            // Cache jumlah tiket per transaksi agar tidak dihitung berulang
+            const ticketsPerTransaction = {};
+
+            for (const ticket of allTickets) {
+                const transaction = ticket.transaction;
+                if (!transaction || transaction.status !== 'PAID') continue;
+
+                const month = new Date(ticket.createdAt).getMonth();
+                const transactionId = ticket.transactionId;
+
+                // Hitung jumlah tiket dalam transaksi (cache)
+                if (!ticketsPerTransaction[transactionId]) {
+                    ticketsPerTransaction[transactionId] = allTickets.filter(t => t.transactionId === transactionId).length;
+                }
+
+                const ticketShare = (transaction.price || 0) / ticketsPerTransaction[transactionId];
+                monthlyRevenueMap[month] += ticketShare;
             }
+
+            const monthlyRevenue = monthlyRevenueMap.map((total, index) => ({
+                month: new Date(currentYear, index).toLocaleString('default', { month: 'long' }),
+                totalRevenue: Math.round(total)
+            }));
 
             return monthlyRevenue;
         } catch (error) {
-            throw new Error(error.message);
+            console.error('Error in grahpRevenueMonthlyService:', error.message);
+            throw new Error(`Failed to get monthly revenue data: ${error.message}`);
         }
     },
 
     async grahpBookingMonthlyService(partnerId) {
         try {
             const partnerAirlines = await prisma.airlinePartner.findMany({
-                where: { partnerId: partnerId },
+                where: { partnerId },
                 select: { airlineId: true }
             });
 
@@ -336,59 +326,45 @@ export default {
                 throw new Error('No airlines found for this partner');
             }
 
-            // Extract airline IDs
             const airlineIds = partnerAirlines.map(pa => pa.airlineId);
-
             const currentYear = new Date().getFullYear();
-            const monthlyBooking = [];
 
-            for (let month = 0; month < 12; month++) {
-                const start = new Date(currentYear, month, 1);
-                start.setHours(0, 0, 0, 0);
-                const end = new Date(currentYear, month + 1, 0);
-                end.setHours(23, 59, 59, 999);
-
-                // Get bookings for partner's airlines in this month
-                const booking = await prisma.ticket.findMany({
-                    where: {
-                        createdAt: {
-                            gte: start,
-                            lte: end,
-                        },
-                        flight: {
-                            plane: {
-                                airline: {
-                                    id: { in: airlineIds }
-                                }
-                            }
-                        },
-                        transactionId: {
-                            not: "",
-                        },
+            // Ambil semua tiket selama tahun ini untuk airline partner
+            const allBookings = await prisma.ticket.findMany({
+                where: {
+                    createdAt: {
+                        gte: new Date(currentYear, 0, 1),
+                        lte: new Date(currentYear, 11, 31, 23, 59, 59, 999),
                     },
-                    include: {
-                        transaction: true,
-                        flight: {
-                            include: {
-                                plane: {
-                                    include: {
-                                        airline: true
-                                    }
-                                }
-                            }
+                    flight: {
+                        plane: {
+                            airlineId: { in: airlineIds }
                         }
                     },
-                });
+                    transactionId: { not: "" }
+                },
+                select: {
+                    createdAt: true
+                }
+            });
 
-                monthlyBooking.push({
-                    month: new Date(currentYear, month).toLocaleString('default', { month: 'long' }),
-                    totalBooking: booking.length,
-                });
+            // Inisialisasi array 12 bulan
+            const monthlyBookingMap = Array(12).fill(0);
+
+            for (const booking of allBookings) {
+                const month = new Date(booking.createdAt).getMonth();
+                monthlyBookingMap[month]++;
             }
+
+            const monthlyBooking = monthlyBookingMap.map((count, index) => ({
+                month: new Date(currentYear, index).toLocaleString('default', { month: 'long' }),
+                totalBooking: count
+            }));
 
             return monthlyBooking;
         } catch (error) {
-            throw new Error(error.message);
-        };
+            console.error('Error in grahpBookingMonthlyService:', error.message);
+            throw new Error(`Failed to get monthly booking data: ${error.message}`);
+        }
     },
 };
