@@ -59,7 +59,7 @@ export default {
         #swagger.security = [{
             "bearerAuth": []
         }]
-         */
+        */
         const { city } = req.body;
         try {
             await validation.validateAddLocation(req.body);
@@ -81,10 +81,57 @@ export default {
     async addHotel(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                'multipart/form-data': {
+                    schema: {
+                        type: 'object',
+                        required: ['locationId', 'name', 'description', 'address', 'contact', 'files'],
+                        properties: {
+                            locationId: { 
+                                type: 'string',
+                                description: 'ID lokasi hotel' 
+                            },
+                            name: { 
+                                type: 'string',
+                                description: 'Nama hotel' 
+                            },
+                            description: { 
+                                type: 'string',
+                                description: 'Deskripsi hotel' 
+                            },
+                            address: { 
+                                type: 'string',
+                                description: 'Alamat hotel' 
+                            },
+                            contact: { 
+                                type: 'string',
+                                description: 'Kontak hotel' 
+                            },
+                            files: {
+                                type: 'array',
+                                description: 'Gambar-gambar hotel (Max: 10 gambar',
+                                items: {
+                                    type: 'string',
+                                    format: 'binary'
+                                }
+                            }
+                        }
+                    },
+                    encoding: {
+                        files: {
+                            style: 'form',
+                            explode: true
+                        }
+                    }
+                }
+            }
+        }
         #swagger.security = [{
             "bearerAuth": []
         }]
-         */
+        */
         const mitraId = res.locals.payload.id;
         const { locationId, name, description, address, contact } = req.body;
         const files = req.files;
@@ -141,6 +188,62 @@ export default {
     async editHotel(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                'multipart/form-data': {
+                    schema: {
+                        type: 'object',
+                        required: ['hotelId'],
+                        properties: {
+                            hotelId: {
+                                type: 'string',
+                                description: 'ID hotel yang akan diubah'
+                            },
+                            locationId: {
+                                type: 'string',
+                                description: 'ID lokasi hotel baru',
+                                nullable: true
+                            },
+                            name: {
+                                type: 'string',
+                                description: 'Nama hotel baru',
+                                nullable: true
+                            },
+                            description: {
+                                type: 'string',
+                                description: 'Deskripsi hotel baru',
+                                nullable: true
+                            },
+                            address: {
+                                type: 'string',
+                                description: 'Alamat hotel baru',
+                                nullable: true
+                            },
+                            contact: {
+                                type: 'string',
+                                description: 'Kontak hotel baru',
+                                nullable: true
+                            },
+                            files: {
+                                type: 'array',
+                                description: 'Gambar-gambar hotel baru (jika ingin menambah atau mengganti - Max: 10 gambar)',
+                                items: {
+                                    type: 'string',
+                                    format: 'binary'
+                                }
+                            }
+                        }
+                    },
+                    encoding: {
+                        files: {
+                            style: 'form',
+                            explode: true
+                        }
+                    }
+                }
+            }
+        }
         #swagger.security = [{
             "bearerAuth": []
         }]
@@ -298,6 +401,45 @@ export default {
     async addRoom(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                'multipart/form-data': {
+                    schema: {
+                        type: 'object',
+                        required: ['name', 'description', 'roomTypeId', 'files'],
+                        properties: {
+                            name: {
+                                type: 'string',
+                                description: 'Nama kamar'
+                            },
+                            description: {
+                                type: 'string',
+                                description: 'Deskripsi kamar'
+                            },
+                            roomTypeId: {
+                                type: 'string',
+                                description: 'ID tipe kamar'
+                            },
+                            files: {
+                                type: 'array',
+                                description: 'Gambar-gambar kamar',
+                                items: {
+                                    type: 'string',
+                                    format: 'binary'
+                                }
+                            }
+                        }
+                    },
+                    encoding: {
+                        files: {
+                            style: 'form',
+                            explode: true
+                        }
+                    }
+                }
+            }
+        }
         #swagger.security = [{
             "bearerAuth": []
         }]
@@ -363,6 +505,47 @@ export default {
     async editRoom(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                'multipart/form-data': {
+                    schema: {
+                        type: 'object',
+                        required: ['roomId'],
+                        properties: {
+                            roomId: {
+                                type: 'string',
+                                description: 'ID kamar yang akan diubah'
+                            },
+                            name: {
+                                type: 'string',
+                                description: 'Nama baru kamar (opsional)',
+                                nullable: true
+                            },
+                            description: {
+                                type: 'string',
+                                description: 'Deskripsi baru kamar (opsional)',
+                                nullable: true
+                            },
+                            files: {
+                                type: 'array',
+                                description: 'Gambar-gambar baru kamar (jika ingin menambah atau mengganti)',
+                                items: {
+                                    type: 'string',
+                                    format: 'binary'
+                                }
+                            }
+                        }
+                    },
+                    encoding: {
+                        files: {
+                            style: 'form',
+                            explode: true
+                        }
+                    }
+                }
+            }
+        }
         #swagger.security = [{
             "bearerAuth": []
         }]
