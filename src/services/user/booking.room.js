@@ -126,147 +126,119 @@ export default {
     },
 
     async paymentBookingRoomServices({ userId, transactionId }) {
-    try {
-        const transaction = await prisma.transaction.findUnique({
-            where: { id: transactionId },
-            include: {
-                reservations: {
-                    include: {
-                        roomReservations: {
-                            include: {
-                                room: {
-                                    include: {
-                                        roomType: {
-                                            include: {
-                                                hotel: {
-                                                    include: {
-                                                        hotelPartners: {
-                                                            include: {
-                                                                partner: true,
-                                                            },
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                user: true,
-            },
-        });
-
-        if (!transaction) throw new Error("Transaksi tidak ditemukan");
-        if (transaction.userId !== userId) throw new Error("Kamu tidak memiliki akses ke transaksi ini");
-        if (transaction.status === "PAID") throw new Error("Transaksi sudah dibayar");
-        if (transaction.status === "CANCELED") throw new Error("Transaksi telah dibatalkan");
-        if (!transaction.reservations?.length) throw new Error("Reservasi tidak ditemukan dalam transaksi ini");
-
-        const reservation = transaction.reservations[0];
-        const now = Date.now();
-        const bookingTime = new Date(reservation.createdAt).getTime();
-
-        if (now - bookingTime > 15 * 60 * 1000) {
-            const reservationIds = transaction.reservations.map(r => r.id);
-            await prisma.roomReservation.deleteMany({ where: { reservationId: { in: reservationIds } } });
-            await prisma.reservation.deleteMany({ where: { id: { in: reservationIds } } });
-            await prisma.transaction.update({
+        try {
+            // Ambil transaksi + data yang dibutuhkan
+            const transaction = await prisma.transaction.findUnique({
                 where: { id: transactionId },
-                data: { status: "CANCELED" },
-            });
-
-            throw new Error("Waktu pembayaran telah habis");
-        }
-
-        const user = transaction.user;
-        if (user.currentAmount < transaction.price) {
-            throw new Error("Saldo kamu tidak mencukupi untuk membayar transaksi ini");
-        }
-
-        const mitraMap = new Map();
-        for (const roomReservation of reservation.roomReservations) {
-            const hotelPartner = roomReservation.room.roomType.hotel.hotelPartners[0];
-            if (!hotelPartner) continue;
-
-            const mitra = hotelPartner.partner;
-            const pricePerRoom = roomReservation.room.roomType.price;
-            const duration = (new Date(reservation.endDate) - new Date(reservation.startDate)) / (1000 * 60 * 60 * 24);
-            const total = pricePerRoom * duration;
-
-            mitraMap.set(mitra.id, (mitraMap.get(mitra.id) || 0) + total);
-        }
-
-        await prisma.$transaction(async (tx) => {
-            for (const [mitraId, amount] of mitraMap.entries()) {
-                await tx.user.update({
-                    where: { id: mitraId },
-                    data: {
-                        currentAmount: { increment: amount },
-                    },
-                });
-            }
-
-            await tx.user.update({
-                where: { id: user.id },
-                data: {
-                    currentAmount: { decrement: transaction.price },
-                },
-            });
-
-            await tx.transaction.update({
-                where: { id: transaction.id },
-                data: { status: "PAID" },
-            });
-        });
-
-        const finalTransaction = await prisma.transaction.findUnique({
-            where: { id: transactionId },
-            include: {
-                reservations: {
+                include: {
+                    user: true,
+                    reservations: {
                     include: {
                         roomReservations: {
+                        include: {
+                            room: {
                             include: {
-                                room: {
-                                    include: {
-                                        roomType: {
-                                            include: {
-                                                hotel: true,
-                                            },
-                                        },
-                                    },
+                                roomType: {
+                                select: { price: true, typeName: true, hotelId: true },
                                 },
                             },
+                            },
+                        },
                         },
                     },
+                    },
                 },
-                user: true,
-            },
-        });
+                });
 
-        return {
-            message: "Pembayaran berhasil",
-            transaction: {
-                id: finalTransaction.id,
-                hotel: finalTransaction.reservations[0]?.roomReservations[0]?.room?.roomType?.hotel?.name || "Unknown Hotel",
-                userId: finalTransaction.user.id,
-                userName: finalTransaction.user.username,
-                price: finalTransaction.price,
-                status: finalTransaction.status,
-                startDate: finalTransaction.reservations[0].startDate,
-                endDate: finalTransaction.reservations[0].endDate,
-                rooms: finalTransaction.reservations[0]?.roomReservations.map(rr => ({
+                if (!transaction) throw new Error("Transaksi tidak ditemukan");
+                if (transaction.userId !== userId) throw new Error("Akses ditolak");
+                if (transaction.status === "PAID") throw new Error("Transaksi sudah dibayar");
+                if (transaction.status === "CANCELED") throw new Error("Transaksi telah dibatalkan");
+                if (!transaction.reservations?.length) throw new Error("Reservasi tidak ditemukan");
+
+                const reservation = transaction.reservations[0];
+                const now = Date.now();
+                const createdAt = new Date(reservation.createdAt).getTime();
+                const duration = Math.ceil(
+                (new Date(reservation.endDate) - new Date(reservation.startDate)) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+                if (now - createdAt > 15 * 60 * 1000) {
+                const reservationIds = transaction.reservations.map(r => r.id);
+                await prisma.roomReservation.deleteMany({ where: { reservationId: { in: reservationIds } } });
+                await prisma.reservation.deleteMany({ where: { id: { in: reservationIds } } });
+                await prisma.transaction.update({
+                    where: { id: transactionId },
+                    data: { status: "CANCELED" },
+                });
+                throw new Error("Waktu pembayaran telah habis");
+                }
+
+                // Hitung pembagian ke mitra berdasarkan hotelId
+                const mitraMap = new Map();
+
+                for (const rr of reservation.roomReservations) {
+                const { hotelId, price } = rr.room.roomType;
+                const hotelPartner = await prisma.hotelPartner.findFirst({
+                    where: { hotelId },
+                    include: { partner: true },
+                });
+
+                if (!hotelPartner) continue;
+
+                const totalHarga = price * duration * rr.amount;
+                const mitraId = hotelPartner.partnerId;
+
+                mitraMap.set(mitraId, (mitraMap.get(mitraId) || 0) + totalHarga);
+                }
+
+                // Validasi saldo
+                if (transaction.user.currentAmount < transaction.price) {
+                throw new Error("Saldo tidak mencukupi");
+                }
+
+                // Proses pembayaran dan pembagian ke mitra
+                await prisma.$transaction(async tx => {
+                for (const [mitraId, amount] of mitraMap.entries()) {
+                    await tx.user.update({
+                    where: { id: mitraId },
+                    data: { currentAmount: { increment: amount } },
+                    });
+                }
+
+                await tx.user.update({
+                    where: { id: transaction.userId },
+                    data: { currentAmount: { decrement: transaction.price } },
+                });
+
+                await tx.transaction.update({
+                    where: { id: transactionId },
+                    data: { status: "PAID" },
+                });
+                });
+
+                // Ambil data final untuk response
+                return {
+                message: "Pembayaran berhasil",
+                transaction: {
+                    id: transaction.id,
+                    userId: transaction.user.id,
+                    userName: transaction.user.name,
+                    price: transaction.price,
+                    status: "PAID",
+                    startDate: reservation.startDate,
+                    endDate: reservation.endDate,
+                    rooms: reservation.roomReservations.map(rr => ({
                     id: rr.room.id,
                     name: rr.room.name,
                     typeName: rr.room.roomType.typeName,
-                })),
-            },
-        };
+                    })),
+                },
+            };
         } catch (error) {
-            console.error("Error saat memproses pembayaran:", error);
-            throw error;
+            console.error("Gagal memproses pembayaran:", error.message);
+            throw new Error(error.message);
         }
     },
 

@@ -4,6 +4,7 @@ import { searchUserService } from "../services/admin/search.user.js";
 import { deleteUserService } from "../services/admin/delete.user.js";
 import { editUserService } from "../services/admin/edit.user.js";
 import { topupService } from "../services/admin/topup.js";
+import adminDashboard from "../services/admin/admin.dashboard.js";
 
 
 export default {
@@ -137,7 +138,7 @@ export default {
         };
     },
 
-    async getUsers(req, res) {
+    async getUsers(_req, res) {
         /**
         #swagger.tags = ['Admin']
         #swagger.security = [{
@@ -274,5 +275,131 @@ export default {
                 data: null,
             });
         };
+    },
+
+    async totalUsers(_req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await adminDashboard.totalUsersService({role: "USER"});
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async totalHotelPartner(_req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await adminDashboard.totalUsersService({role: "MITRA_HOTEL"});
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async totalPlanePartner(_req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await adminDashboard.totalUsersService({role: "MITRA_PENERBANGAN"});
+            res.status(200).json({
+                message: "success",
+                data: result,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async graphUsers(_req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await adminDashboard.graphUsersService({role: "USER"});
+            res.status(200).json({
+                message: "success",
+                data: result,
+            })
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async graphHotelPartners(_req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await adminDashboard.graphUsersService({role: "MITRA_HOTEL"});
+            res.status(200).json({
+                message: "success",
+                data: result,
+            })
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    async graphPlanePartners(_req, res) {
+        /**
+        #swagger.tags = ['Admin']
+        #swagger.security = [{
+            "bearerAuth": []
+         }]
+        */
+        try {
+            const result = await adminDashboard.graphUsersService({role: "MITRA_PENERBANGAN"});
+            res.status(200).json({
+                message: "success",
+                data: result,
+            })
+        } catch (error) {
+            res.status(400).json({
+                message: error.message,
+                data: null,
+            });
+        }
     },
 };

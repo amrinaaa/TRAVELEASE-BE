@@ -49,12 +49,20 @@ router.delete("/user", authMiddleware, adminMiddleware, adminControllers.deleteU
 router.put("/amount", authMiddleware, adminMiddleware, adminControllers.topup);
 router.post('/admin/profile/:id', upload.single('file'), authMiddleware, adminMiddleware, uploadController.uploadProfilebyAdmin);
 router.delete('/admin/profile/:id', authMiddleware, adminMiddleware, deleteFileController.deleteProfilebyAdmin);
+//Dashboard
+router.get('/dashboard/total-users', authMiddleware, adminMiddleware, adminControllers.totalUsers);
+router.get('/dashboard/total-hotel-partners', authMiddleware, adminMiddleware, adminControllers.totalHotelPartner);
+router.get('/dashboard/total-plane-partners', authMiddleware, adminMiddleware, adminControllers.totalPlanePartner);
+router.get('/dashboard/graph-monthly-users', authMiddleware, adminMiddleware, adminControllers.graphUsers);
+router.get('/dashboard/graph-monthly-hotel-partners', authMiddleware, adminMiddleware, adminControllers.graphHotelPartners);
+router.get('/dashboard/graph-monthly-plane-partners', authMiddleware, adminMiddleware, adminControllers.graphPlanePartners);
 
 //Airport
 router.get('/airports', authMiddleware, airportsController.getAirports); //bisa diakses oleh semua role
 router.post('/airport', authMiddleware, airportsController.addAirport);
 router.post('/airportImage/:airportId', upload.single('file'), authMiddleware, uploadController.uploadAirportImage);
 router.delete('/airportImage/:id', authMiddleware, deleteFileController.deleteAirportImage);
+
 
 
 //Penerbangan
