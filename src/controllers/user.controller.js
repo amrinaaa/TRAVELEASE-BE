@@ -332,28 +332,28 @@ export default {
             data: result,
         });
     } catch (error) {
-        console.error("Error in cancelTransaction:", error);
-        const errorType = error.message.split(':')[0];
-        const errorDetails = error.message.split(':').slice(1).join(':').trim();
+        // console.error("Error in cancelTransaction:", error);
+        // const errorType = error.message.split(':')[0];
+        // const errorDetails = error.message.split(':').slice(1).join(':').trim();
         
-        const errorMap = {
-            "Transaction not found": 404,
-            "User not found for transaction": 404,
-            "User does not own this transaction": 403,
-            "Order already cancelled": 400,
-            "Only purchase transactions": 400,
-            "No content found": 400,
-            "Could not determine earliest date": 400,
-            "Cancellation window has passed": 400,
-            "Invalid transaction status": 400,
-            "Partner not found": 400
-        };
+        // const errorMap = {
+        //     "Transaction not found": 404,
+        //     "User not found for transaction": 404,
+        //     "User does not own this transaction": 403,
+        //     "Order already cancelled": 400,
+        //     "Only purchase transactions": 400,
+        //     "No content found": 400,
+        //     "Could not determine earliest date": 400,
+        //     "Cancellation window has passed": 400,
+        //     "Invalid transaction status": 400,
+        //     "Partner not found": 400
+        // };
 
-        const statusCode = errorMap[errorType] || 500;
-        const message = statusCode === 500 ? "Internal Server Error" : error.message;
+        // const statusCode = errorMap[errorType] || 500;
+        // const message = statusCode === 500 ? "Internal Server Error" : error.message;
 
-        return res.status(statusCode).json({ 
-            message: message,
+        res.status(400).json({ 
+            message: error.message,
             data: null 
         });
     }

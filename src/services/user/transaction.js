@@ -74,209 +74,179 @@ export default {
     async cancelTransactionService(userId, transactionId) {
         try {
             return await prisma.$transaction(async (tx) => {
-                // 1. Ambil transaksi dengan semua relasi dalam satu query
                 const transaction = await tx.transaction.findUnique({
-                    where: { id: transactionId },
+                where: { id: transactionId },
+                include: {
+                    user: true,
+                    tickets: {
                     include: {
-                        user: { select: { id: true } },
-                        tickets: {
-                            include: {
-                                flight: {
-                                    select: { departureTime: true, planeId: true }
-                                }
-                            }
-                        },
-                        reservations: {
-                            include: {
-                                roomReservations: {
-                                    include: {
-                                        room: {
-                                            include: {
-                                                roomType: {
-                                                    include: {
-                                                        hotel: {
-                                                            select: { id: true }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        flight: {
+                        select: { departureTime: true, planeId: true }
                         }
                     }
+                    },
+                    reservations: {
+                    include: {
+                        roomReservations: {
+                        include: {
+                            room: {
+                            include: {
+                                roomType: {
+                                include: {
+                                    hotel: true
+                                }
+                                }
+                            }
+                            }
+                        }
+                        }
+                    }
+                    }
+                }
                 });
 
-                // 2. Validasi dasar
-                if (!transaction) throw new Error('Transaction not found');
-                if (transaction.userId !== userId) throw new Error('User does not own this transaction');
-                if (transaction.status === 'CANCELED') throw new Error('Order already cancelled');
-                if (transaction.transactionType !== 'PURCHASE') throw new Error('Only purchase transactions can be cancelled');
+                if (!transaction) {
+                throw new Error("Transaction not found or invalid");
+                }
 
-                // 3. Cek konten transaksi
+                if (transaction.userId !== userId) {
+                throw new Error("Unauthorized: You do not own this transaction");
+                }
+
+                if (transaction.status === "CANCELED") {
+                throw new Error("This transaction has already been cancelled");
+                }
+
+                if (transaction.transactionType !== "PURCHASE") {
+                throw new Error("Only PURCHASE transactions can be cancelled");
+                }
+
                 const hasFlights = transaction.tickets.length > 0;
                 const hasHotels = transaction.reservations.length > 0;
-                
+
                 if (!hasFlights && !hasHotels) {
-                    await tx.transaction.update({
-                        where: { id: transactionId },
-                        data: { status: 'CANCELED' }
-                    });
-                    throw new Error('No content found: This transaction has no flights or hotels');
+                await tx.transaction.update({
+                    where: { id: transactionId },
+                    data: { status: "CANCELED" }
+                });
+                throw new Error("Transaction contains no flights or hotels");
                 }
 
-                // 4. Tentukan tanggal terdekat untuk aturan pembatalan
+                // Hitung tanggal paling awal
                 let earliestDate = null;
 
-                // Untuk penerbangan
+                transaction.tickets.forEach(ticket => {
+                const date = ticket.flight?.departureTime;
+                if (date && (!earliestDate || new Date(date) < earliestDate)) {
+                    earliestDate = new Date(date);
+                }
+                });
+
+                transaction.reservations.forEach(res => {
+                if (!earliestDate || res.startDate < earliestDate) {
+                    earliestDate = res.startDate;
+                }
+                });
+
+                if (!earliestDate) {
+                throw new Error("Earliest service date could not be determined");
+                }
+
+                const twoDaysFromNow = new Date();
+                twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+                if (earliestDate < twoDaysFromNow) {
+                throw new Error("Cancellation period has expired (less than 2 days left)");
+                }
+
+                // Hapus tiket dan reservasi
                 if (hasFlights) {
-                    for (const ticket of transaction.tickets) {
-                        if (ticket.flight?.departureTime) {
-                            const date = new Date(ticket.flight.departureTime);
-                            if (!earliestDate || date < earliestDate) earliestDate = date;
-                        }
-                    }
-                }
-
-                // Untuk hotel
-                if (hasHotels) {
-                    for (const reservation of transaction.reservations) {
-                        if (reservation.startDate) {
-                            const date = new Date(reservation.startDate);
-                            if (!earliestDate || date < earliestDate) earliestDate = date;
-                        }
-                    }
-                }
-
-                if (!earliestDate) throw new Error('Could not determine earliest date');
-
-                // 5. Validasi waktu pembatalan
-                const currentTime = new Date();
-                if ((earliestDate.getTime() - currentTime.getTime()) < 2 * 24 * 60 * 60 * 1000) {
-                    throw new Error(`Cancellation window has passed: Must be at least 2 days before (Earliest date: ${earliestDate.toISOString()})`);
-                }
-
-                // 6. Proses penghapusan data
-                const deletePromises = [];
-
-                if (hasFlights) {
-                    deletePromises.push(
-                        tx.ticket.deleteMany({ where: { transactionId } })
-                    );
+                await tx.ticket.deleteMany({ where: { transactionId } });
                 }
 
                 if (hasHotels) {
-                    const reservationIds = transaction.reservations.map(r => r.id);
-                    
-                    if (reservationIds.length > 0) {
-                        deletePromises.push(
-                            tx.roomReservation.deleteMany({ 
-                                where: { reservationId: { in: reservationIds } }
-                            }),
-                            tx.reservation.deleteMany({ 
-                                where: { id: { in: reservationIds } }
-                            })
-                        );
-                    }
+                const reservationIds = transaction.reservations.map(r => r.id);
+                if (reservationIds.length > 0) {
+                    await tx.roomReservation.deleteMany({
+                    where: { reservationId: { in: reservationIds } }
+                    });
+                    await tx.reservation.deleteMany({
+                    where: { id: { in: reservationIds } }
+                    });
+                }
                 }
 
-                await Promise.all(deletePromises);
-
-                // 7. Proses refund jika sudah dibayar
+                // Refund jika status PAID
                 let refundData = null;
-                
-                if (transaction.status === 'PAID') {
-                    // Refund ke user
-                    await tx.user.update({
-                        where: { id: userId },
-                        data: { currentAmount: { increment: transaction.price } }
+
+                if (transaction.status === "PAID") {
+                await tx.user.update({
+                    where: { id: userId },
+                    data: { currentAmount: { increment: transaction.price } }
+                });
+
+                const partnerIds = new Set();
+
+                // Flight partner
+                const planeIds = [...new Set(transaction.tickets.map(t => t.flight?.planeId).filter(Boolean))];
+                if (planeIds.length) {
+                    const planes = await tx.plane.findMany({
+                    where: { id: { in: planeIds } },
+                    select: { airlineId: true }
                     });
 
-                    // Temukan partner untuk debit
-                    const partnerIds = new Set();
-                    
-                    // Untuk penerbangan
-                    if (hasFlights) {
-                        const planeIds = [...new Set(transaction.tickets
-                            .filter(t => t.flight?.planeId)
-                            .map(t => t.flight.planeId))];
-                        
-                        if (planeIds.length > 0) {
-                            const airlines = await tx.plane.findMany({
-                                where: { id: { in: planeIds } },
-                                select: { airlineId: true }
-                            });
-                            
-                            const airlineIds = [...new Set(airlines.map(a => a.airlineId))];
-                            
-                            if (airlineIds.length > 0) {
-                                const partners = await tx.airlinePartner.findMany({
-                                    where: { airlineId: { in: airlineIds } },
-                                    select: { partnerId: true }
-                                });
-                                
-                                partners.forEach(p => partnerIds.add(p.partnerId));
-                            }
-                        }
-                    }
-                    
-                    // Untuk hotel
-                    if (hasHotels) {
-                        const hotelIds = new Set();
-                        
-                        for (const reservation of transaction.reservations) {
-                            for (const rr of reservation.roomReservations) {
-                                if (rr.room?.roomType?.hotel?.id) {
-                                    hotelIds.add(rr.room.roomType.hotel.id);
-                                }
-                            }
-                        }
-                        
-                        if (hotelIds.size > 0) {
-                            const partners = await tx.hotelPartner.findMany({
-                                where: { hotelId: { in: [...hotelIds] } },
-                                select: { partnerId: true }
-                            });
-                            
-                            partners.forEach(p => partnerIds.add(p.partnerId));
-                        }
-                    }
-                    
-                    // Debit partner jika ditemukan
-                    if (partnerIds.size > 0) {
-                        const amountPerPartner = Math.floor(transaction.price / partnerIds.size);
-                        const updatePromises = [];
-                        
-                        for (const partnerId of partnerIds) {
-                            updatePromises.push(
-                                tx.user.update({
-                                    where: { id: partnerId },
-                                    data: { currentAmount: { decrement: amountPerPartner } }
-                                })
-                            );
-                        }
-                        
-                        await Promise.all(updatePromises);
-                        refundData = {
-                            refundedAmount: transaction.price,
-                            debitedPartners: [...partnerIds],
-                            amountPerPartner
-                        };
-                    } else {
-                        throw new Error('Partner not found: No partners to debit');
-                    }
+                    const airlineIds = planes.map(p => p.airlineId);
+                    const airlinePartners = await tx.airlinePartner.findMany({
+                    where: { airlineId: { in: airlineIds } },
+                    select: { partnerId: true }
+                    });
+
+                    airlinePartners.forEach(p => partnerIds.add(p.partnerId));
                 }
-                
-                // 8. Update status transaksi
-                const updatedTransaction = await tx.transaction.update({
-                    where: { id: transactionId },
-                    data: { status: 'CANCELED' }
+
+                // Hotel partner
+                transaction.reservations.forEach(res => {
+                    res.roomReservations.forEach(rr => {
+                    const hotelId = rr.room?.roomType?.hotel?.id;
+                    if (hotelId) {
+                        partnerIds.add(hotelId);
+                    }
+                    });
                 });
-                
+
+                const hotelPartners = await tx.hotelPartner.findMany({
+                    where: { hotelId: { in: Array.from(partnerIds) } },
+                    select: { partnerId: true }
+                });
+
+                hotelPartners.forEach(p => partnerIds.add(p.partnerId));
+
+                if (partnerIds.size === 0) {
+                    throw new Error("No partners found to refund from");
+                }
+
+                const amountPerPartner = Math.floor(transaction.price / partnerIds.size);
+                await Promise.all(Array.from(partnerIds).map(pid => {
+                    return tx.user.update({
+                    where: { id: pid },
+                    data: { currentAmount: { decrement: amountPerPartner } }
+                    });
+                }));
+
+                refundData = {
+                    refundedAmount: transaction.price,
+                    debitedPartners: Array.from(partnerIds),
+                    amountPerPartner
+                };
+                }
+
+                const updated = await tx.transaction.update({
+                where: { id: transactionId },
+                data: { status: "CANCELED" }
+                });
+
                 return {
-                    status: updatedTransaction.status,
-                    refundData
+                status: updated.status,
+                refundData
                 };
             });
         } catch (error) {
