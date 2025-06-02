@@ -7,7 +7,7 @@ import userService from "../services/user/user.service.js";
 export default {
   async getProfile(_req, res) {
     /**
-    #swagger.tags = ['User-Login']
+    #swagger.tags = ['Profile Mitra dan User']
     #swagger.security = [{
         "bearerAuth": []
     }]
@@ -29,7 +29,7 @@ export default {
 
   async editProfile(req, res) {
     /**
-        #swagger.tags = ['User-Login']
+        #swagger.tags = ['Profile Mitra dan User']
         #swagger.requestBody = {
             required: true,
             schema: {$ref: "#/components/schemas/EditProfileRequest"}
