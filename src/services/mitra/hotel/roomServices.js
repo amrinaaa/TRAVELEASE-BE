@@ -99,6 +99,7 @@ export default {
                     description: true,
                     roomImages: {
                         select: {
+                            id: true,
                             urlImage: true
                         }
                     },
