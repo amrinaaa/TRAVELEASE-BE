@@ -328,24 +328,34 @@ export default {
             "bearerAuth": []
         }]
         */
+
         try {
-            const mitraId = res.locals.payload.id;
-            const customers = await customerServices.getCustomerListService(mitraId);
+            const hotelId = req.query.hotelId;
 
-            return res.status(200).json({
-                success: true,
-                message: 'List customers fetched successfully',
-                data: customers,
-            });
-
-        } catch (error) {
-            console.error('Error fetching customer list:', error);
-            return res.status(500).json({
+            if (!hotelId) {
+            return res.status(400).json({
                 success: false,
-                message: 'Something went wrong while fetching customers',
-                error: error.message,
+                message: 'hotelId is required in query params',
+                data: null
             });
         }
+
+        const customers = await customerServices.getCustomerListService(hotelId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'List of customers fetched successfully',
+            data: customers,
+        });
+
+    } catch (error) {
+        console.error('Error fetching customer list:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong while fetching customers',
+            error: error.message,
+        });
+    }
     },
 
     async getRoomList(req, res) {
