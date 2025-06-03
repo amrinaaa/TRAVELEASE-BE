@@ -2764,6 +2764,11 @@
                     "description": "Deskripsi baru kamar (opsional)",
                     "nullable": true
                   },
+                  "roomTypeId": {
+                    "type": "string",
+                    "description": "ID tipe ruangan baru (opsional)",
+                    "nullable": true
+                  },
                   "files": {
                     "type": "array",
                     "description": "Gambar-gambar baru kamar (jika ingin menambah atau mengganti)",

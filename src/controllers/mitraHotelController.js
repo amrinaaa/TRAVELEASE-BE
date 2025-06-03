@@ -527,6 +527,11 @@ export default {
                                 description: 'Deskripsi baru kamar (opsional)',
                                 nullable: true
                             },
+                            roomTypeId: {
+                                type: 'string',
+                                description: 'ID tipe ruangan baru (opsional)',
+                                nullable: true
+                            },
                             files: {
                                 type: 'array',
                                 description: 'Gambar-gambar baru kamar (jika ingin menambah atau mengganti)',
@@ -550,7 +555,7 @@ export default {
             "bearerAuth": []
         }]
         */
-        const { roomId, name, description } = req.body;
+        const { roomId, name, description, roomTypeId } = req.body;
         const files = req.files;
 
         try {
@@ -569,6 +574,7 @@ export default {
                 roomId,
                 name,
                 description,
+                roomTypeId,
                 files
             });
 

@@ -112,10 +112,16 @@ export default {
     },
 
     async validateEditRoom(data) {
-        const { roomId } = data;
+        const { roomId, roomTypeId } = data;
 
         if (!roomId) {
             const error = new Error("Room ID is required");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (roomTypeId && typeof roomTypeId !== 'string') {
+            const error = new Error("roomTypeId must be a string");
             error.statusCode = 400;
             throw error;
         }

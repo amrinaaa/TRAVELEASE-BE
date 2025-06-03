@@ -137,29 +137,32 @@ export default {
         }
     },
 
-    async editRoomService({ roomId, name, description, files }) {
+    async editRoomService({ roomId, name, description, roomTypeId, files }) {
         try {
             const room = await prisma.room.findUnique({
                 where: { id: roomId },
                 include: { roomType: true },
             });
-    
+
             if (!room) {
                 throw new Error("Room not found");
             }
-    
+
+            const updateData = {};
+
+            if (name) updateData.name = name;
+            if (description) updateData.description = description;
+            if (roomTypeId) updateData.roomTypeId = roomTypeId;
+
             const updatedRoom = await prisma.room.update({
                 where: { id: roomId },
-                data: {
-                    name,
-                    description,
-                },
+                data: updateData,
             });
 
             await Promise.all(
                 files.map(file => fotoRoom.uploadRoomImage(file, updatedRoom.id))
             );
-    
+
             return updatedRoom;
         } catch (error) {
             console.error("Error editing room:", error);
