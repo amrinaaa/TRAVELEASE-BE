@@ -2009,6 +2009,15 @@
           "Mitra Hotel"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "mitraId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -3922,18 +3931,10 @@
           "400": {
             "description": "Bad Request"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "403": {
             "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        }
       }
     },
     "/booking-room": {

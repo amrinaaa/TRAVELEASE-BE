@@ -8,14 +8,14 @@ import { validateImage } from "../utils/validation/fileImage.js"
 import bookingTodayService from "../services/mitra/hotel/dashboardService.js"
 
 export default {
-    async getListHotel(_req, res) {
+    async getListHotel(req, res) {
         /**
         #swagger.tags = ['Mitra Hotel']
         #swagger.security = [{
             "bearerAuth": []
         }]
          */
-        const id = res.locals.payload.id;
+        const id = req.query.mitraId || res.locals.payload.id;
         try {
             const result = await hotelServices.getListHotelService(id);
             res.status(200).json({

@@ -172,7 +172,7 @@ router.put('/payment-flight', authMiddleware, userMiddleware, userController.pay
 router.get('/user/hotels', userController.getHotel);
 router.get('/user/hotel-rooms/:hotelId', userController.getRoomsByIdHotel);
 router.get('/user/detail-room/:roomId', authMiddleware, userMiddleware, userController.detailRoomByIdRoom);
-router.get('/user/saldo', authMiddleware, userMiddleware, userController.getSaldoUser);
+router.get('/user/saldo', authMiddleware, userController.getSaldoUser);
 router.post('/booking-room', authMiddleware, userMiddleware, userController.bookingRoom);
 router.patch('/payment-room/:transactionId', authMiddleware, userMiddleware, userController.paymentBookingRoom);
 
