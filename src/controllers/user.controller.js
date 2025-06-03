@@ -313,9 +313,6 @@ export default {
   async getSaldoUser(req, res) {
     /**
         #swagger.tags = ['User-Login']
-        #swagger.security = [{
-            "bearerAuth": []
-        }]
         */
     const userId = res.locals.payload.id;
     try {
