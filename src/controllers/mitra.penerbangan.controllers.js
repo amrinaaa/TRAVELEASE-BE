@@ -36,7 +36,7 @@ export default {
             "bearerAuth": []
          }]
         */
-        const mitraId = res.locals.payload.id;
+        const mitraId = req.query.mitraId || res.locals.payload?.id;;
         try {
             const result = await mitraPenerbangan.getAirlinesService(mitraId);
             res.status(200).json({

@@ -1082,6 +1082,15 @@
           "Mitra Penerbangan"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "mitraId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
